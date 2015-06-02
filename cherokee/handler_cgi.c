@@ -71,7 +71,7 @@ static ret_t fork_and_execute_cgi_unix (cherokee_handler_cgi_t *cgi);
 
 /* Plugin initialization
  */
-CGI_LIB_INIT (cgi, http_get | http_post | http_head);
+CGI_LIB_INIT (cgi, http_get | http_post | http_head | http_put | http_delete);
 
 
 

@@ -1,0 +1,1 @@
+./configure --prefix=/usr/local/zenloadbalancer/app/cherokee/ --disable-ipv6 --with-wwwroot=/usr/local/zenloadbalancer/www --with-cgiroot=/usr/local/zenloadbalancer/www --with-wwwuser=root

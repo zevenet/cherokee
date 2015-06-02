@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_modules_html_modules_a_8594_a_href_modules_handlers_html_handlers_a"><a href="index.html">Index</a> &#8594; <a href="modules.html">Modules</a> &#8594; <a href="modules_handlers.html">Handlers</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_handler_drop_connection">Handler: Drop Connection</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This handler immediately drops the TCP connection without replying
+anything whatsoever.</p></div>
+<div class="paragraph"><p>This handler can be used as security measure against some types of
+attack. For instance, an an error in the PHP and Java floating point
+library could be exploited to cause a denial of service against a web
+service. Under certain circumstances, attempting to convert the string
+<em>2.2250738585072011e-308</em> into a floating point value can hang the PHP
+runtime. Similarly, the Java runtime (and compiler) suffer from a
+related problem.</p></div>
+<div class="paragraph"><p>By filtering incoming traffic and using this handler,
+requests that may seek to exploit this fault can be safely discarded.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">Any application code that parses input into a floating point
+could be vulnerable. More importantly, the family of <em>Accept</em> HTTP
+headers use floating point scores that could be exploited on certain
+implementations. To prevent this problem, a solution could be to create a
+Header-type rule that matches the <em>2250738585072011</em> string and
+discards the requests.</td>
+</tr></table>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

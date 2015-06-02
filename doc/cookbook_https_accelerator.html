@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_cookbook_html_cookbook_a"><a href="index.html">Index</a> &#8594; <a href="cookbook.html">Cookbook</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_cookbook_ssl_offloading_with_cherokee">Cookbook: SSL Offloading with Cherokee</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>It is no secret that HTTPS traffic has an important performance impact
+when compared to HTTP. This penalty is influenced by a number of
+reasons: handshaking overhead, latency due to the increased number of
+round trips, and increased CPU usage on the server.</p></div>
+<div class="paragraph"><p>This impact loss can be mitigated to a certain extent through several
+methods. You can use a dedicated hardware SSL layer. Or you can also
+ensure that the web server is using HTTP Keep-Alive, which allows the
+client to reuse SSL sessions, and avoids the need for another
+handshake. Cherokee will allow this, but you can also set it up to act
+as an HTTPS accelerator, which is pretty interesting by itself.</p></div>
+<div class="paragraph"><p>If you are using several servers this can be easily done. The theory
+is very simple:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Set up a main HTTP Reverse proxy. This one should allow the clients
+to maintain HTTP Keep-Alive sessions, and will return data through a
+secured HTTPS channel. It can also use dedicated SSL hardware to speed
+up the encryption. This proxy will balance the load among a number of
+back-ends.
+</p>
+</li>
+<li>
+<p>
+Set up your HTTP back-ends, which will be in your local network and
+thus can transfer data through the regular HTTP protocol.
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>It seems easy enough. The performance gain is very significant since
+all the back-ends do not have to suffer the constant hammering involved
+with HTTPS overhead, and their contents can be efficiently cached.</p></div>
+<h3 id="details">The process in detail</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Lets assume your back-end servers are running on your local network on
+10.0.0.101:8080, 10.0.0.102:8080, and so on.</p></div>
+<div class="paragraph"><p>The front-end server would have to balance the load among them.  For
+that, you will first have to add as many
+<a href="config_info_sources.html">Information Sources</a> as back-ends.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/cookbook_https_accelerator_sources.png" alt="media/images/cookbook_https_accelerator_sources.png" />
+</div>
+<div class="image-title">Multiple backends</div>
+</div>
+<div class="paragraph"><p>Then you will have to configure the HTTP Reverse proxy. Visit your
+front-end&#8217;s virtual server through the
+<a href="config_virtual_servers.html">vServers</a> section, select the
+<tt>Behavior</tt> tab, and click on <tt>Rule Management</tt>. You will be able to
+choose the <a href="modules_handlers_proxy.html">HTTP Reverse Proxy</a>
+handler, and set it to balance the load among all your back-ends. In
+the example, we will allow <tt>Keepalive</tt> connections, and assign all the
+information sources for the defined backends.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/cookbook_https_accelerator_handler.png" alt="media/images/cookbook_https_accelerator_handler.png" />
+</div>
+<div class="image-title">HTTP Reverse Proxy balancing</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_modules_html_modules_a_8594_a_href_modules_handlers_html_handlers_a"><a href="index.html">Index</a> &#8594; <a href="modules.html">Modules</a> &#8594; <a href="modules_handlers.html">Handlers</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_handler_http_error">Handler: HTTP Error</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The <strong>HTTP Error</strong> (<tt>`custom_error</tt>` internally) handler is used to
+generate errors when certain rules are matched. For instance it can be
+used to deny access to specific files, such as those containing
+passwords.</p></div>
+<h3 id="parameters">Parameters</h3><div style="clear:left"></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+<thead>
+<tr>
+<th align="left" valign="top">Parameters </th>
+<th align="left" valign="top">Type    </th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>error</tt></p></td>
+<td align="left" valign="top"><p class="table">number</p></td>
+<td align="left" valign="top"><p class="table">HTTP error code return.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_handler_custom_error.png" alt="media/images/admin_handler_custom_error.png" />
+</div>
+</div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Available errors in <tt>cherokee-admin</tt></caption>
+<col width="10%" />
+<col width="90%" />
+<thead>
+<tr>
+<th align="left" valign="top">Code </th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">400</p></td>
+<td align="left" valign="top"><p class="table">Bad Request</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">401</p></td>
+<td align="left" valign="top"><p class="table">Unauthorized</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">402</p></td>
+<td align="left" valign="top"><p class="table">Payment Required</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">403</p></td>
+<td align="left" valign="top"><p class="table">Forbidden</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">404</p></td>
+<td align="left" valign="top"><p class="table">Not Found</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">405</p></td>
+<td align="left" valign="top"><p class="table">Method Not Allowed</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">406</p></td>
+<td align="left" valign="top"><p class="table">Not Acceptable</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">407</p></td>
+<td align="left" valign="top"><p class="table">Proxy Auth Required</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">408</p></td>
+<td align="left" valign="top"><p class="table">Request Timeout</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">409</p></td>
+<td align="left" valign="top"><p class="table">Conflict</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">410</p></td>
+<td align="left" valign="top"><p class="table">Gone</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">411</p></td>
+<td align="left" valign="top"><p class="table">Length Required</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">412</p></td>
+<td align="left" valign="top"><p class="table">Precondition Failed</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">413</p></td>
+<td align="left" valign="top"><p class="table">Request Entity too large</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">414</p></td>
+<td align="left" valign="top"><p class="table">Request-URI too long</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">415</p></td>
+<td align="left" valign="top"><p class="table">Unsupported Media Type</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">416</p></td>
+<td align="left" valign="top"><p class="table">Requested range not satisfiable</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">417</p></td>
+<td align="left" valign="top"><p class="table">Expectation Failed</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">422</p></td>
+<td align="left" valign="top"><p class="table">Unprocessable Entity</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">423</p></td>
+<td align="left" valign="top"><p class="table">Locked</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">424</p></td>
+<td align="left" valign="top"><p class="table">Failed Dependency</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">425</p></td>
+<td align="left" valign="top"><p class="table">Unordered Collection</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">426</p></td>
+<td align="left" valign="top"><p class="table">Upgrade Required</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">449</p></td>
+<td align="left" valign="top"><p class="table">Retry With</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">500</p></td>
+<td align="left" valign="top"><p class="table">Internal Server Error</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">501</p></td>
+<td align="left" valign="top"><p class="table">Not Implemented</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">502</p></td>
+<td align="left" valign="top"><p class="table">Bad gateway</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">503</p></td>
+<td align="left" valign="top"><p class="table">Service Unavailable</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">504</p></td>
+<td align="left" valign="top"><p class="table">Gateway Timeout</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">505</p></td>
+<td align="left" valign="top"><p class="table">HTTP Version Not Supported</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">506</p></td>
+<td align="left" valign="top"><p class="table">Variant Also Negotiates</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">507</p></td>
+<td align="left" valign="top"><p class="table">Insufficient Storage</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">509</p></td>
+<td align="left" valign="top"><p class="table">Bandwidth Limit Exceeded</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">510</p></td>
+<td align="left" valign="top"><p class="table">Not Extended</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_cookbook_html_cookbook_a"><a href="index.html">Index</a> &#8594; <a href="cookbook.html">Cookbook</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_cookbook_streaming_audio_and_video">Cookbook: Streaming Audio and Video</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>It&#8217;s really easy to configure Cherokee so it streams audio and video
+files instead of sending then as a regular file.</p></div>
+<div class="paragraph"><p>The first thing you have to ensure is that Cherokee has been compiled
+with the required libraries. In this case, the FFMpeg library set is
+required. Cherokee uses it to extract information of the media files.</p></div>
+<h3 id="wizard">Standard configuration</h3><div style="clear:left"></div>
+<div class="paragraph"><p>There is a
+<a href="http://www.cherokee-project.com/screencasts.html#streaming">screencast</a>
+available at the
+<a href="http://www.cherokee-project.com/">Cherokee-Project website</a> to
+demonstrate how easy it is to use the Streaming wizard.</p></div>
+<div class="paragraph"><p><span class="image">
+<a class="image" href="http://www.cherokee-project.com/screencasts.html#streaming">
+<img src="media/images/screencast.png" alt="media/images/screencast.png" />
+</a>
+</span></p></div>
+<div class="paragraph"><p>To configure Cherokee to stream media files is trivial. The only thing
+you will have to do is to choose the virtual server on which you want
+to enable the streaming functionality, and then click on the <tt>Add New</tt>
+button located at the top of the panel.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_vserver_wizard.png" alt="media/images/admin_vserver_wizard.png" />
+</div>
+</div>
+<div class="paragraph"><p>Once in there, the only thing left to do is finding the the Streaming
+wizard under the <tt>Tasks</tt> category, and following the
+instructions. Right after which the virtual server will be ready to
+stream your media files, including MP3, OGG, OGV, MP4, etc.</p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

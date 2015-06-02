@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_cookbook_html_cookbook_a"><a href="index.html">Index</a> &#8594; <a href="cookbook.html">Cookbook</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_cookbook_restricting_traffic_by_ip">Cookbook: Restricting traffic by IP</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This section answers some general questions regarding the current
+behavior of several parts of Cherokee that might lead to
+missunderstandings.</p></div>
+<div class="paragraph"><p>Some scenarios require web traffic to be restricted on a virtual
+server basd on incoming IP.  Although an IP/Subnet host match type is
+present on the <tt>Host Match</tt> tab of virtual servers, this can&#8217;t be used
+as a security measure to enforce traffic restrictions. Its main
+purpose is explained elsewhere in the documentation, and suffice it to
+say that if this method were to be used, it could be easily overcomed by
+forging the <tt>Host</tt> header.</p></div>
+<div class="paragraph"><p>If you want to restrict the traffic of one of your virtual servers
+based on the incoming IP, the best way to go is setting a non-final
+rule on top of your behavior rule list of the virtual server. That
+rule should match the forbidden IPs with an <tt>Incoming IP/Port</tt>-type
+rule (such as <tt>(NOT Incoming IP: 127.0.0.1/8)</tt>), and could be handled
+by custom error handler, or an appropriate redirection.</p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

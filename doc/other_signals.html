@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_other_html_other_information_a"><a href="index.html">Index</a> &#8594; <a href="other.html">Other information</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_other_signals">Other: Signals</h2>
+<div class="sectionbody">
+<div class="paragraph"><p><a href="other_bundle_cherokee-admin.html">Cherokee-Admin</a> is all you need to
+interact with Cherokee. However, should you want to tap directly into
+the underlying communication mechanism you would need to send the
+supported signals to the  <a href="other_bundle_cherokee.html">cherokee</a> process.</p></div>
+<div class="paragraph"><p>If needed it will relay the appropriate signals to any
+<a href="other_bundle_cherokee-worker.html">cherokee-worker</a> instances.</p></div>
+<div class="paragraph"><p>The following signals are supported by Cherokee:</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="20%" />
+<col width="80%" />
+<thead>
+<tr>
+<th align="left" valign="top">Parameters </th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">SIGHUP</p></td>
+<td align="left" valign="top"><p class="table">Restarts the server gracefully</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">SIGUSR1</p></td>
+<td align="left" valign="top"><p class="table">Restarts the server closing all the opened connections</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">SIGUSR2</p></td>
+<td align="left" valign="top"><p class="table">Reopens the log files</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">SIGTERM</p></td>
+<td align="left" valign="top"><p class="table">Exits</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

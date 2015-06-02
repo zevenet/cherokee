@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_modules_html_modules_a"><a href="index.html">Index</a> &#8594; <a href="modules.html">Modules</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_modules_balancers">Modules: Balancers</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>These Cherokee modules allow to balance the load among several
+servers. Cherokee is completely modular, and thus a distinction must
+be made clear.</p></div>
+<div class="paragraph"><p>Balancer modules only implement the balancing strategy. To actually
+use one of these strategies you will need to select a
+<a href="modules_handlers.html">handler</a> that makes use of balancers in the
+<a href="other_bundle_cherokee-admin.html">cherokee-admin</a> interface.</p></div>
+<div class="paragraph"><p>These handlers can be chosen within the
+<tt>Handler</tt> tab of the <a href="config_virtual_servers_rule.html">Rule
+Options</a> section.</p></div>
+<div class="paragraph"><p>Every balancing strategy is used to manage one or more
+<a href="config_info_sources.html">information sources</a>, so at least one
+has to be added to the pool managed by the balancer. To do this,
+simply choose among the available sources in the <tt>Assign Info
+Sources</tt>.</p></div>
+<div class="paragraph"><p>This is the list of currently supported balancing strategies:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="modules_balancers_round_robin.html">Round Robin</a>
+</p>
+</li>
+<li>
+<p>
+<a href="modules_balancers_ip_hash.html">IP Hash</a>
+</p>
+</li>
+<li>
+<p>
+<a href="modules_balancers_failover.html">Failover</a>
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>And these are the handlers that use balancing:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="modules_handlers_proxy.html">Reverse HTTP Proxy</a>
+</p>
+</li>
+<li>
+<p>
+<a href="modules_handlers_fcgi.html">FastCGI</a>
+</p>
+</li>
+<li>
+<p>
+<a href="modules_handlers_scgi.html">SCGI</a>
+</p>
+</li>
+<li>
+<p>
+<a href="modules_handlers_uwsgi.html">uWSGI</a>
+</p>
+</li>
+<li>
+<p>
+<a href="modules_handlers_dbslayer.html">MySQL bridge</a>
+</p>
+</li>
+</ul></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

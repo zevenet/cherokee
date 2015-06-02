@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_modules_html_modules_a_8594_a_href_modules_encoders_html_encoders_a"><a href="index.html">Index</a> &#8594; <a href="modules.html">Modules</a> &#8594; <a href="modules_encoders.html">Encoders</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_encoder_gzip">Encoder: Gzip</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This is a compression encoder. It is used to reduce the outgoing
+bandwidth consumed by the server and speed up things for the client.</p></div>
+<div class="paragraph"><p>Remember that the encoding support is based on modules. If the
+configuration file tells the server to load a module, it will get it
+ready to use.  Otherwise there won&#8217;t be any kind of support in memory.</p></div>
+<div class="paragraph"><p>A <strong>Compression Level</strong> can be optionally set within the range 0 to 9,
+where 0 is no compression, 1 best speed, and 9 is best compression.</p></div>
+<div class="paragraph"><p>For example, let&#8217;s see how it works when the encoder is configured to
+handle html files.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>$ wget -q -O - http://localhost/example.html</tt></pre>
+</div></div>
+<div class="paragraph"><p>It works!</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>$ wget -q -O - --header="Accept-encoding: gzip"  \
+  http://localhost/example.html | gzip -dc -</tt></pre>
+</div></div>
+<div class="paragraph"><p>It works!</p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

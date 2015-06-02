@@ -1,0 +1,40 @@
+2009-06-03  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* zh_CN.po, LINGUAS: Adds a Chinese Simplified translation. By
+	lijiong1986 <lijiong1986@126.com>. Thanks!!
+
+2009-06-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* se.po: Updated by Andreas Anddersson <andreas@cyberdelic.org>
+
+2009-05-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* se.po, LINGUAS: New translation Swedish. Translated by Andreas
+	Anddersson <andreas@cyberdelic.org; thanks!
+
+2009-05-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* es.po: Updated. Translates a few missing strings.
+
+2009-05-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* LINGUAS: Initial Dutch translation import. By Stefan de Konink
+	<stefan@konink.de>.
+
+2009-05-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* de.po: Initial German translation import. By Andreas Sinz
+	<andreas.sinz@aon.at>.
+
+2009-04-17  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.in.in: New file, from gettext-0.17.
+	* Rules-quot: New file, from gettext-0.17.
+	* boldquot.sed: New file, from gettext-0.17.
+	* en@boldquot.header: New file, from gettext-0.17.
+	* en@quot.header: New file, from gettext-0.17.
+	* insert-header.sin: New file, from gettext-0.17.
+	* quot.sed: New file, from gettext-0.17.
+	* remove-potcdate.sin: New file, from gettext-0.17.
+	* POTFILES.in: New file.
+

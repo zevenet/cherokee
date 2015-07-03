@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -148,7 +148,7 @@ update_guts (void)
 	/* Update internal variables
 	 */
 	cherokee_bogonow_msec = (((unsigned long long)cherokee_bogonow_tv.tv_sec * 1000) +
-				 (cherokee_bogonow_tv.tv_usec) / 1000);
+	                         (cherokee_bogonow_tv.tv_usec) / 1000);
 
 	if (cherokee_bogonow_now == cherokee_bogonow_tv.tv_sec)
 		return ret_ok;
@@ -163,8 +163,8 @@ update_guts (void)
 	/* Regenerate the GMT string */
 	cherokee_buffer_clean (&cherokee_bogonow_strgmt);
 	len = cherokee_dtm_gmttm2str (cherokee_bogonow_strgmt.buf,
-				      cherokee_bogonow_strgmt.size,
-				      &cherokee_bogonow_tmgmt);
+	                              cherokee_bogonow_strgmt.size,
+	                              &cherokee_bogonow_tmgmt);
 	cherokee_bogonow_strgmt.len = len;
 	cherokee_bogonow_strgmt.buf[len] = '\0';
 
@@ -215,8 +215,8 @@ cherokee_bogotime_try_update (void)
 
 ret_t
 cherokee_bogotime_add_callback (bogotime_callback_t  func,
-				void                *param,
-				time_t               elapse)
+                                void                *param,
+                                time_t               elapse)
 {
 	callback_entry_t *entry;
 

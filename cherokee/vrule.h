@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -67,11 +67,11 @@ typedef struct {
  */
 #define PLUGIN_INFO_VRULE_EASY_INIT(name)                         \
 	PLUGIN_INFO_INIT(name, cherokee_vrule,                    \
-		(void *)cherokee_vrule_ ## name ## _new,          \
-		(void *)NULL)
+	                 (void *)cherokee_vrule_ ## name ## _new, \
+	                 (void *)NULL)
 
 #define PLUGIN_INFO_VRULE_EASIEST_INIT(name)                      \
-	PLUGIN_EMPTY_INIT_FUNCTION(name)			  \
+	PLUGIN_EMPTY_INIT_FUNCTION(name)                          \
 	PLUGIN_INFO_VRULE_EASY_INIT(name)
 
 /* Methods

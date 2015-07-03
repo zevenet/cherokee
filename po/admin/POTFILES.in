@@ -11,6 +11,7 @@ admin/CTK/CTK/Image.py
 admin/CTK/CTK/Paginator.py
 admin/CTK/CTK/Server.py
 admin/CTK/CTK/Submitter.py
+admin/CTK/CTK/TextArea.py
 admin/CTK/CTK/TextField.py
 admin/CTK/CTK/ToggleButton.py
 admin/CTK/CTK/i18n.py
@@ -23,9 +24,6 @@ admin/Graph.py
 admin/Handler.py
 admin/Icons.py
 admin/Mime.py
-admin/OWS_Backup.py
-admin/OWS_Cherokee_Info.py
-admin/OWS_Login.py
 admin/Page.py
 admin/PageAdvanced.py
 admin/PageEntry.py

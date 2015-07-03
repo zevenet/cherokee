@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -32,7 +32,7 @@ URL_APPLY     = '/plugin/dirlist/apply'
 DEFAULT_THEME = "default"
 
 NOTE_THEME        = N_("Choose the listing theme.")
-NOTE_ICON_DIR     = N_("Web directory where the icon files are located. Default: <i>/icons</i>.")
+NOTE_ICON_DIR     = N_("Web directory where the icon files are located. Default: <i>/cherokee_icons</i>.")
 NOTE_NOTICE_FILES = N_("List of notice files to be inserted.")
 NOTE_HIDDEN_FILES = N_("List of files that should not be listed.")
 
@@ -44,6 +44,8 @@ class Plugin_dirlist (Handler.PluginHandler):
         Handler.PluginHandler.__init__ (self, key, **kwargs)
         Handler.PluginHandler.AddCommon (self)
 
+        symlinks = kwargs.pop('symlinks', True)
+
         # Listing
         table = CTK.PropsTable()
         table.Add (_('Show Size'),               CTK.CheckCfgText("%s!size"%(self.key),           True,  _('Show')),    '')
@@ -52,7 +54,8 @@ class Plugin_dirlist (Handler.PluginHandler):
         table.Add (_('Show Group'),              CTK.CheckCfgText("%s!group"%(self.key),          False, _('Show')),    '')
         table.Add (_('Show Backup files'),       CTK.CheckCfgText("%s!backup"%(self.key),         False, _('Show')),    '')
         table.Add (_('Show Hidden files'),       CTK.CheckCfgText("%s!hidden"%(self.key),         False, _('Show')),    '')
-        table.Add (_('Allow symbolic links'),    CTK.CheckCfgText("%s!symlinks"%(self.key),       True,  _('Allow')),   '')
+        if symlinks:
+            table.Add (_('Allow symbolic links'),    CTK.CheckCfgText("%s!symlinks"%(self.key),       True,  _('Allow')),   '')
         table.Add (_('Redirect symbolic links'), CTK.CheckCfgText("%s!redir_symlinks"%(self.key), False, _('Enabled')), '')
 
         submit = CTK.Submitter (URL_APPLY)

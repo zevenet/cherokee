@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -143,7 +143,7 @@ add_extension (char *val, void *data)
 }
 
 static ret_t
-set_maxage (cherokee_mime_t *mime, cherokee_buffer_t *type, int maxage)
+set_maxage (cherokee_mime_t *mime, cherokee_buffer_t *type, cuint_t maxage)
 {
 	ret_t                  ret;
 	cherokee_mime_entry_t *entry = NULL;
@@ -166,7 +166,7 @@ static ret_t
 configure_mime (cherokee_config_node_t *config, void *data)
 {
 	ret_t                   ret;
-	cint_t                  maxage;
+	cuint_t                 maxage;
 	cherokee_config_node_t *subconf;
 	cherokee_mime_t        *mime     = MIME(data);
 	void                   *params[] = {mime, &config->key};
@@ -176,7 +176,7 @@ configure_mime (cherokee_config_node_t *config, void *data)
 		cherokee_config_node_read_list (subconf, NULL, add_extension, params);
 	}
 
-	ret = cherokee_config_node_read_int (config, "max-age", &maxage);
+	ret = cherokee_config_node_read_uint (config, "max-age", &maxage);
 	if (ret == ret_ok) {
 		ret = set_maxage (mime, &config->key, maxage);
 		if (ret != ret_ok) return ret;
@@ -200,8 +200,8 @@ cherokee_mime_configure (cherokee_mime_t *mime, cherokee_config_node_t *config)
 
 ret_t
 cherokee_mime_get_by_suffix (cherokee_mime_t        *mime,
-			     char                   *suffix,
-			     cherokee_mime_entry_t **entry)
+                             char                   *suffix,
+                             cherokee_mime_entry_t **entry)
 {
 	return cherokee_avl_get_ptr (&mime->ext_table, suffix, (void **)entry);
 }

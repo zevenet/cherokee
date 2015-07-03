@@ -70,7 +70,7 @@ user entered host part of the URI must match the Common Name (CN)
 provided by the certificate. Since virtual hosts are in use, the CN of
 the first available certificate may or may not match the one specified
 in the early stages of TLS negotiation.</p></div>
-<div class="paragraph"><p>Fortunately this can be overcomed by using SNI (Server Name
+<div class="paragraph"><p>Fortunately this can be overcome by using SNI (Server Name
 Indication), which places the host information in the SSL
 handshake. If the web server is accessed through a web browser that
 supports SNI, things will just work. Every modern web browser does.</p></div>
@@ -89,6 +89,13 @@ match your domains, you can always add more than one matching criteria
 on that section. An IP/Subnet match plus a simultaneous wildcard match
 is a combination likely to cover every corner-case scenario you are
 presented with.</p></div>
+<div class="paragraph" id="hsts"><div class="title">Can clients be forced to use HTTPS?</div><p>After enabling HTTP Strict Transport Security per Virtual Server, a client
+gets automatically redirected to HTTPS upon connection to HTTP. In principle
+this equals to the match rule "Is TLS/SSL" with an external redirection.
+Additionally HSTS adds the HTTP Header "Strict-Transport-Security" to a
+secure connection which informs the browser that all other content on
+the page must be accessed over HTTPS. The max-age options defines when the
+browser can check HTTP again.</p></div>
 <div class="paragraph" id="ssl-support"><div class="title">How to enable the SSL support?</div><p>SSL support is not enabled by default. You will have to perform three
 straightforward actions is order to enable it:</p></div>
 <div class="olist arabic"><ol class="arabic">
@@ -144,7 +151,7 @@ This last step applies only if your certificate is not recognised
     to follow the chain of trust. You can reed more about
     <a href="#chained-certificates">chained certificates</a> later on this
     document. You will only have to concatenate the certificate files
-    and put the combined text into a file used for the the
+    and put the combined text into a file used for the
     <tt>Certificate</tt> field. This part is <em>very important</em>: you have to
     concatenate your certificates into a single file in order to use
     them in Cherokee. The order in which you concatenate the files is
@@ -155,6 +162,43 @@ This last step applies only if your certificate is not recognised
 <div class="content">
 <pre><tt>cat public.pem inter_ca_public.pem &gt; chained.pem</tt></pre>
 </div></div>
+</li>
+</ol></div>
+<div class="paragraph" id="advanced"><div class="title">Advanced options</div><p>In order to make SSL more secure, Cherokee offers the following advanced
+options:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+The <tt>Ciphers</tt> field can be set up to to allow specific cipher suites,
+    making communication with the client bound to stronger ciphers.
+    We made the following the default:
+    <tt>ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:
+     ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:
+     ECDHE-RSA-RC4-SHA:ECDHE-RSA-AES256-SHA:
+     DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-SHA256:
+     DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-SHA256:
+     DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:RC4-SHA:
+     AES256-GCM-SHA384:AES256-SHA256:CAMELLIA256-SHA:
+     ECDHE-RSA-AES128-SHA:AES128-GCM-SHA256:AES128-SHA256:
+     AES128-SHA:CAMELLIA128-SHA</tt>
+</p>
+</li>
+<li>
+<p>
+In normal SSL communication the clients cipher suite preference
+    is respected. You may understand that if a client prefers a weak
+    cipher but supports a strong cipher, the strong cipher would never
+    be used. We have introduced the option <tt>Server Preference</tt> to
+    enforce our preference on the client and made this as the default.
+    Setting a custom order is possible using the <tt>Ciphers</tt> field.
+</p>
+</li>
+<li>
+<p>
+To assist any server administrator, we have made the SSL settings
+    secure by default. Hence, use Server Preference, specified strong
+    ciphers and have disabled SSL compression.
+</p>
 </li>
 </ol></div>
 <div class="paragraph" id="ie-workarownd"><div class="title">I get certificate errors when having more than one. Workarounds?</div><p>This is a scenario known to happen only with some web browsers running

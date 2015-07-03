@@ -1,16 +1,14 @@
 from os.path import join
 
-PREFIX          = "/usr/local"
-LIBDIR          = "/usr/local/lib"
-DATADIR         = "/usr/local/share"
-DOCDIR          = "/usr/local/share/doc/cherokee"
-LOCALEDIR       = "/usr/local/share/locale"
-WWWROOT         = "/usr/local/var/www"
-SYSCONFDIR      = "/usr/local/etc"
-LOCALSTATE      = "/usr/local/var"
-VERSION         = "1.2.101"
-OWS_ENABLE      = '1'
-OWS_API_VERSION = '2'
+PREFIX          = "/usr/local/zenloadbalancer/app/cherokee"
+LIBDIR          = "/usr/local/zenloadbalancer/app/cherokee/lib"
+DATADIR         = "/usr/local/zenloadbalancer/app/cherokee/share"
+DOCDIR          = "/usr/local/zenloadbalancer/app/cherokee/share/doc/cherokee"
+LOCALEDIR       = "/usr/local/zenloadbalancer/app/cherokee/share/locale"
+WWWROOT         = "/usr/local/zenloadbalancer/www"
+SYSCONFDIR      = "/usr/local/zenloadbalancer/app/cherokee/etc"
+LOCALSTATE      = "/usr/local/zenloadbalancer/app/cherokee/var"
+VERSION         = "1.2.104"
 
 CHEROKEE_SERVER       = join (PREFIX, "sbin/cherokee")
 CHEROKEE_WORKER       = join (PREFIX, "sbin/cherokee-worker")
@@ -26,5 +24,3 @@ CHEROKEE_VAR_LOG      = join (LOCALSTATE, "log")
 CHEROKEE_VAR_RUN      = join (LOCALSTATE, "run")
 CHEROKEE_VAR_LIB      = join (LOCALSTATE, "lib/cherokee")
 CHEROKEE_RRD_DIR      = join (LOCALSTATE, "lib/cherokee/graphs")
-CHEROKEE_OWS_DIR      = join (LOCALSTATE, "lib/cherokee/ows")
-CHEROKEE_OWS_ROOT     = join (LOCALSTATE, "lib/cherokee/ows/root")

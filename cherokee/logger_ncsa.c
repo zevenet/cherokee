@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -58,8 +58,8 @@ static cherokee_buffer_t now;
 
 ret_t
 cherokee_logger_ncsa_new (cherokee_logger_t         **logger,
-			  cherokee_virtual_server_t  *vsrv,
-			  cherokee_config_node_t     *config)
+                          cherokee_virtual_server_t  *vsrv,
+                          cherokee_config_node_t     *config)
 {
 	ret_t ret;
 	CHEROKEE_NEW_STRUCT (n, logger_ncsa);
@@ -108,23 +108,23 @@ bogotime_callback (void *param)
 	 */
 	cherokee_buffer_clean  (&now);
 	cherokee_buffer_add_va (&now,
-				" [%02d/%s/%d:%02d:%02d:%02d %c%02d%02d] \"",
-				pnow_tm->tm_mday,
-				month[pnow_tm->tm_mon],
-				1900 + pnow_tm->tm_year,
-				pnow_tm->tm_hour,
-				pnow_tm->tm_min,
-				pnow_tm->tm_sec,
-				(cherokee_bogonow_tzloc < 0) ? '-' : '+',
-				(int) (abs(cherokee_bogonow_tzloc) / 60),
-				(int) (abs(cherokee_bogonow_tzloc) % 60));
+	                        " [%02d/%s/%d:%02d:%02d:%02d %c%02d%02d] \"",
+	                        pnow_tm->tm_mday,
+	                        month[pnow_tm->tm_mon],
+	                        1900 + pnow_tm->tm_year,
+	                        pnow_tm->tm_hour,
+	                        pnow_tm->tm_min,
+	                        pnow_tm->tm_sec,
+	                        (cherokee_bogonow_tzloc < 0) ? '-' : '+',
+	                        (int) (abs(cherokee_bogonow_tzloc) / 60),
+	                        (int) (abs(cherokee_bogonow_tzloc) % 60));
 }
 
 
 ret_t
 cherokee_logger_ncsa_init_base (cherokee_logger_ncsa_t    *logger,
-				cherokee_virtual_server_t *vsrv,
-				cherokee_config_node_t    *config)
+                                cherokee_virtual_server_t *vsrv,
+                                cherokee_config_node_t    *config)
 {
 	ret_t                   ret;
 	cherokee_config_node_t *subconf;
@@ -180,6 +180,8 @@ cherokee_logger_ncsa_init (cherokee_logger_ncsa_t *logger)
 ret_t
 cherokee_logger_ncsa_free (cherokee_logger_ncsa_t *logger)
 {
+	cherokee_buffer_mrproper (&now);
+
 	cherokee_buffer_mrproper (&logger->now_dtm);
 	cherokee_buffer_mrproper (&logger->referer);
 	cherokee_buffer_mrproper (&logger->useragent);
@@ -197,8 +199,8 @@ cherokee_logger_ncsa_flush (cherokee_logger_ncsa_t *logger)
 
 static ret_t
 build_log_string (cherokee_logger_ncsa_t *logger,
-		  cherokee_connection_t  *cnt,
-		  cherokee_buffer_t      *buf)
+                  cherokee_connection_t  *cnt,
+                  cherokee_buffer_t      *buf)
 {
 	ret_t              ret;
 	const char        *method;

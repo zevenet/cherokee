@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -80,7 +80,7 @@
 "<a href=\"{request}/info/js\">JavaScript</a> and "                                                 CRLF\
 "<a href=\"{request}/info/php\">PHP</a>.</div>"
 
-#define AJAX_JS	\
+#define AJAX_JS                                                                                         \
 "<script type=\"text/javascript\">"                                                                 CRLF\
 "function ajaxObject (url) {"                                                                       CRLF\
 "   var that = this;"                                                                               CRLF\
@@ -88,7 +88,7 @@
 "   this.callback = function(txt) {}"                                                               CRLF\
 "   this.update = function(passData) {"                                                             CRLF\
 "      if (updating == true)"                                                                       CRLF\
-"		    return false;"                                                                  CRLF\
+"          return false;"                                                                           CRLF\
 "      updating = true;"                                                                            CRLF\
 "      var AJAX = null;"                                                                            CRLF\
 "      if (window.XMLHttpRequest) {"                                                                CRLF\
@@ -223,7 +223,7 @@
 "<a href=\"http://www.alobbs.com/\">Alvaro Lopez Ortega</a> &lt;alvaro@alobbs.com&gt;"
 
 #define LICENSE                                                                                         \
-"<p>Copyright (C) 2001 - 2011 " AUTHOR "</p>"                                                       CRLF\
+"<p>Copyright (C) 2001 - 2013 " AUTHOR "</p>"                                                       CRLF\
 "<p>This program is free software; you can redistribute it and/or"                                  CRLF\
 "modify it under the terms of version 2 of the GNU General Public"                                  CRLF\
 "License as published by the Free Software Foundation.</p>"                                         CRLF\
@@ -269,7 +269,7 @@ cherokee_handler_server_info_configure (cherokee_config_node_t *conf, cherokee_s
 		CHEROKEE_NEW_STRUCT (n, handler_server_info_props);
 
 		cherokee_module_props_init_base (MODULE_PROPS(n),
-						 MODULE_PROPS_FREE(props_free));
+		                                 MODULE_PROPS_FREE(props_free));
 		n->just_about         = false;
 		n->connection_details = false;
 
@@ -302,8 +302,7 @@ cherokee_handler_server_info_configure (cherokee_config_node_t *conf, cherokee_s
 
 
 static void
-add_uptime (cherokee_dwriter_t *writer,
-	    cherokee_server_t  *srv)
+add_uptime (cherokee_dwriter_t *writer, cherokee_server_t *srv)
 {
 	cuint_t           days;
 	cuint_t           hours;
@@ -315,7 +314,7 @@ add_uptime (cherokee_dwriter_t *writer,
 
 	/* Raw seconds number */
 	cherokee_dwriter_cstring (writer, "seconds");
-	cherokee_dwriter_integer (writer, lapse);
+	cherokee_dwriter_unsigned (writer, lapse);
 
 	/* Formatted string */
 	days = lapse / (60*60*24);
@@ -327,13 +326,13 @@ add_uptime (cherokee_dwriter_t *writer,
 
 	if (days > 0) {
 		cherokee_buffer_add_va (&tmp, "%d Day%s, %d Hour%s, %d Minute%s, %d Seconds",
-					days, days>1?"s":"", hours, hours>1?"s":"", mins, mins>1?"s":"", lapse);
+		                        days, days>1?"s":"", hours, hours>1?"s":"", mins, mins>1?"s":"", lapse);
 	} else if (hours > 0) {
 		cherokee_buffer_add_va (&tmp, "%d Hour%s, %d Minute%s, %d Seconds",
-					hours, hours>1?"s":"", mins, mins>1?"s":"", lapse);
+		                        hours, hours>1?"s":"", mins, mins>1?"s":"", lapse);
 	} else if (mins > 0) {
 		cherokee_buffer_add_va (&tmp, "%d Minute%s, %d Seconds",
-					mins, mins>1?"s":"", lapse);
+		                        mins, mins>1?"s":"", lapse);
 	} else {
 		cherokee_buffer_add_va (&tmp, "%d Seconds", lapse);
 	}
@@ -347,8 +346,7 @@ add_uptime (cherokee_dwriter_t *writer,
 
 
 static void
-add_traffic (cherokee_dwriter_t *writer,
-	     cherokee_server_t  *srv)
+add_traffic (cherokee_dwriter_t *writer, cherokee_server_t *srv)
 {
 	cherokee_list_t  *i;
 	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
@@ -358,14 +356,14 @@ add_traffic (cherokee_dwriter_t *writer,
 	cherokee_dwriter_dict_open (writer);
 	cherokee_dwriter_cstring (writer, "tx");
 	if (srv->collector) {
-		cherokee_dwriter_integer (writer, COLLECTOR_TX(srv->collector));
+		cherokee_dwriter_unsigned (writer, COLLECTOR_TX(srv->collector));
 	} else {
 		cherokee_dwriter_number (writer, "-1", 2);
 	}
 
 	cherokee_dwriter_cstring (writer, "rx");
 	if (srv->collector) {
-		cherokee_dwriter_integer (writer, COLLECTOR_RX(srv->collector));
+		cherokee_dwriter_unsigned (writer, COLLECTOR_RX(srv->collector));
 	} else {
 		cherokee_dwriter_number (writer, "-1", 2);
 	}
@@ -391,7 +389,7 @@ add_traffic (cherokee_dwriter_t *writer,
 	cherokee_dwriter_dict_open (writer);
 	cherokee_dwriter_cstring (writer, "accepts");
 	if (srv->collector) {
-		cherokee_dwriter_integer (writer, COLLECTOR(srv->collector)->accepts);
+		cherokee_dwriter_unsigned (writer, COLLECTOR(srv->collector)->accepts);
 	} else {
 		cherokee_dwriter_number (writer, "-1", 2);
 	}
@@ -408,7 +406,7 @@ add_traffic (cherokee_dwriter_t *writer,
 	cherokee_dwriter_dict_open (writer);
 	cherokee_dwriter_cstring (writer, "timeouts");
 	if (srv->collector) {
-		cherokee_dwriter_integer (writer, COLLECTOR(srv->collector)->timeouts);
+		cherokee_dwriter_unsigned (writer, COLLECTOR(srv->collector)->timeouts);
 	} else {
 		cherokee_dwriter_number (writer, "-1", 2);
 	}
@@ -434,9 +432,9 @@ add_traffic (cherokee_dwriter_t *writer,
 		if (vsrv->collector != NULL) {
 			cherokee_dwriter_dict_open (writer);
 			cherokee_dwriter_cstring (writer, "rx");
-			cherokee_dwriter_integer (writer, COLLECTOR_RX(vsrv->collector));
+			cherokee_dwriter_unsigned (writer, COLLECTOR_RX(vsrv->collector));
 			cherokee_dwriter_cstring (writer, "tx");
-			cherokee_dwriter_integer (writer, COLLECTOR_TX(vsrv->collector));
+			cherokee_dwriter_unsigned (writer, COLLECTOR_TX(vsrv->collector));
 			cherokee_dwriter_dict_close (writer);
 		} else {
 			cherokee_dwriter_null (writer);
@@ -453,13 +451,12 @@ add_traffic (cherokee_dwriter_t *writer,
 
 
 static void
-add_config (cherokee_dwriter_t *writer,
-	    cherokee_server_t  *srv)
+add_config (cherokee_dwriter_t *writer, cherokee_server_t *srv)
 {
 	cherokee_dwriter_dict_open (writer);
 
 	cherokee_dwriter_cstring (writer, "threads");
-	cherokee_dwriter_integer (writer, srv->thread_num);
+	cherokee_dwriter_unsigned (writer, srv->thread_num);
 	cherokee_dwriter_cstring (writer, "ipv6");
 	cherokee_dwriter_bool    (writer, srv->ipv6);
 	cherokee_dwriter_cstring (writer, "tls");
@@ -467,9 +464,9 @@ add_config (cherokee_dwriter_t *writer,
 	cherokee_dwriter_cstring (writer, "chroot");
 	cherokee_dwriter_bool    (writer, srv->chrooted);
 	cherokee_dwriter_cstring (writer, "UID");
-	cherokee_dwriter_integer (writer, getuid());
+	cherokee_dwriter_unsigned (writer, getuid());
 	cherokee_dwriter_cstring (writer, "GID");
-	cherokee_dwriter_integer (writer, getgid());
+	cherokee_dwriter_unsigned (writer, getgid());
 
 #ifdef HAVE_SYS_UTSNAME
 	{
@@ -489,8 +486,7 @@ add_config (cherokee_dwriter_t *writer,
 
 
 static void
-add_connections (cherokee_dwriter_t *writer,
-		 cherokee_server_t  *srv)
+add_connections (cherokee_dwriter_t *writer, cherokee_server_t *srv)
 {
 	cuint_t conns_num = 0;
 	cuint_t active    = 0;
@@ -502,11 +498,11 @@ add_connections (cherokee_dwriter_t *writer,
 
 	cherokee_dwriter_dict_open (writer);
 	cherokee_dwriter_cstring (writer, "number");
-	cherokee_dwriter_integer (writer, conns_num);
+	cherokee_dwriter_unsigned (writer, conns_num);
 	cherokee_dwriter_cstring (writer, "active");
-	cherokee_dwriter_integer (writer, active);
+	cherokee_dwriter_unsigned (writer, active);
 	cherokee_dwriter_cstring (writer, "reusable");
-	cherokee_dwriter_integer (writer, reusable);
+	cherokee_dwriter_unsigned (writer, reusable);
 	cherokee_dwriter_dict_close (writer);
 }
 
@@ -558,8 +554,7 @@ modules_while (cherokee_buffer_t *key, void *value, void *params[])
 }
 
 static void
-add_modules (cherokee_dwriter_t *writer,
-	     cherokee_server_t  *srv)
+add_modules (cherokee_dwriter_t *writer, cherokee_server_t *srv)
 {
 	cuint_t  loggers    = 0;
 	cuint_t  handlers   = 0;
@@ -572,40 +567,39 @@ add_modules (cherokee_dwriter_t *writer,
 	cuint_t  vrules     = 0;
 	cuint_t  collectors = 0;
 	void    *params[]   = {&loggers, &handlers, &encoders, &validators, &generic,
-			       &balancers, &rules, &cryptors, &vrules, &collectors};
+	                       &balancers, &rules, &cryptors, &vrules, &collectors};
 
 	cherokee_avl_while (AVL_GENERIC (&srv->loader.table),
-			    (cherokee_avl_while_func_t) modules_while,
-			    params, NULL, NULL);
+	                    (cherokee_avl_while_func_t) modules_while,
+	                    params, NULL, NULL);
 
 	cherokee_dwriter_dict_open (writer);
 	cherokee_dwriter_cstring (writer, "loggers");
-	cherokee_dwriter_integer (writer, loggers);
+	cherokee_dwriter_unsigned (writer, loggers);
 	cherokee_dwriter_cstring (writer, "handlers");
-	cherokee_dwriter_integer (writer, handlers);
+	cherokee_dwriter_unsigned (writer, handlers);
 	cherokee_dwriter_cstring (writer, "encoders");
-	cherokee_dwriter_integer (writer, encoders);
+	cherokee_dwriter_unsigned (writer, encoders);
 	cherokee_dwriter_cstring (writer, "validators");
-	cherokee_dwriter_integer (writer, validators);
+	cherokee_dwriter_unsigned (writer, validators);
 	cherokee_dwriter_cstring (writer, "generic");
-	cherokee_dwriter_integer (writer, generic);
+	cherokee_dwriter_unsigned (writer, generic);
 	cherokee_dwriter_cstring (writer, "balancers");
-	cherokee_dwriter_integer (writer, balancers);
+	cherokee_dwriter_unsigned (writer, balancers);
 	cherokee_dwriter_cstring (writer, "rules");
-	cherokee_dwriter_integer (writer, rules);
+	cherokee_dwriter_unsigned (writer, rules);
 	cherokee_dwriter_cstring (writer, "cryptors");
-	cherokee_dwriter_integer (writer, cryptors);
+	cherokee_dwriter_unsigned (writer, cryptors);
 	cherokee_dwriter_cstring (writer, "vrules");
-	cherokee_dwriter_integer (writer, vrules);
+	cherokee_dwriter_unsigned (writer, vrules);
 	cherokee_dwriter_cstring (writer, "collectors");
-	cherokee_dwriter_integer (writer, collectors);
+	cherokee_dwriter_unsigned (writer, collectors);
 	cherokee_dwriter_dict_close (writer);
 }
 
 
 static ret_t
-server_info_build_logo (cherokee_handler_server_info_t *hdl,
-			cherokee_buffer_t              *buffer)
+server_info_build_logo (cherokee_handler_server_info_t *hdl, cherokee_buffer_t *buffer)
 {
 	ret_t ret;
 	UNUSED(hdl);
@@ -615,8 +609,7 @@ server_info_build_logo (cherokee_handler_server_info_t *hdl,
 }
 
 static ret_t
-server_info_build_html (cherokee_handler_server_info_t *hdl,
-			cherokee_buffer_t              *buffer)
+server_info_build_html (cherokee_handler_server_info_t *hdl, cherokee_buffer_t *buffer)
 {
 	cherokee_buffer_t ver = CHEROKEE_BUF_INIT;
 
@@ -628,8 +621,8 @@ server_info_build_html (cherokee_handler_server_info_t *hdl,
 	cherokee_buffer_mrproper (&ver);
 
 	cherokee_buffer_replace_string (buffer, "{request}", 9,
-					HANDLER_CONN(hdl)->request.buf,
-					HANDLER_CONN(hdl)->request.len);
+	                                HANDLER_CONN(hdl)->request.buf,
+	                                HANDLER_CONN(hdl)->request.len);
 
 	cherokee_buffer_add_str (buffer, PAGE_FOOT);
 	return ret_ok;
@@ -637,8 +630,7 @@ server_info_build_html (cherokee_handler_server_info_t *hdl,
 
 
 static void
-add_icons (cherokee_dwriter_t *writer,
-	   cherokee_server_t  *srv)
+add_icons (cherokee_dwriter_t *writer, cherokee_server_t *srv)
 {
 	if (srv->icons == NULL) {
 		cherokee_dwriter_null (writer);
@@ -657,8 +649,7 @@ add_icons (cherokee_dwriter_t *writer,
 
 
 static void
-add_iocache (cherokee_dwriter_t *writer,
-	     cherokee_server_t  *srv)
+add_iocache (cherokee_dwriter_t *writer, cherokee_server_t *srv)
 {
 	float               percent;
 	size_t              mmaped  = 0;
@@ -674,9 +665,9 @@ add_iocache (cherokee_dwriter_t *writer,
 
 	/* General parameters */
 	cherokee_dwriter_cstring (writer, "file_size_max");
-	cherokee_dwriter_integer (writer, iocache->max_file_size);
+	cherokee_dwriter_unsigned (writer, iocache->max_file_size);
 	cherokee_dwriter_cstring (writer, "file_size_min");
-	cherokee_dwriter_integer (writer, iocache->min_file_size);
+	cherokee_dwriter_unsigned (writer, iocache->min_file_size);
 
 	cherokee_buffer_add_fsize (&tmp_buf, iocache->max_file_size);
 	cherokee_dwriter_cstring (writer, "file_size_max_formatted");
@@ -688,16 +679,16 @@ add_iocache (cherokee_dwriter_t *writer,
 	cherokee_dwriter_bstring (writer, &tmp_buf);
 
 	cherokee_dwriter_cstring (writer, "lasting_mmap");
-	cherokee_dwriter_integer (writer, iocache->lasting_mmap);
+	cherokee_dwriter_unsigned (writer, iocache->lasting_mmap);
 
 	cherokee_dwriter_cstring (writer, "lasting_stat");
-	cherokee_dwriter_integer (writer, iocache->lasting_stat);
+	cherokee_dwriter_unsigned (writer, iocache->lasting_stat);
 
 	cherokee_dwriter_cstring (writer, "size_max");
-	cherokee_dwriter_integer (writer, CACHE(iocache)->max_size);
+	cherokee_dwriter_unsigned (writer, CACHE(iocache)->max_size);
 
 	cherokee_dwriter_cstring (writer, "fetches");
-	cherokee_dwriter_integer (writer, CACHE(iocache)->count);
+	cherokee_dwriter_unsigned (writer, CACHE(iocache)->count);
 
 	/* Fetches */
 	if (CACHE(iocache)->count == 0)
@@ -718,7 +709,7 @@ add_iocache (cherokee_dwriter_t *writer,
 	/* Total Mmaped */
 	cherokee_iocache_get_mmaped_size (iocache, &mmaped);
 	cherokee_dwriter_cstring (writer, "mmaped");
-	cherokee_dwriter_integer (writer, mmaped);
+	cherokee_dwriter_unsigned (writer, mmaped);
 
 	cherokee_buffer_clean (&tmp_buf);
 	cherokee_buffer_add_fsize (&tmp_buf, mmaped);
@@ -731,8 +722,7 @@ add_iocache (cherokee_dwriter_t *writer,
 
 
 static void
-add_detailed_connections (cherokee_dwriter_t *writer,
-			  cherokee_list_t    *infos)
+add_detailed_connections (cherokee_dwriter_t *writer, cherokee_list_t *infos)
 {
 	cherokee_list_t   *i, *j;
 	cherokee_buffer_t tmp    = CHEROKEE_BUF_INIT;
@@ -756,7 +746,7 @@ add_detailed_connections (cherokee_dwriter_t *writer,
 		cherokee_dwriter_cstring (writer, "percentage");
 		if (!cherokee_buffer_is_empty (&info->percent)) {
 			cherokee_dwriter_number  (writer,
-						  info->percent.buf, info->percent.len);
+			                          info->percent.buf, info->percent.len);
 		} else {
 			cherokee_dwriter_null (writer);
 		}
@@ -861,8 +851,8 @@ out:
 
 ret_t
 cherokee_handler_server_info_new  (cherokee_handler_t      **hdl,
-				   cherokee_connection_t    *cnt,
-				   cherokee_module_props_t  *props)
+                                   cherokee_connection_t    *cnt,
+                                   cherokee_module_props_t  *props)
 {
 	ret_t ret;
 	CHEROKEE_NEW_STRUCT (n, handler_server_info);
@@ -947,7 +937,7 @@ cherokee_handler_server_info_init (cherokee_handler_server_info_t *hdl)
 
 ret_t
 cherokee_handler_server_info_step (cherokee_handler_server_info_t *hdl,
-				   cherokee_buffer_t              *buffer)
+                                   cherokee_buffer_t              *buffer)
 {
 	ret_t ret;
 
@@ -961,7 +951,7 @@ cherokee_handler_server_info_step (cherokee_handler_server_info_t *hdl,
 
 ret_t
 cherokee_handler_server_info_add_headers (cherokee_handler_server_info_t *hdl,
-					  cherokee_buffer_t              *buffer)
+                                          cherokee_buffer_t              *buffer)
 {
 	cherokee_connection_t *conn = HANDLER_CONN(hdl);
 

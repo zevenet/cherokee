@@ -3,7 +3,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2009 Alvaro Lopez Ortega
+# Copyright (C) 2009-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -58,7 +58,7 @@ from Notice import Notice
 from Link import Link, LinkWindow, LinkIcon
 from DatePicker import DatePicker
 from Button import Button
-from TextArea import TextArea
+from TextArea import TextArea, TextAreaCfg
 from ToggleButton import ToggleButton, ToggleButtonOnOff
 from Druid import Druid, DruidButtonsPanel, DruidButton, DruidButton_Goto, DruidButton_Close, DruidButton_Submit, DruidButtonsPanel_Next, DruidButtonsPanel_PrevNext, DruidButtonsPanel_PrevCreate, DruidButtonsPanel_Create, DruidButtonsPanel_Cancel, DruidButtonsPanel_Close, DruidButtonsPanel_Next_Auto, DruidButtonsPanel_PrevNext_Auto, DruidButtonsPanel_PrevCreate_Auto, DruidContent_TriggerNext, DruidContent__JS_to_goto, DruidContent__JS_to_goto_next, DruidContent__JS_to_close, DruidContent__JS_if_external_submit, DruidContent__JS_if_internal_submit
 from List import List, ListEntry

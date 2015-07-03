@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -58,13 +58,13 @@ static DH *dh_param_4096 = NULL;
 #include "cryptor_libssl_dh_2048.c"
 #include "cryptor_libssl_dh_4096.c"
 
-#define CLEAR_LIBSSL_ERRORS						\
-	do {								\
-		unsigned long openssl_error;				\
-		while ((openssl_error = ERR_get_error())) {		\
-			TRACE(ENTRIES, "Ignoring libssl error: %s\n",	\
-			      ERR_error_string(openssl_error, NULL));	\
-		}							\
+#define CLEAR_LIBSSL_ERRORS                                             \
+	do {                                                            \
+		unsigned long openssl_error;                            \
+		while ((openssl_error = ERR_get_error())) {             \
+			TRACE(ENTRIES, "Ignoring libssl error: %s\n",   \
+			      ERR_error_string(openssl_error, NULL));   \
+		}                                                       \
 	} while(0)
 
 
@@ -107,8 +107,8 @@ _free (cherokee_cryptor_libssl_t *cryp)
 
 static ret_t
 try_read_dh_param(cherokee_config_node_t  *conf,
-		  DH                     **dh,
-		  int                      bitsize)
+                  DH                     **dh,
+                  int                      bitsize)
 {
 	ret_t              ret;
 	cherokee_buffer_t *buf;
@@ -158,8 +158,8 @@ out:
 
 static ret_t
 _configure (cherokee_cryptor_t     *cryp,
-	    cherokee_config_node_t *conf,
-	    cherokee_server_t      *srv)
+            cherokee_config_node_t *conf,
+            cherokee_server_t      *srv)
 {
 	ret_t ret;
 
@@ -199,9 +199,9 @@ _vserver_free (cherokee_cryptor_vserver_libssl_t *cryp_vsrv)
 
 ret_t
 cherokee_cryptor_libssl_find_vserver (SSL *ssl,
-				      cherokee_server_t     *srv,
-				      cherokee_buffer_t     *servername,
-				      cherokee_connection_t *conn)
+                                      cherokee_server_t     *srv,
+                                      cherokee_buffer_t     *servername,
+                                      cherokee_connection_t *conn)
 {
 	ret_t                      ret;
 	cherokee_virtual_server_t *vsrv = NULL;
@@ -260,7 +260,6 @@ openssl_sni_servername_cb (SSL *ssl, int *ad, void *arg)
 	cherokee_connection_t     *conn;
 	cherokee_buffer_t          tmp;
 	cherokee_server_t         *srv       = SRV(arg);
-	cherokee_virtual_server_t *vsrv      = NULL;
 
 	UNUSED(ad);
 
@@ -273,7 +272,6 @@ openssl_sni_servername_cb (SSL *ssl, int *ad, void *arg)
 	}
 
 	cherokee_buffer_init(&tmp);
-	cherokee_buffer_ensure_size(&tmp, 40);
 
 	/* Read the SNI server name
 	 */
@@ -281,8 +279,17 @@ openssl_sni_servername_cb (SSL *ssl, int *ad, void *arg)
 	if (servername == NULL) {
 		/* Set the server name to the IP address if we couldn't get the host name via SNI
 		 */
-		cherokee_socket_ntop (&conn->socket, tmp.buf, tmp.size);
-		TRACE (ENTRIES, "No SNI: Did not provide a server name, using IP='%s' as servername.\n", tmp.buf);
+		char ip_str[40];
+		cherokee_sockaddr_t sa;
+		socklen_t sa_len = sizeof(sa);
+
+		re = getsockname (SOCKET_FD(&conn->socket),
+		                  (struct sockaddr *) &sa,
+		                  &sa_len);
+
+		cherokee_ntop (sa.sa.sa_family, (struct sockaddr *) &sa, ip_str, sizeof(ip_str));
+		cherokee_buffer_add (&tmp, ip_str, strlen(ip_str));
+		TRACE (ENTRIES, "No SNI: Did not provide a server name, using IP='%s' as servername.\n", ip_str);
 	} else {
 		cherokee_buffer_add (&tmp, servername, strlen(servername));
 		TRACE (ENTRIES, "SNI: Switching to servername='%s'\n", servername);
@@ -337,17 +344,46 @@ tmp_dh_cb (SSL *ssl, int export, int keylen)
 	return NULL;
 }
 
+#ifdef TRACE_ENABLED
+static int
+verify_trace_cb(int preverify_ok, X509_STORE_CTX *x509_store)
+{
+	X509 *peer_certificate = X509_STORE_CTX_get_current_cert(x509_store);
+	if (peer_certificate) {
+		BIO *mem = BIO_new(BIO_s_mem());
+		char *ptr;
+		X509_print (mem, peer_certificate);
+		BIO_get_mem_data(mem, &ptr);
+		TRACE (ENTRIES, "SSL: %s", ptr);
+		BIO_free (mem);
+	}
+
+	return preverify_ok;
+}
+#endif
+
+static int
+verify_tolerate_cb(int preverify_ok, X509_STORE_CTX *x509_store)
+{
+#ifdef TRACE_ENABLED
+	verify_trace_cb(preverify_ok, x509_store);
+#endif
+	return 1;
+}
 
 static ret_t
 _vserver_new (cherokee_cryptor_t          *cryp,
-	      cherokee_virtual_server_t   *vsrv,
-	      cherokee_cryptor_vserver_t **cryp_vsrv)
+              cherokee_virtual_server_t   *vsrv,
+              cherokee_cryptor_vserver_t **cryp_vsrv)
 {
 	ret_t       ret;
 	int         rc;
 	const char *error;
 	long        options;
 	int         verify_mode = SSL_VERIFY_NONE;
+#if !defined(OPENSSL_NO_EC) && OPENSSL_VERSION_NUMBER >= 0x0090800L && OPENSSL_VERSION_NUMBER < 0x10002000L
+	EC_KEY *ecdh;
+#endif
 
 	CHEROKEE_NEW_STRUCT (n, cryptor_vserver_libssl);
 
@@ -371,14 +407,50 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 		goto error;
 	}
 
-	/* Callback to be used when a DH parameters are required
+	/* Setup DH parameters
 	 */
-	SSL_CTX_set_tmp_dh_callback (n->context, tmp_dh_cb);
+	switch (vsrv->ssl_dh_length)
+	{
+	case 512:
+	case 1024:
+	case 2048:
+	case 4096:
+		SSL_CTX_set_tmp_dh (n->context, tmp_dh_cb(NULL, 0, vsrv->ssl_dh_length));
+		break;
+
+	default:
+		SSL_CTX_set_tmp_dh_callback (n->context, tmp_dh_cb);
+	}
+
+	/* Set ecliptic curve key parameters
+	 */
+#if !defined(OPENSSL_NO_EC) && OPENSSL_VERSION_NUMBER >= 0x10002000L
+	/* OpenSSL >= 1.0.2 automatically handles ECDH temporary key parameter
+	 * selection. */
+	SSL_CTX_set_ecdh_auto(n->context, 1);
+#elif !defined(OPENSSL_NO_EC) && OPENSSL_VERSION_NUMBER >= 0x0090800L
+	/* For OpenSSL < 1.0.2, ECDH temporary key parameter selection must be
+	 * performed manually. Default to the NIST P-384 (secp384r1) curve
+	 * to be compliant with RFC 6460 when AES-256 TLS cipher suites are in
+	 * use. This does make Cherokee non-compliant with RFC 6460 when
+	 * AES-128 TLS cipher suites are in use as they "MUST" support
+	 * NIST P-256 (prime256v1) but only "SHOULD" support NIST P-384
+	 * (secp384v1). However 99.9% of clients support both or neither.
+	 */
+	ecdh = EC_KEY_new_by_curve_name(NID_secp384r1);
+	if (ecdh != NULL) {
+		SSL_CTX_set_tmp_ecdh(n->context, ecdh);
+		EC_KEY_free(ecdh);
+	}
+#endif
 
 	/* Set the SSL context options:
 	 */
 	options  = SSL_OP_ALL;
 	options |= SSL_OP_SINGLE_DH_USE;
+#ifdef SSL_OP_SINGLE_ECDH_USE
+	options |= SSL_OP_SINGLE_ECDH_USE;
+#endif
 
 #ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
 	options |= SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS;
@@ -387,6 +459,40 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 	if (! cryp->allow_SSLv2) {
 		options |= SSL_OP_NO_SSLv2;
 	}
+
+	if (! cryp->allow_SSLv3) {
+		options |= SSL_OP_NO_SSLv3;
+	}
+
+	if (! cryp->allow_TLSv1) {
+		options |= SSL_OP_NO_TLSv1;
+	}
+
+#if OPENSSL_VERSION_NUMBER >= 0x10001000L
+	if (! cryp->allow_TLSv1_1) {
+		options |= SSL_OP_NO_TLSv1_1;
+	}
+
+	if (! cryp->allow_TLSv1_2) {
+		options |= SSL_OP_NO_TLSv1_2;
+	}
+#endif
+
+#ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+	if (vsrv->cipher_server_preference) {
+		options |= SSL_OP_CIPHER_SERVER_PREFERENCE;
+	}
+#endif
+
+#ifndef OPENSSL_NO_COMP
+	if (! vsrv->ssl_compression) {
+#ifdef SSL_OP_NO_COMPRESSION
+		options |= SSL_OP_NO_COMPRESSION;
+#elif OPENSSL_VERSION_NUMBER >= 0x00908000L
+		sk_SSL_COMP_zero(SSL_COMP_get_compression_methods());
+#endif
+	}
+#endif
 
 	SSL_CTX_set_options (n->context, options);
 
@@ -397,7 +503,7 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 		if (rc != 1) {
 			OPENSSL_LAST_ERROR(error);
 			LOG_ERROR(CHEROKEE_ERROR_SSL_CIPHER,
-				  vsrv->ciphers.buf, error);
+			          vsrv->ciphers.buf, error);
 			goto error;
 		}
 	}
@@ -413,7 +519,7 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 	if (rc != 1) {
 		OPENSSL_LAST_ERROR(error);
 		LOG_ERROR(CHEROKEE_ERROR_SSL_CERTIFICATE,
-			  vsrv->server_cert.buf, error);
+		          vsrv->server_cert.buf, error);
 		goto error;
 	}
 
@@ -437,11 +543,11 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 		goto error;
 	}
 
-	if (! cherokee_buffer_is_empty (&vsrv->req_client_certs)) {
+	if (vsrv->req_client_certs != req_client_cert_skip) {
 		STACK_OF(X509_NAME) *X509_clients;
 
 		verify_mode = SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE;
-		if (cherokee_buffer_cmp_str (&vsrv->req_client_certs, "required") == 0) {
+		if (vsrv->req_client_certs == req_client_cert_require) {
 			verify_mode |= SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
 		}
 
@@ -452,7 +558,7 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 			if (rc != 1) {
 				OPENSSL_LAST_ERROR(error);
 				LOG_CRITICAL(CHEROKEE_ERROR_SSL_CA_READ,
-					     vsrv->certs_ca.buf, error);
+				             vsrv->certs_ca.buf, error);
 				goto error;
 			}
 
@@ -460,7 +566,7 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 			if (X509_clients == NULL) {
 				OPENSSL_LAST_ERROR(error);
 				LOG_CRITICAL (CHEROKEE_ERROR_SSL_CA_LOAD,
-					      vsrv->certs_ca.buf, error);
+				              vsrv->certs_ca.buf, error);
 				goto error;
 			}
 
@@ -471,20 +577,30 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 		} else {
 			verify_mode = SSL_VERIFY_NONE;
 		}
+
 	}
 
-	SSL_CTX_set_verify (n->context, verify_mode, NULL);
+	if (vsrv->req_client_certs == req_client_cert_tolerate) {
+		SSL_CTX_set_verify (n->context, verify_mode, verify_tolerate_cb);
+	} else {
+#ifdef TRACE_ENABLED
+		SSL_CTX_set_verify (n->context, verify_mode, verify_trace_cb);
+#else
+		SSL_CTX_set_verify (n->context, verify_mode, NULL);
+#endif
+	}
+
 	SSL_CTX_set_verify_depth (n->context, vsrv->verify_depth);
 
 	SSL_CTX_set_read_ahead (n->context, 1);
 	SSL_CTX_set_mode (n->context,
-			  SSL_CTX_get_mode(n->context) | SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
+	                  SSL_CTX_get_mode(n->context) | SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
 
 	/* Set the SSL context cache
 	 */
 	rc = SSL_CTX_set_session_id_context (n->context,
-					     (unsigned char *) vsrv->name.buf,
-					     (unsigned int)    vsrv->name.len);
+	                                     (unsigned char *) vsrv->name.buf,
+	                                     MIN(SSL_MAX_SSL_SESSION_ID_LENGTH, (unsigned int) vsrv->name.len));
 	if (rc != 1) {
 		OPENSSL_LAST_ERROR(error);
 		LOG_ERROR (CHEROKEE_ERROR_SSL_SESSION_ID, vsrv->name.buf, error);
@@ -525,9 +641,9 @@ error:
 
 static ret_t
 socket_initialize (cherokee_cryptor_socket_libssl_t *cryp,
-		   cherokee_socket_t                *socket,
-		   cherokee_virtual_server_t        *vserver,
-		   cherokee_connection_t            *conn)
+                   cherokee_socket_t                *socket,
+                   cherokee_virtual_server_t        *vserver,
+                   cherokee_connection_t            *conn)
 {
 	int                                re;
 	const char                        *error;
@@ -570,9 +686,11 @@ socket_initialize (cherokee_cryptor_socket_libssl_t *cryp,
 	if (re != 1) {
 		OPENSSL_LAST_ERROR(error);
 		LOG_ERROR (CHEROKEE_ERROR_SSL_FD,
-			   socket->socket, error);
+		           socket->socket, error);
 		return ret_error;
 	}
+
+	cryp->is_pending = false;
 
 #ifndef OPENSSL_NO_TLSEXT
 	SSL_set_app_data (cryp->session, conn);
@@ -591,10 +709,10 @@ socket_initialize (cherokee_cryptor_socket_libssl_t *cryp,
 
 static ret_t
 _socket_init_tls (cherokee_cryptor_socket_libssl_t *cryp,
-		  cherokee_socket_t                *sock,
-		  cherokee_virtual_server_t        *vsrv,
-		  cherokee_connection_t            *conn,
-		  cherokee_socket_status_t         *blocking)
+                  cherokee_socket_t                *sock,
+                  cherokee_virtual_server_t        *vsrv,
+                  cherokee_connection_t            *conn,
+                  cherokee_socket_status_t         *blocking)
 {
 	int   re;
 	ret_t ret;
@@ -660,7 +778,7 @@ _socket_init_tls (cherokee_cryptor_socket_libssl_t *cryp,
 #ifdef TRACE_ENABLED
 	{
 		CHEROKEE_TEMP (buf,256);
-		SSL_CIPHER *cipher = SSL_get_current_cipher (cryp->session);
+		const SSL_CIPHER *cipher = SSL_get_current_cipher (cryp->session);
 
 		if (cipher) {
 			SSL_CIPHER_description (cipher, &buf[0], buf_size-1);
@@ -774,9 +892,9 @@ _socket_shutdown (cherokee_cryptor_socket_libssl_t *cryp)
 
 static ret_t
 _socket_write (cherokee_cryptor_socket_libssl_t *cryp,
-	       char                             *buf,
-	       int                               buf_len,
-	       size_t                           *pcnt_written)
+               char                             *buf,
+               int                               buf_len,
+               size_t                           *pcnt_written)
 {
 	int     re;
 	ssize_t len;
@@ -851,7 +969,7 @@ _socket_write (cherokee_cryptor_socket_libssl_t *cryp,
 			return ret_eof;
 		default:
 			LOG_ERRNO_S (error, cherokee_err_error,
-				     CHEROKEE_ERROR_SSL_SW_DEFAULT);
+			             CHEROKEE_ERROR_SSL_SW_DEFAULT);
 		}
 
 		TRACE (ENTRIES",write", "write len=%d (written=0), ERROR: %s\n", buf_len, ERR_error_string(re, NULL));
@@ -863,7 +981,7 @@ _socket_write (cherokee_cryptor_socket_libssl_t *cryp,
 	}
 
 	LOG_ERROR (CHEROKEE_ERROR_SSL_SW_ERROR,
-		   SSL_get_fd(cryp->session), (int)len, ERR_error_string(re, NULL));
+	           SSL_get_fd(cryp->session), (int)len, ERR_error_string(re, NULL));
 
 	TRACE (ENTRIES",write", "write len=%d (written=0), ERROR: %s\n", buf_len, ERR_error_string(re, NULL));
 	return ret_error;
@@ -872,21 +990,32 @@ _socket_write (cherokee_cryptor_socket_libssl_t *cryp,
 
 static ret_t
 _socket_read (cherokee_cryptor_socket_libssl_t *cryp,
-	      char                             *buf,
-	      int                               buf_size,
-	      size_t                           *pcnt_read)
+              char                             *buf,
+              int                               buf_size,
+              size_t                           *pcnt_read)
 {
 	int     re;
 	int     error;
-	ssize_t len;
+	ssize_t len    = 0;
 
 	CLEAR_LIBSSL_ERRORS;
 
-	len = SSL_read (cryp->session, buf, buf_size);
-	if (likely (len > 0)) {
-		*pcnt_read = len;
-		if (SSL_pending (cryp->session))
-			return ret_eagain;
+	*pcnt_read = 0;
+
+	while (buf_size > 0) {
+		len = SSL_read (cryp->session, buf, buf_size);
+		if (len < 1)
+			break;
+		*pcnt_read += len;
+		buf += len;
+		buf_size -= len;
+	}
+
+	/* We have more data than buffer space. Mark the socket as
+	 * having pending data. */
+	cryp->is_pending = (buf_size == 0);
+
+	if (*pcnt_read > 0) {
 		return ret_ok;
 	}
 
@@ -914,20 +1043,20 @@ _socket_read (cherokee_cryptor_socket_libssl_t *cryp,
 			return ret_eof;
 		default:
 			LOG_ERRNO_S (error, cherokee_err_error,
-				     CHEROKEE_ERROR_SSL_SR_DEFAULT);
+			             CHEROKEE_ERROR_SSL_SR_DEFAULT);
 		}
 		return ret_error;
 	}
 
 	LOG_ERROR (CHEROKEE_ERROR_SSL_SR_ERROR,
-		   SSL_get_fd(cryp->session), (int)len, ERR_error_string(re, NULL));
+	           SSL_get_fd(cryp->session), (int)len, ERR_error_string(re, NULL));
 	return ret_error;
 }
 
 static int
 _socket_pending (cherokee_cryptor_socket_libssl_t *cryp)
 {
-	return (SSL_pending (cryp->session) > 0);
+	return cryp->is_pending;
 }
 
 static ret_t
@@ -959,7 +1088,7 @@ _socket_free (cherokee_cryptor_socket_libssl_t *cryp_socket)
 
 static ret_t
 _socket_new (cherokee_cryptor_libssl_t         *cryp,
-	     cherokee_cryptor_socket_libssl_t **cryp_socket)
+             cherokee_cryptor_socket_libssl_t **cryp_socket)
 {
 	ret_t ret;
 	CHEROKEE_NEW_STRUCT (n, cryptor_socket_libssl);
@@ -993,8 +1122,8 @@ _socket_new (cherokee_cryptor_libssl_t         *cryp,
 
 static ret_t
 _client_init_tls (cherokee_cryptor_client_libssl_t *cryp,
-		  cherokee_buffer_t                *host,
-		  cherokee_socket_t                *socket)
+                  cherokee_buffer_t                *host,
+                  cherokee_socket_t                *socket)
 {
 	int         re;
 	const char *error;
@@ -1008,11 +1137,13 @@ _client_init_tls (cherokee_cryptor_client_libssl_t *cryp,
 		return ret_error;
 	}
 
+#if 0
 	/* CA verifications
+	 */
 	re = cherokee_buffer_is_empty (&cryp->vserver_ref->certs_ca);
 	if (! re) {
 		re = SSL_CTX_load_verify_locations (socket->ssl_ctx,
-						    socket->vserver_ref->certs_ca.buf, NULL);
+		                                    socket->vserver_ref->certs_ca.buf, NULL);
 		if (! re) {
 			OPENSSL_LAST_ERROR(error);
 			LOG_ERROR (CHEROKEE_ERROR_SSL_CTX_LOAD,
@@ -1027,7 +1158,7 @@ _client_init_tls (cherokee_cryptor_client_libssl_t *cryp,
 			return ret_error;
 		}
 	}
-	 */
+#endif
 
 	SSL_CTX_set_verify (cryp->ssl_ctx, SSL_VERIFY_NONE, NULL);
 
@@ -1093,7 +1224,7 @@ _client_free (cherokee_cryptor_client_libssl_t *cryp)
 
 static ret_t
 _client_new (cherokee_cryptor_t         *cryp,
-	     cherokee_cryptor_client_t **cryp_client)
+             cherokee_cryptor_client_t **cryp_client)
 {
 	ret_t ret;
 	CHEROKEE_NEW_STRUCT (n, cryptor_client_libssl);
@@ -1117,7 +1248,7 @@ _client_new (cherokee_cryptor_t         *cryp,
 
 	/* Client */
 	CRYPTOR_SOCKET(n)->free     = (cryptor_socket_func_free_t) _client_free;
-	CRYPTOR_SOCKET(n)->init_tls = (cryptor_client_func_init_t) _client_init_tls;
+	CRYPTOR_SOCKET(n)->init_tls = (cryptor_socket_func_init_tls_t) _client_init_tls;
 
 	*cryp_client = CRYPTOR_CLIENT(n);
 	return ret_ok;
@@ -1125,9 +1256,9 @@ _client_new (cherokee_cryptor_t         *cryp,
 
 
 PLUGIN_INFO_INIT (libssl,
-		  cherokee_cryptor,
-		  cherokee_cryptor_libssl_new,
-		  NULL);
+                  cherokee_cryptor,
+                  cherokee_cryptor_libssl_new,
+                  NULL);
 
 
 ret_t
@@ -1231,26 +1362,26 @@ PLUGIN_INIT_NAME(libssl) (cherokee_plugin_loader_t *loader)
 
 # if HAVE_OPENSSL_ENGINE_H
 #  if OPENSSL_VERSION_NUMBER >= 0x00907000L
-        ENGINE_load_builtin_engines();
+	ENGINE_load_builtin_engines();
 	OpenSSL_add_all_algorithms();
 #  endif
-        e = ENGINE_by_id("pkcs11");
-        while (e != NULL) {
-                if(! ENGINE_init(e)) {
-                        ENGINE_free (e);
-                        LOG_CRITICAL_S (CHEROKEE_ERROR_SSL_PKCS11);
+	e = ENGINE_by_id("pkcs11");
+	while (e != NULL) {
+		if(! ENGINE_init(e)) {
+			ENGINE_free (e);
+			LOG_CRITICAL_S (CHEROKEE_ERROR_SSL_PKCS11);
 			break;
-                }
+		}
 
-                if(! ENGINE_set_default(e, ENGINE_METHOD_ALL)) {
-                        ENGINE_free (e);
-                        LOG_CRITICAL_S (CHEROKEE_ERROR_SSL_DEFAULTS);
+		if(! ENGINE_set_default(e, ENGINE_METHOD_ALL)) {
+			ENGINE_free (e);
+			LOG_CRITICAL_S (CHEROKEE_ERROR_SSL_DEFAULTS);
 			break;
-                }
+		}
 
-                ENGINE_finish(e);
-                ENGINE_free(e);
+		ENGINE_finish(e);
+		ENGINE_free(e);
 		break;
-        }
+	}
 #endif
 }

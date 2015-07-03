@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -131,13 +131,13 @@ cherokee_thread_wait_end (cherokee_thread_t *thd)
 
 ret_t
 cherokee_thread_new  (cherokee_thread_t      **thd,
-		      void                   *server,
-		      cherokee_thread_type_t  type,
-		      cherokee_poll_type_t    fdpoll_type,
-		      cint_t                  system_fd_num,
-		      cint_t                  fd_num,
-		      cint_t                  conns_max,
-		      cint_t                  keepalive_max)
+                      void                   *server,
+                      cherokee_thread_type_t  type,
+                      cherokee_poll_type_t    fdpoll_type,
+                      cint_t                  system_fd_num,
+                      cint_t                  fd_num,
+                      cint_t                  conns_max,
+                      cint_t                  keepalive_max)
 {
 	ret_t              ret;
 	cherokee_server_t *srv = SRV(server);
@@ -268,8 +268,8 @@ cherokee_thread_new  (cherokee_thread_t      **thd,
 
 static void
 conn_set_mode (cherokee_thread_t        *thd,
-	       cherokee_connection_t    *conn,
-	       cherokee_socket_status_t  s)
+               cherokee_connection_t    *conn,
+               cherokee_socket_status_t  s)
 {
 	if (conn->socket.status == s) {
 		TRACE (ENTRIES, "Connection already in mode = %s\n", (s == socket_reading)? "reading" : "writing");
@@ -424,8 +424,8 @@ purge_closed_polling_connection (cherokee_thread_t *thread, cherokee_connection_
 
 static void
 close_active_connection (cherokee_thread_t     *thread,
-			 cherokee_connection_t *conn,
-			 cherokee_boolean_t     reset)
+                         cherokee_connection_t *conn,
+                         cherokee_boolean_t     reset)
 {
 	ret_t ret;
 
@@ -449,6 +449,25 @@ close_active_connection (cherokee_thread_t     *thread,
 	/* Finally, purge connection
 	 */
 	purge_connection (thread, conn);
+}
+
+
+static void
+close_active_broken_connection (cherokee_thread_t     *thread,
+                                cherokee_connection_t *conn,
+                                cherokee_boolean_t     reset)
+{
+	/* Purge flcache in case of a broken connection.
+	 */
+	cherokee_avl_flcache_node_t *entry = conn->flcache.avl_node_ref;
+	if ((CONN_VSRV(conn)->flcache != NULL) && entry) {
+		cherokee_flcache_conn_clean (&conn->flcache);
+		cherokee_flcache_del_entry (CONN_VSRV(conn)->flcache, entry);
+	}
+
+	/* Close active connection
+	 */
+	close_active_connection(thread, conn, reset);
 }
 
 
@@ -492,21 +511,20 @@ maybe_purge_closed_connection (cherokee_thread_t *thread, cherokee_connection_t 
 
 static void
 send_hardcoded_error (cherokee_socket_t *sock,
-		      const char        *error,
-		      cherokee_buffer_t *tmp)
+                      const char        *error,
+                      cherokee_buffer_t *tmp)
 {
 	ret_t              ret;
 	size_t             write;
 	cherokee_boolean_t done  = false;
 
 	cherokee_buffer_clean (tmp);
-	cherokee_buffer_add_va (
-		tmp,
-		"HTTP/1.0 %s" CRLF_CRLF					\
-		"<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">" CRLF \
-		"<html><head><title>%s</title></head>" CRLF		\
-		"<body><h1>%s</h1></body></html>",
-		error, error, error);
+	cherokee_buffer_add_va (tmp,
+	                        "HTTP/1.0 %s" CRLF_CRLF                     \
+	                        "<!DOCTYPE html>" CRLF                      \
+	                        "<html><head><title>%s</title></head>" CRLF \
+	                        "<body><h1>%s</h1></body></html>",
+	                        error, error, error);
 
 	do {
 		write = 0;
@@ -550,7 +568,7 @@ process_polling_connections (cherokee_thread_t *thd)
 			 */
 			if (CONN_VSRV(conn)->error_writer) {
 				CHEROKEE_THREAD_PROP_SET (thread_error_writer_ptr,
-							  CONN_VSRV(conn)->error_writer);
+				                          CONN_VSRV(conn)->error_writer);
 			}
 		}
 
@@ -573,8 +591,8 @@ process_polling_connections (cherokee_thread_t *thd)
 				/* Push a hardcoded error
 				 */
 				send_hardcoded_error (&conn->socket,
-						      http_gateway_timeout_string,
-						      THREAD_TMP_BUF1(thd));
+				                      http_gateway_timeout_string,
+				                      THREAD_TMP_BUF1(thd));
 
 				/* Assign the error code. Even though it wasn't used
 				 * before the handler::free function could check it.
@@ -689,7 +707,7 @@ process_active_connections (cherokee_thread_t *thd)
 			 */
 			if (CONN_VSRV(conn)->error_writer) {
 				CHEROKEE_THREAD_PROP_SET (thread_error_writer_ptr,
-							  CONN_VSRV(conn)->error_writer);
+				                          CONN_VSRV(conn)->error_writer);
 			}
 		}
 
@@ -760,8 +778,8 @@ process_active_connections (cherokee_thread_t *thd)
 		}
 		else {
 			re = cherokee_fdpoll_check (thd->fdpoll,
-						    SOCKET_FD(&conn->socket),
-						    conn->socket.status);
+			                            SOCKET_FD(&conn->socket),
+			                            conn->socket.status);
 			switch (re) {
 			case -1:
 				close_active_connection (thd, conn, false);
@@ -837,8 +855,8 @@ process_active_connections (cherokee_thread_t *thd)
 			if (! cherokee_buffer_is_empty (&conn->incoming_header))
 			{
 				ret = cherokee_header_has_header (&conn->header,
-								  &conn->incoming_header,
-								  conn->incoming_header.len);
+				                                  &conn->incoming_header,
+				                                  conn->incoming_header.len);
 				switch (ret) {
 				case ret_ok:
 					goto phase_reading_header_EXIT;
@@ -855,8 +873,8 @@ process_active_connections (cherokee_thread_t *thd)
 			/* Read from the client
 			 */
 			ret = cherokee_connection_recv (conn,
-							&conn->incoming_header,
-							DEFAULT_RECV_SIZE, &len);
+			                                &conn->incoming_header,
+			                                DEFAULT_RECV_SIZE, &len);
 			switch (ret) {
 			case ret_ok:
 				break;
@@ -926,7 +944,7 @@ process_active_connections (cherokee_thread_t *thd)
 			    CONN_VSRV(conn)->error_writer)
 			{
 				CHEROKEE_THREAD_PROP_SET (thread_error_writer_ptr,
-							  CONN_VSRV(conn)->error_writer);
+				                          CONN_VSRV(conn)->error_writer);
 			}
 
 			/* Update timeout of the Keep-alive connections carried over..
@@ -1157,7 +1175,7 @@ process_active_connections (cherokee_thread_t *thd)
 				if ((MODULE(conn->handler)->info) &&
 				    (MODULE(conn->handler)->info->name))
 					LOG_ERROR (CHEROKEE_ERROR_THREAD_HANDLER_RET,
-						   ret, MODULE(conn->handler)->info->name);
+					           ret, MODULE(conn->handler)->info->name);
 				else
 					RET_UNKNOWN(ret);
 				break;
@@ -1170,7 +1188,7 @@ process_active_connections (cherokee_thread_t *thd)
 				goto shutdown;
 			}
 
- 			if (http_type_300(conn->error_code) ||
+			if (http_type_300(conn->error_code) ||
 			    http_type_400(conn->error_code) ||
 			    http_type_500(conn->error_code))
 			{
@@ -1337,7 +1355,7 @@ process_active_connections (cherokee_thread_t *thd)
 					continue;
 
 				case ret_error:
-					close_active_connection (thd, conn, true);
+					close_active_broken_connection (thd, conn, true);
 					continue;
 
 				default:
@@ -1366,7 +1384,7 @@ process_active_connections (cherokee_thread_t *thd)
 				case ret_eof:
 				case ret_error:
 				default:
-					close_active_connection (thd, conn, false);
+					close_active_broken_connection (thd, conn, false);
 					continue;
 				}
 				break;
@@ -1382,7 +1400,7 @@ process_active_connections (cherokee_thread_t *thd)
 				case ret_eof:
 				case ret_error:
 				default:
-					close_active_connection (thd, conn, false);
+					close_active_broken_connection (thd, conn, false);
 					continue;
 				}
 				break;
@@ -1395,7 +1413,7 @@ process_active_connections (cherokee_thread_t *thd)
 				continue;
 
 			case ret_error:
-				close_active_connection (thd, conn, false);
+				close_active_broken_connection (thd, conn, false);
 				continue;
 
 			default:
@@ -1476,9 +1494,20 @@ process_active_connections (cherokee_thread_t *thd)
 			break;
 
 		default:
- 			SHOULDNT_HAPPEN;
+			SHOULDNT_HAPPEN;
 		}
 
+	} /* list */
+
+	list_for_each_safe (i, tmp, LIST(&thd->active_list)) {
+		conn = CONN(i);
+
+		/* Check whether we have data sitting in SSL buffers that needs
+		* to be processed before we wait for file descriptors. */
+		if (conn->socket.cryptor &&
+		    cherokee_cryptor_socket_pending(conn->socket.cryptor)) {
+			thd->pending_read_num++;
+		}
 	} /* list */
 
 	return ret_ok;
@@ -1525,8 +1554,7 @@ cherokee_thread_free (cherokee_thread_t *thd)
 
 
 static void
-thread_full_handler (cherokee_thread_t *thd,
-		     cherokee_bind_t   *bind)
+thread_full_handler (cherokee_thread_t *thd, cherokee_bind_t *bind)
 {
 	ret_t              ret;
 	cherokee_list_t   *i;
@@ -1634,7 +1662,7 @@ get_new_connection (cherokee_thread_t *thd, cherokee_connection_t **conn)
 
 
 static ret_t
-thread_add_connection (cherokee_thread_t *thd, cherokee_connection_t  *conn)
+thread_add_connection (cherokee_thread_t *thd, cherokee_connection_t *conn)
 {
 	ret_t ret;
 
@@ -1649,8 +1677,7 @@ thread_add_connection (cherokee_thread_t *thd, cherokee_connection_t  *conn)
 
 
 static ret_t
-accept_new_connection (cherokee_thread_t *thd,
-		       cherokee_bind_t   *bind)
+accept_new_connection (cherokee_thread_t *thd, cherokee_bind_t *bind)
 {
 	int                    re;
 	ret_t                  ret;
@@ -1761,8 +1788,8 @@ error:
 
 static ret_t
 should_accept_more (cherokee_thread_t *thd,
-		    cherokee_bind_t   *bind,
-		    ret_t              prev_ret)
+                    cherokee_bind_t   *bind,
+                    ret_t              prev_ret)
 {
 	/* If it is full, do not accept more!
 	 */
@@ -1816,7 +1843,7 @@ cherokee_thread_step_SINGLE_THREAD (cherokee_thread_t *thd)
 	/* Reactive sleeping connections
 	 */
 	fdwatch_msecs = cherokee_limiter_get_time_limit (&thd->limiter,
-							 fdwatch_msecs);
+	                                                 fdwatch_msecs);
 
 	/* Graceful restart
 	 */
@@ -1869,15 +1896,15 @@ out:
 
 static void
 watch_accept_MULTI_THREAD (cherokee_thread_t  *thd,
-			   cherokee_boolean_t  block,
-			   int                 fdwatch_msecs)
+                           cherokee_boolean_t  block,
+                           int                 fdwatch_msecs)
 {
 	ret_t               ret;
 	int                 unlocked;
 	cherokee_bind_t    *bind;
 	cherokee_list_t    *i;
-	cherokee_boolean_t  yield      = false;
- 	cherokee_server_t  *srv        = THREAD_SRV(thd);
+	cherokee_boolean_t  yield = false;
+	cherokee_server_t  *srv   = THREAD_SRV(thd);
 
 	/* Lock
 	 */
@@ -1893,9 +1920,9 @@ watch_accept_MULTI_THREAD (cherokee_thread_t  *thd,
 
 	/* Shortcut: don't waste time on watch() */
 	if (unlikely ((srv->wanna_exit) ||
-		      ((srv->wanna_reinit) &&
-		       (thd->active_list_num  == 0) &&
-		       (thd->polling_list_num == 0))))
+	              ((srv->wanna_reinit) &&
+	               (thd->active_list_num  == 0) &&
+	               (thd->polling_list_num == 0))))
 	{
 		goto out;
 	}
@@ -1904,8 +1931,8 @@ watch_accept_MULTI_THREAD (cherokee_thread_t  *thd,
 	 */
 	list_for_each (i, &srv->listeners) {
 		ret = cherokee_fdpoll_add (thd->fdpoll,
-					   S_SOCKET_FD(BIND(i)->socket),
-					   FDPOLL_MODE_READ);
+		                           S_SOCKET_FD(BIND(i)->socket),
+		                           FDPOLL_MODE_READ);
 		if (unlikely (ret < ret_ok)) {
 			ret = ret_error;
 			goto out;
@@ -1967,7 +1994,7 @@ out:
 
 ret_t
 cherokee_thread_step_MULTI_THREAD (cherokee_thread_t  *thd,
-				   cherokee_boolean_t  dont_block)
+                                   cherokee_boolean_t  dont_block)
 {
 	ret_t              ret;
 	cherokee_boolean_t time_updated;
@@ -2001,7 +2028,7 @@ cherokee_thread_step_MULTI_THREAD (cherokee_thread_t  *thd,
 	/* Reactive sleeping connections
 	 */
 	fdwatch_msecs = cherokee_limiter_get_time_limit (&thd->limiter,
-							 fdwatch_msecs);
+	                                                 fdwatch_msecs);
 
 	/* Server wants to exit, and the thread has nothing to do
 	 */
@@ -2032,10 +2059,10 @@ cherokee_thread_step_MULTI_THREAD (cherokee_thread_t  *thd,
 	/* Watch fds, and accept new connections
 	 */
 	can_block = ((dont_block == false) &&
-		     (thd->exit == false) &&
-		     (thd->active_list_num == 0) &&
-		     (thd->polling_list_num == 0) &&
-		     (thd->limiter.conns_num == 0));
+	             (thd->exit == false) &&
+	             (thd->active_list_num == 0) &&
+	             (thd->polling_list_num == 0) &&
+	             (thd->limiter.conns_num == 0));
 
 	watch_accept_MULTI_THREAD (thd, can_block, fdwatch_msecs);
 
@@ -2158,10 +2185,10 @@ reactive_conn_from_polling (cherokee_thread_t *thd, cherokee_connection_t *conn)
 
 ret_t
 cherokee_thread_deactive_to_polling (cherokee_thread_t     *thd,
-				     cherokee_connection_t *conn,
-				     int                    fd,
-				     int                    rw,
-				     char                   multiple)
+                                     cherokee_connection_t *conn,
+                                     int                    fd,
+                                     int                    rw,
+                                     char                   multiple)
 {
 	ret_t               ret;
 	cherokee_boolean_t  add_fd = true;

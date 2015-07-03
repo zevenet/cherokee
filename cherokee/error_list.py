@@ -127,7 +127,7 @@ e('VALIDATOR_PAM_AUTH',
 
 e('VALIDATOR_PAM_ACCOUNT',
   title = "User '%s' - invalid account: %s",
-  desc  = "The specified user does not exist on the sytem.")
+  desc  = "The specified user does not exist on the system.")
 
 
 # cherokee/validator_ldap.c
@@ -304,10 +304,6 @@ e('HANDLER_CGI_SETID',
 
 e('HANDLER_CGI_EXECUTE',
   title = "Could not execute '%s': %s",
-  desc  = SYSTEM_ISSUE)
-
-e('HANDLER_CGI_CREATEPROCESS',
-  title = "CreateProcess error: error=%d",
   desc  = SYSTEM_ISSUE)
 
 e('HANDLER_CGI_GET_HOSTNAME',
@@ -752,6 +748,18 @@ e('SRC_INTER_SPAWN',
   title = "Could not spawn '%s'",
   desc  = SYSTEM_ISSUE)
 
+e('SRC_INTER_SETUID',
+  title = "Can't change setuid %d",
+  desc  = SYSTEM_ISSUE)
+
+e('SRC_INTER_SETGID',
+  title = "Can't change setgid %d",
+  desc  = SYSTEM_ISSUE)
+
+e('SRC_INTER_CHROOT',
+  title = "Could not chroot() to '%s'",
+  desc  = SYSTEM_ISSUE)
+
 
 # cherokee/config_reader.c
 #
@@ -770,6 +778,25 @@ e('CONF_READ_PARSE',
   debug = "%s")
 
 
+# cherokee/flcache.c
+#
+e('FLCACHE_CHOWN',
+  title = "Could not chown the FLCache directory '%s' to user '%s' and group '%s'",
+  desc  = SYSTEM_ISSUE)
+
+e('FLCACHE_MKDIR',
+  title = "Could not create the '%s' directory, or it doesn't have %s permissions",
+  desc  = SYSTEM_ISSUE)
+
+e('FLCACHE_MKDIRS',
+  title = "Could not create the FLCache temporal directy neither under %s nor under %s, or it doesn't have %s permissions",
+  desc  = SYSTEM_ISSUE)
+
+e('FLCACHE_CREATE_FILE',
+  title = "Could not create the '%s' cache object file: ${errno}",
+  desc  = SYSTEM_ISSUE)
+
+
 # cherokee/template.c
 #
 e('TEMPLATE_NO_TOKEN',
@@ -777,17 +804,21 @@ e('TEMPLATE_NO_TOKEN',
   desc  = "It seems that the template uses an undefined token.")
 
 
-# cherokee/spawner.c
+# cherokee/services-client.c
 #
-e('SPAWNER_TMP_INIT',
-  title   = "Could not open temporal file '%s': ${errno}",
-  desc    = "It looks like the cherokee supervisor is not running, or it could not create the required temporal file.",
-  show_bt = False)
+e('CLIENT_ALREADY_INIT',
+  title   = "Could not initialise service client, already initialised.",
+  desc    = CODING_BUG)
 
-e('SPAWNER_UNLOCK_SEMAPHORE',
-  title = "Could not unlock spawning semaphore %d: ${errno}",
-  desc  = SYSTEM_ISSUE)
+# cherokee/services-server.c
+#
+e('SERVER_ALREADY_INIT',
+  title   = "Could not initialise service server, already initialised.",
+  desc    = CODING_BUG)
 
+e('SERVER_CANNOT_SOCKETPAIR',
+  title   = "Could not create socket pair for service server: ${errno}",
+  desc    = SYSTEM_ISSUE)
 
 # cherokee/http.c
 #
@@ -1341,18 +1372,3 @@ e('SSL_PKCS11',
 e('SSL_DEFAULTS',
   title = "Could not set all defaults",
   desc  = SYSTEM_ISSUE)
-
-# Front-line cache
-#
-e('FLCACHE_MKDIR',
-  title = "Could not create the '%s' directory, or it doesn't have %s permissions",
-  desc  = SYSTEM_ISSUE)
-
-e('FLCACHE_MKDIRS',
-  title = "Could not create the FLCache temporal directy neither under %s nor under %s, or it doesn't have %s permissions",
-  desc  = SYSTEM_ISSUE)
-
-e('FLCACHE_CREATE_FILE',
-  title = "Could not create the '%s' cache object file: ${errno}",
-  desc  = SYSTEM_ISSUE)
-

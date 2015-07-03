@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -37,7 +37,7 @@
 
 ret_t
 cherokee_admin_server_reply_get_ports (cherokee_handler_t *hdl,
-				       cherokee_dwriter_t  *dwriter)
+                                       cherokee_dwriter_t  *dwriter)
 {
 	cherokee_list_t   *i;
 	cherokee_bind_t   *bind_entry;
@@ -51,13 +51,13 @@ cherokee_admin_server_reply_get_ports (cherokee_handler_t *hdl,
 		cherokee_dwriter_dict_open (dwriter);
 
 		cherokee_dwriter_cstring (dwriter, "id");
-		cherokee_dwriter_integer (dwriter, bind_entry->id);
+		cherokee_dwriter_unsigned (dwriter, bind_entry->id);
 
 		cherokee_dwriter_cstring (dwriter, "bind");
 		cherokee_dwriter_bstring (dwriter, &bind_entry->ip);
 
 		cherokee_dwriter_cstring (dwriter, "port");
-		cherokee_dwriter_integer (dwriter, bind_entry->port);
+		cherokee_dwriter_unsigned (dwriter, bind_entry->port);
 
 		cherokee_dwriter_cstring (dwriter, "tls");
 		cherokee_dwriter_bool    (dwriter, BIND_IS_TLS(bind_entry));
@@ -71,7 +71,7 @@ cherokee_admin_server_reply_get_ports (cherokee_handler_t *hdl,
 
 ret_t
 cherokee_admin_server_reply_get_traffic (cherokee_handler_t *hdl,
-					 cherokee_dwriter_t *dwriter)
+                                         cherokee_dwriter_t *dwriter)
 {
 	cherokee_server_t *srv = HANDLER_SRV(hdl);
 	cherokee_buffer_t *tmp = THREAD_TMP_BUF2 (HANDLER_THREAD(hdl));
@@ -80,14 +80,14 @@ cherokee_admin_server_reply_get_traffic (cherokee_handler_t *hdl,
 
 	cherokee_dwriter_cstring (dwriter, "tx");
 	if (srv->collector) {
-		cherokee_dwriter_integer (dwriter, COLLECTOR_TX(srv->collector));
+		cherokee_dwriter_unsigned (dwriter, COLLECTOR_TX(srv->collector));
 	} else {
 		cherokee_dwriter_number (dwriter, "-1", 2);
 	}
 
 	cherokee_dwriter_cstring (dwriter, "rx");
 	if (srv->collector) {
-		cherokee_dwriter_integer (dwriter, COLLECTOR_RX(srv->collector));
+		cherokee_dwriter_unsigned (dwriter, COLLECTOR_RX(srv->collector));
 	} else {
 		cherokee_dwriter_number (dwriter, "-1", 2);
 	}
@@ -117,7 +117,7 @@ cherokee_admin_server_reply_get_traffic (cherokee_handler_t *hdl,
 
 static void
 render_connection_info (cherokee_connection_info_t *conn_info,
-			cherokee_dwriter_t         *dwriter)
+                        cherokee_dwriter_t         *dwriter)
 {
 	cherokee_dwriter_dict_open (dwriter);
 
@@ -162,7 +162,7 @@ render_connection_info (cherokee_connection_info_t *conn_info,
 
 ret_t
 cherokee_admin_server_reply_get_conns (cherokee_handler_t *hdl,
-				       cherokee_dwriter_t *dwriter)
+                                       cherokee_dwriter_t *dwriter)
 {
 	ret_t              ret;
 	cherokee_list_t    connections;
@@ -206,23 +206,30 @@ cherokee_admin_server_reply_get_conns (cherokee_handler_t *hdl,
 
 ret_t
 cherokee_admin_server_reply_close_conn (cherokee_handler_t *hdl,
-					cherokee_dwriter_t *dwriter,
-					cherokee_buffer_t  *question)
+                                        cherokee_dwriter_t *dwriter,
+                                        cherokee_buffer_t  *question)
 {
 	ret_t              ret;
 	char              *begin;
 	cherokee_server_t *server = HANDLER_SRV(hdl);
+	cherokee_buffer_t  match  = CHEROKEE_BUF_INIT;
 
-	if (strncmp (question->buf, "del server.connection ", 22)) {
+	cherokee_buffer_fake_str (&match, "close server.connection ");
+
+	if (strncasecmp (question->buf, match.buf, match.len)) {
 		return ret_error;
 	}
 
-	begin = question->buf + 22;
-	ret = cherokee_server_del_connection (server, begin);
+	begin = question->buf + match.len;
+	ret = cherokee_server_close_connection (server, CONN_THREAD(HANDLER_CONN(hdl)), begin);
 
 	cherokee_dwriter_dict_open (dwriter);
 	cherokee_dwriter_cstring (dwriter, "close");
-	cherokee_dwriter_cstring (dwriter, ret == ret_ok ? "ok" : "failed");
+	if (ret == ret_ok) {
+		cherokee_dwriter_cstring (dwriter, "ok");
+	} else {
+		cherokee_dwriter_cstring (dwriter, "failed");
+	}
 	cherokee_dwriter_dict_close (dwriter);
 
 	return ret_ok;
@@ -231,7 +238,7 @@ cherokee_admin_server_reply_close_conn (cherokee_handler_t *hdl,
 
 ret_t
 cherokee_admin_server_reply_get_trace (cherokee_handler_t *hdl,
-				       cherokee_dwriter_t *dwriter)
+                                       cherokee_dwriter_t *dwriter)
 {
 	ret_t              ret;
 	cherokee_buffer_t *traces_ref = NULL;
@@ -258,19 +265,22 @@ cherokee_admin_server_reply_get_trace (cherokee_handler_t *hdl,
 
 ret_t
 cherokee_admin_server_reply_set_trace (cherokee_handler_t *hdl,
-				       cherokee_dwriter_t *dwriter,
-				       cherokee_buffer_t  *question)
+                                       cherokee_dwriter_t *dwriter,
+                                       cherokee_buffer_t  *question)
 {
 	ret_t ret;
+	cherokee_buffer_t match = CHEROKEE_BUF_INIT;
 
 	UNUSED (hdl);
 
+	cherokee_buffer_fake_str (&match, "set server.trace ");
+
 	/* Process question
 	 */
-	if (strncmp (question->buf, "set server.trace ", sizeof("set server.trace ")-1)) {
+	if (strncasecmp (question->buf, match.buf, match.len)) {
 		return ret_error;
 	}
-	cherokee_buffer_move_to_begin (question, sizeof("set server.trace "-1));
+	cherokee_buffer_move_to_begin (question, match.len);
 
 	/* Set the traces
 	 */
@@ -291,8 +301,8 @@ cherokee_admin_server_reply_set_trace (cherokee_handler_t *hdl,
 
 ret_t
 cherokee_admin_server_reply_set_backup_mode (cherokee_handler_t *hdl,
-					     cherokee_dwriter_t *dwriter,
-					     cherokee_buffer_t  *question)
+                                             cherokee_dwriter_t *dwriter,
+                                             cherokee_buffer_t  *question)
 {
 	ret_t              ret;
 	cherokee_server_t *srv = HANDLER_SRV(hdl);
@@ -328,13 +338,13 @@ cherokee_admin_server_reply_set_backup_mode (cherokee_handler_t *hdl,
 
 ret_t
 cherokee_admin_server_reply_get_thread_num (cherokee_handler_t *hdl,
-					    cherokee_dwriter_t *dwriter)
+                                            cherokee_dwriter_t *dwriter)
 {
 	cherokee_server_t *srv = HANDLER_SRV(hdl);
 
 	cherokee_dwriter_dict_open (dwriter);
 	cherokee_dwriter_cstring (dwriter, "thread_num");
-	cherokee_dwriter_integer (dwriter, srv->thread_num);
+	cherokee_dwriter_unsigned (dwriter, srv->thread_num);
 	cherokee_dwriter_dict_close (dwriter);
 
 	return ret_ok;
@@ -373,13 +383,17 @@ sources_while (cherokee_buffer_t *key, void *value, void *param)
 		cherokee_source_interpreter_t *source_int = SOURCE_INT(source);
 
 		cherokee_dwriter_cstring (dwriter, "PID");
-		cherokee_dwriter_integer (dwriter, source_int->pid);
+		if (source_int->pid == -1) {
+			cherokee_dwriter_number   (dwriter, "-1", 2);
+		} else {
+			cherokee_dwriter_unsigned (dwriter, source_int->pid);
+		}
 
 		cherokee_dwriter_cstring (dwriter, "debug");
 		cherokee_dwriter_bool    (dwriter, source_int->debug);
 
 		cherokee_dwriter_cstring (dwriter, "timeout");
-		cherokee_dwriter_integer (dwriter, source_int->timeout);
+		cherokee_dwriter_unsigned (dwriter, source_int->timeout);
 
 		cherokee_dwriter_cstring (dwriter, "interpreter");
 		cherokee_dwriter_bstring (dwriter, &source_int->interpreter);
@@ -391,12 +405,12 @@ sources_while (cherokee_buffer_t *key, void *value, void *param)
 
 ret_t
 cherokee_admin_server_reply_get_sources (cherokee_handler_t *hdl,
-					 cherokee_dwriter_t *dwriter)
+                                         cherokee_dwriter_t *dwriter)
 {
 	cherokee_server_t *srv = HANDLER_SRV(hdl);
 
 	cherokee_dwriter_list_open (dwriter);
-	cherokee_avl_while (&srv->sources, sources_while, dwriter, NULL, NULL);
+	cherokee_avl_while (AVL_GENERIC(&srv->sources), sources_while, dwriter, NULL, NULL);
 	cherokee_dwriter_list_close (dwriter);
 
 	return ret_ok;
@@ -404,10 +418,11 @@ cherokee_admin_server_reply_get_sources (cherokee_handler_t *hdl,
 
 ret_t
 cherokee_admin_server_reply_kill_source (cherokee_handler_t *hdl,
-					 cherokee_dwriter_t *dwriter,
-					 cherokee_buffer_t  *question)
+                                         cherokee_dwriter_t *dwriter,
+                                         cherokee_buffer_t  *question)
 {
 	ret_t              ret;
+	int                re;
 	char              *begin;
 	char              *end;
 	char              *p;
@@ -415,27 +430,30 @@ cherokee_admin_server_reply_kill_source (cherokee_handler_t *hdl,
 	char               id[10];
 	cherokee_source_t *source = NULL;
 	cherokee_server_t *srv    = HANDLER_SRV(hdl);
+	cherokee_buffer_t  match  = CHEROKEE_BUF_INIT;
+
+	cherokee_buffer_fake_str (&match, "kill server.source ");
 
 	/* Check the command
 	 */
-	if (strncmp (question->buf, "kill server.source ", sizeof("kill server.source ")-1)) {
+	if (strncasecmp (question->buf, match.buf, match.len)) {
 		return ret_error;
 	}
-	begin = question->buf + sizeof("kill server.source ")-1;
+	begin = question->buf + match.len;
 	end   = question->buf + question->len;
 
 	/* Check the source to be killed
 	 */
 	n = 0;
 	p = begin;
-	while (CHEROKEE_CHAR_IS_DIGIT(*p) && (p < end)) {
+	while (CHEROKEE_CHAR_IS_DIGIT(*p) && (p < end) && (n < 10)) {
 		id[n] = *p;
 		p++;
 		n++;
 	}
 	id[n] = '\0';
 
-	if (unlikely ((n <= 0) || (n >= sizeof(n)))) {
+	if (unlikely ((n == 0) || (n == 10))) {
 		cherokee_dwriter_dict_open (dwriter);
 		cherokee_dwriter_cstring (dwriter, "source");
 		cherokee_dwriter_cstring (dwriter, "invalid");
@@ -468,21 +486,61 @@ cherokee_admin_server_reply_kill_source (cherokee_handler_t *hdl,
 	/* Kill the process
 	 */
 	if (getuid() == 0) {
-		/* Looks like we can actully kill the process
+		/* Looks like we can actually kill the process
 		 */
-		kill (SOURCE_INT(source)->pid, SIGTERM);
-		goto ok;
+		re = kill (SOURCE_INT(source)->pid, SIGTERM);
+
 	} else {
-		/* It should be the 'cherokee' supervisor (running as root)
+		/* TODO: It should be the 'cherokee' supervisor (running as root)
 		 * the one in charge of killing the process.
 		 */
-		// TODO
+		re = kill (SOURCE_INT(source)->pid, SIGTERM);
 	}
 
-ok:
+	if (re == 0) {
+		cherokee_dwriter_dict_open (dwriter);
+		cherokee_dwriter_cstring (dwriter, "source");
+		cherokee_dwriter_cstring (dwriter, "killed");
+		cherokee_dwriter_dict_close (dwriter);
+		SOURCE_INT(source)->pid = -1;
+
+	} else if (errno == ESRCH) {
+		cherokee_dwriter_dict_open (dwriter);
+		cherokee_dwriter_cstring (dwriter, "source");
+		cherokee_dwriter_cstring (dwriter, "nothing to kill");
+		cherokee_dwriter_dict_close (dwriter);
+		SOURCE_INT(source)->pid = -1;
+
+	} else if (errno == EPERM) {
+		cherokee_dwriter_dict_open (dwriter);
+		cherokee_dwriter_cstring (dwriter, "source");
+		cherokee_dwriter_cstring (dwriter, "no permission");
+		cherokee_dwriter_dict_close (dwriter);
+		// need to keep the pid, its still there
+	}
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_admin_server_reply_restart (cherokee_handler_t *hdl,
+                                     cherokee_dwriter_t *dwriter)
+{
+	ret_t ret;
+
+	/* Initialise the restart
+	 */
+	ret = cherokee_server_handle_HUP (HANDLER_SRV (hdl));
+	if (ret != ret_ok) {
+		return ret_error;
+	}
+
+	/* Reply
+	 */
 	cherokee_dwriter_dict_open (dwriter);
-	cherokee_dwriter_cstring (dwriter, "source");
-	cherokee_dwriter_cstring (dwriter, "killed");
+	cherokee_dwriter_cstring (dwriter, "restart");
+	cherokee_dwriter_bool (dwriter, ret == ret_ok);
 	cherokee_dwriter_dict_close (dwriter);
 	return ret_ok;
 }

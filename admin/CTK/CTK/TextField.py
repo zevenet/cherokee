@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2009 Alvaro Lopez Ortega
+# Copyright (C) 2009-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -189,24 +189,24 @@ $("#%(id)s")
                 dataType: 'json',
                 url:      '%(url)s',
                 data:     '%(key)s='+value,
-	 success: function (data) {
-            self.data('last_value', value);
+                success: function (data) {
+                    self.data('last_value', value);
 
-            var name = self.attr('name');
-	    for (var key in data['updates']) {
-               if (key == name) {
-                  self.val (data['updates'][key]);
-                  break;
-               }
-            }
-         },
-         error: function() {
-            event.stopPropagation();
-            self.val (self.data('last_value'));
-         },
-         complete: function (XMLHttpRequest, textStatus) {
-	    $("#activity").fadeOut('fast');
-         }
+                    var name = self.attr('name');
+                    for (var key in data['updates']) {
+                       if (key == name) {
+                          self.val (data['updates'][key]);
+                          break;
+                       }
+                    }
+                },
+                error: function() {
+                    event.stopPropagation();
+                    self.val (self.data('last_value'));
+                },
+                complete: function (XMLHttpRequest, textStatus) {
+                    $("#activity").fadeOut('fast');
+                }
        });
     }
 })

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -35,7 +35,7 @@ typedef struct {
 	struct {
 		ssize_t            begin;
 		ssize_t            end;
- 	} slice;
+	} slice;
 } cherokee_template_replacement_t;
 
 #define TEMPLATE_REPL(x) ((cherokee_template_replacement_t *)(x))
@@ -125,7 +125,7 @@ cherokee_template_mrproper (cherokee_template_t *tem)
 
 ret_t
 cherokee_template_new_token (cherokee_template_t        *tem,
-			     cherokee_template_token_t **token)
+                             cherokee_template_token_t **token)
 {
 	ret_t ret;
 
@@ -140,10 +140,10 @@ cherokee_template_new_token (cherokee_template_t        *tem,
 
 ret_t
 cherokee_template_set_token  (cherokee_template_t        *tem,
-			      const char                 *name,
-			      cherokee_tem_repl_func_t    func,
-			      void                       *param,
-			      cherokee_template_token_t **token)
+                              const char                 *name,
+                              cherokee_tem_repl_func_t    func,
+                              void                       *param,
+                              cherokee_template_token_t **token)
 {
 	ret_t                      ret;
 	cherokee_template_token_t *n;
@@ -166,7 +166,7 @@ cherokee_template_set_token  (cherokee_template_t        *tem,
 
 ret_t
 cherokee_template_parse (cherokee_template_t *tem,
-			 cherokee_buffer_t   *incoming)
+                         cherokee_buffer_t   *incoming)
 {
 	char              *token1;
 	char              *token2;
@@ -290,7 +290,7 @@ out:
 
 ret_t
 cherokee_template_parse_file (cherokee_template_t *tem,
-			      const char          *file)
+                              const char          *file)
 {
 	ret_t             ret;
 	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
@@ -315,8 +315,8 @@ out:
 
 ret_t
 cherokee_template_render (cherokee_template_t *tem,
-			  cherokee_buffer_t   *output,
-			  void                *param)
+                          cherokee_buffer_t   *output,
+                          void                *param)
 {
 	ret_t                            ret;
 	cherokee_list_t                 *i;
@@ -330,8 +330,8 @@ cherokee_template_render (cherokee_template_t *tem,
 		 */
 		if (repl->pos > 0) {
 			cherokee_buffer_add (output,
-					     tem->text.buf + pos,
-					     repl->pos - pos);
+			                     tem->text.buf + pos,
+			                     repl->pos - pos);
 		}
 
 		/* Add the token (slide)
@@ -370,8 +370,8 @@ cherokee_template_render (cherokee_template_t *tem,
 	/* Copy the last chunk
 	 */
 	cherokee_buffer_add (output,
-			     tem->text.buf + pos,
-			     tem->text.len - pos);
+	                     tem->text.buf + pos,
+	                     tem->text.len - pos);
 
 	return ret_ok;
 }

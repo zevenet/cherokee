@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -40,8 +40,8 @@ PLUGIN_INFO_BALANCER_EASIEST_INIT (failover);
 
 ret_t
 cherokee_balancer_failover_configure (cherokee_balancer_t    *balancer,
-				      cherokee_server_t      *srv,
-				      cherokee_config_node_t *conf)
+                                      cherokee_server_t      *srv,
+                                      cherokee_config_node_t *conf)
 {
 	ret_t ret;
 
@@ -64,7 +64,7 @@ cherokee_balancer_failover_configure (cherokee_balancer_t    *balancer,
 
 static ret_t
 reactivate_entry_guts (cherokee_balancer_failover_t *balancer,
-		       cherokee_balancer_entry_t    *entry)
+                       cherokee_balancer_entry_t    *entry)
 {
 	/* balancer->mutex is LOCKED
 	 */
@@ -82,7 +82,7 @@ reactivate_entry_guts (cherokee_balancer_failover_t *balancer,
 
 static ret_t
 reactivate_entry (cherokee_balancer_failover_t *balancer,
-		  cherokee_balancer_entry_t    *entry)
+                  cherokee_balancer_entry_t    *entry)
 {
 	/* balancer->mutex is LOCKED
 	 */
@@ -118,8 +118,8 @@ reactivate_all_entries (cherokee_balancer_failover_t *balancer)
 
 static ret_t
 report_fail (cherokee_balancer_failover_t *balancer,
-	     cherokee_connection_t        *conn,
-	     cherokee_source_t            *src)
+             cherokee_connection_t        *conn,
+             cherokee_source_t            *src)
 {
 	ret_t                      ret;
 	cherokee_list_t           *i;
@@ -169,8 +169,8 @@ out:
 
 static ret_t
 dispatch (cherokee_balancer_failover_t  *balancer,
-	  cherokee_connection_t         *conn,
-	  cherokee_source_t            **src)
+          cherokee_connection_t         *conn,
+          cherokee_source_t            **src)
 {
 	cherokee_list_t           *i;
 	cherokee_balancer_entry_t *entry = NULL;

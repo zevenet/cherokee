@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2011 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -54,12 +54,15 @@ VALIDATIONS = [
     ("server!iocache!lasting_stat",   validations.is_positive_int),
     ("server!iocache!lasting_mmap",   validations.is_positive_int),
     ("server!tls!protocol!SSLv2",     validations.is_boolean),
+    ("server!tls!protocol!SSLv3",     validations.is_boolean),
+    ("server!tls!protocol!TLSv1",     validations.is_boolean),
+    ("server!tls!protocol!TLSv1_1",   validations.is_boolean),
+    ("server!tls!protocol!TLSv1_2",   validations.is_boolean),
     ("server!tls!timeout_handshake",  validations.is_positive_int),
     ("server!tls!dh_param512",        validations.is_local_file_exists),
     ("server!tls!dh_param1024",       validations.is_local_file_exists),
     ("server!tls!dh_param2048",       validations.is_local_file_exists),
     ("server!tls!dh_param4096",       validations.is_local_file_exists),
-    ("admin!ows!repository",          validations.is_http_url),
 ]
 
 WARNING = N_("""<p><b>WARNING</b>: This section contains advanced
@@ -93,8 +96,10 @@ NOTE_DH2048       = N_('Path to a Diffie Hellman (DH) parameters PEM file: 2048 
 NOTE_DH4096       = N_('Path to a Diffie Hellman (DH) parameters PEM file: 4096 bits.')
 NOTE_TLS_TIMEOUT  = N_('Timeout for the TLS/SSL handshake. Default: 15 seconds.')
 NOTE_TLS_SSLv2    = N_('Allow clients to use SSL version 2 - Beware: it is vulnerable. (Default: No)')
-NOTE_APPS_REPO    = N_('HTTP address of an anternative Cherokee applications repository.')
-
+NOTE_TLS_SSLv3    = N_('Allow clients to use SSL version 3 - Beware: it is vulnerable. (Default: No)')
+NOTE_TLS_TLSv1    = N_('Allow clients to use TLS version 1 (Default: Yes)')
+NOTE_TLS_TLSv1_1  = N_('Allow clients to use TLS version 1.1 (Default: Yes)')
+NOTE_TLS_TLSv1_2  = N_('Allow clients to use TLS version 1.2 (Default: Yes)')
 
 HELPS = [('config_advanced', N_('Advanced'))]
 
@@ -175,7 +180,11 @@ class TLSWidget (CTK.Container):
         CTK.Container.__init__ (self)
 
         table = CTK.PropsAuto(URL_APPLY)
-        table.Add (_('Allow SSL v2'),             CTK.CheckCfgText('server!tls!protocol!SSLv2', False, _("Allow")), _(NOTE_TLS_SSLv2))
+        table.Add (_('SSL version 2'),            CTK.CheckCfgText('server!tls!protocol!SSLv2',  False, _("Allow")), _(NOTE_TLS_SSLv2))
+        table.Add (_('SSL version 3'),            CTK.CheckCfgText('server!tls!protocol!SSLv3',  False, _("Allow")), _(NOTE_TLS_SSLv3))
+        table.Add (_('TLS version 1'),            CTK.CheckCfgText('server!tls!protocol!TLSv1',   True, _("Allow")), _(NOTE_TLS_TLSv1))
+        table.Add (_('TLS version 1.1'),          CTK.CheckCfgText('server!tls!protocol!TLSv1_1', True, _("Allow")), _(NOTE_TLS_TLSv1_1))
+        table.Add (_('TLS version 1.2'),          CTK.CheckCfgText('server!tls!protocol!TLSv1_2', True, _("Allow")), _(NOTE_TLS_TLSv1_2))
         table.Add (_('Handshake Timeout'),        CTK.TextCfg('server!tls!timeout_handshake', True), _(NOTE_TLS_TIMEOUT))
         table.Add (_('DH parameters: 512 bits'),  CTK.TextCfg('server!tls!dh_param512',  True), _(NOTE_DH512))
         table.Add (_('DH parameters: 1024 bits'), CTK.TextCfg('server!tls!dh_param1024', True), _(NOTE_DH1024))
@@ -185,17 +194,6 @@ class TLSWidget (CTK.Container):
         self += CTK.RawHTML ("<h2>%s</h2>" %(_('TLS')))
         self += CTK.Indenter(table)
 
-class AppsWidget (CTK.Container):
-    def __init__ (self):
-        CTK.Container.__init__ (self)
-
-        table = CTK.PropsAuto(URL_APPLY)
-        table.Add (_('Repository Address'), CTK.TextCfg('admin!ows!repository', True, {'optional_string':_("Main repository")}), _(NOTE_APPS_REPO))
-
-        self += CTK.RawHTML ("<h2>%s</h2>" %(_('Apps Center')))
-        self += CTK.Indenter(table)
-
-
 class Render:
     def __call__ (self):
         tabs = CTK.Tab()
@@ -204,7 +202,6 @@ class Render:
         tabs.Add (_('I/O cache'),     IOCacheWidget())
         tabs.Add (_('Special Files'), SpecialFilesWidget())
         tabs.Add (_('TLS'),           TLSWidget())
-        tabs.Add (_('Apps'),          AppsWidget())
 
         notice = CTK.Notice('warning')
         notice += CTK.RawHTML(_(WARNING))

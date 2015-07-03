@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -38,15 +38,16 @@ PLUGIN_INFO_RULE_EASIEST_INIT(url_arg);
 
 static ret_t
 check_argument (cherokee_rule_url_arg_t *rule,
-		cherokee_buffer_t       *value)
+                cherokee_buffer_t       *value)
 {
 	int re;
 
 	/* Check whether it matches
 	 */
 	re = pcre_exec (rule->pcre, NULL,
-			value->buf, value->len,
-			0, 0, NULL, 0);
+	                value->buf,
+	                value->len,
+	                0, 0, NULL, 0);
 
 	if (re < 0) {
 		TRACE (ENTRIES, "Parameter value '%s' didn't match with '%s'\n",
@@ -124,7 +125,7 @@ match (cherokee_rule_url_arg_t  *rule,
 	/* Check all arguments
 	 */
 	else {
-		ret = cherokee_avl_while (conn->arguments, match_avl_func, rule, NULL, NULL);
+		ret = cherokee_avl_while (AVL_GENERIC(conn->arguments), match_avl_func, rule, NULL, NULL);
 		if (ret == ret_eof) {
 			return ret_ok;
 		}
@@ -147,7 +148,7 @@ configure (cherokee_rule_url_arg_t   *rule,
 	ret = cherokee_config_node_copy (conf, "match", &rule->match);
 	if (ret != ret_ok) {
 		LOG_ERROR (CHEROKEE_ERROR_RULE_NO_PROPERTY,
-			   RULE(rule)->priority, "match");
+		           RULE(rule)->priority, "match");
 		return ret_error;
 	}
 
@@ -202,5 +203,5 @@ cherokee_rule_url_arg_new (cherokee_rule_url_arg_t **rule)
 	cherokee_buffer_init (&n->match);
 
 	*rule = n;
- 	return ret_ok;
+	return ret_ok;
 }

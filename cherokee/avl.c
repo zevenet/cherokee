@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -62,14 +62,14 @@ node_free (cherokee_avl_node_t *key)
 
 static int
 node_cmp (cherokee_avl_node_t *A,
-	  cherokee_avl_node_t *B,
-	  cherokee_avl_t      *avl)
+          cherokee_avl_node_t *B,
+          cherokee_avl_t      *avl)
 {
-        if (AVL(avl)->case_insensitive) {
-                return cherokee_buffer_case_cmp_buf (&A->key, &B->key);
-        } else {
-                return cherokee_buffer_cmp_buf (&A->key, &B->key);
-        }
+	if (AVL(avl)->case_insensitive) {
+		return cherokee_buffer_case_cmp_buf (&A->key, &B->key);
+	} else {
+		return cherokee_buffer_cmp_buf (&A->key, &B->key);
+	}
 }
 
 static int
@@ -172,8 +172,8 @@ cherokee_avl_get_ptr (cherokee_avl_t *avl, const char *key, void **value)
 
 static ret_t
 while_func_wrap (cherokee_avl_generic_node_t *node,
-		 void                        *value,
-		 void                        *params_internal)
+                 void                        *value,
+                 void                        *params_internal)
 {
 	cherokee_buffer_t          *key;
 	void                      **params    = (void **)params_internal;
@@ -187,20 +187,20 @@ while_func_wrap (cherokee_avl_generic_node_t *node,
 
 ret_t
 cherokee_avl_while (cherokee_avl_generic_t     *avl,
-		    cherokee_avl_while_func_t   func,
-		    void                       *param,
-		    cherokee_buffer_t         **key,
-		    void                      **value)
+                    cherokee_avl_while_func_t   func,
+                    void                       *param,
+                    cherokee_buffer_t         **key,
+                    void                      **value)
 {
 	void *params_internal[] = {func, param};
 
-	return cherokee_avl_generic_while (avl, while_func_wrap, params_internal, key, value);
+	return cherokee_avl_generic_while (avl, while_func_wrap, params_internal, (cherokee_avl_generic_node_t **) key, value);
 }
 
 
 ret_t
 cherokee_avl_set_case (cherokee_avl_t     *avl,
-		       cherokee_boolean_t  case_insensitive)
+                       cherokee_boolean_t  case_insensitive)
 {
 	avl->case_insensitive = case_insensitive;
 	return ret_ok;

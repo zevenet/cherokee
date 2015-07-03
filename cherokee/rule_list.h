@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -48,8 +48,8 @@ ret_t cherokee_rule_list_add      (cherokee_rule_list_t *list, cherokee_rule_t *
 ret_t cherokee_rule_list_sort     (cherokee_rule_list_t *list);
 
 ret_t cherokee_rule_list_match    (cherokee_rule_list_t    *list,
-				   cherokee_connection_t   *conn,
-				   cherokee_config_entry_t *ret_config);
+                                   cherokee_connection_t   *conn,
+                                   cherokee_config_entry_t *ret_config);
 
 CHEROKEE_END_DECLS
 

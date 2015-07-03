@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -111,12 +111,12 @@ report_error (cherokee_buffer_t *buf)
 
 static void
 render_python_error (cherokee_error_type_t   type,
-		     const char             *filename,
-		     int                     line,
-		     int                     error_num,
-		     const cherokee_error_t *error,
-		     cherokee_buffer_t      *output,
-		     va_list                 ap)
+                     const char             *filename,
+                     int                     line,
+                     int                     error_num,
+                     const cherokee_error_t *error,
+                     cherokee_buffer_t      *output,
+                     va_list                 ap)
 {
 	va_list           ap_tmp;
 	cherokee_buffer_t tmp     = CHEROKEE_BUF_INIT;
@@ -241,12 +241,12 @@ render_python_error (cherokee_error_type_t   type,
 
 static void
 render_human_error (cherokee_error_type_t   type,
-		    const char             *filename,
-		    int                     line,
-		    int                     error_num,
-		    const cherokee_error_t *error,
-		    cherokee_buffer_t      *output,
-		    va_list                 ap)
+                    const char             *filename,
+                    int                     line,
+                    int                     error_num,
+                    const cherokee_error_t *error,
+                    cherokee_buffer_t      *output,
+                    va_list                 ap)
 {
 	va_list ap_tmp;
 
@@ -294,12 +294,15 @@ render_human_error (cherokee_error_type_t   type,
 
 static ret_t
 render_human_backtrace (const cherokee_error_t *error,
-			cherokee_buffer_t      *output)
+                        cherokee_buffer_t      *output)
 {
 #ifdef BACKTRACES_ENABLED
 	if (error->show_backtrace) {
 		cherokee_buf_add_backtrace (output, 2, "\n", "  ");
 	}
+#else
+	UNUSED (error);
+	UNUSED (output);
 #endif
 	return ret_ok;
 }
@@ -307,11 +310,11 @@ render_human_backtrace (const cherokee_error_t *error,
 
 static ret_t
 render (cherokee_error_type_t  type,
-	const char            *filename,
-	int                    line,
-	int                    error_num,
-	va_list                ap,
-	cherokee_buffer_t     *error_str)
+        const char            *filename,
+        int                    line,
+        int                    error_num,
+        va_list                ap,
+        cherokee_buffer_t     *error_str)
 {
 	const cherokee_error_t *error;
 	cherokee_boolean_t      readable;
@@ -347,9 +350,9 @@ render (cherokee_error_type_t  type,
 
 ret_t
 cherokee_error_log (cherokee_error_type_t  type,
-		    const char            *filename,
-		    int                    line,
-		    int                    error_num, ...)
+                    const char            *filename,
+                    int                    line,
+                    int                    error_num, ...)
 {
 	va_list            ap;
 	cherokee_buffer_t  error_str = CHEROKEE_BUF_INIT;
@@ -372,10 +375,10 @@ cherokee_error_log (cherokee_error_type_t  type,
 
 ret_t
 cherokee_error_errno_log (int                    errnumber,
-			  cherokee_error_type_t  type,
-			  const char            *filename,
-			  int                    line,
-			  int                    error_num, ...)
+                          cherokee_error_type_t  type,
+                          const char            *filename,
+                          int                    line,
+                          int                    error_num, ...)
 {
 	va_list            ap;
 	const char        *errstr;
@@ -396,7 +399,7 @@ cherokee_error_errno_log (int                    errnumber,
 	}
 
 	cherokee_buffer_replace_string (&error_str, (char *)"${errno}", 8,
-					(char *) errstr, strlen(errstr));
+	                                (char *) errstr, strlen(errstr));
 
 	/* Report it
 	 */

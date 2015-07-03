@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -45,11 +45,14 @@ typedef enum {
 	header_accept_encoding,
 	header_accept_language,
 	header_authorization,
+	header_cache_control,
 	header_connection,
+	header_content_encoding,
 	header_content_length,
 	header_content_type,
 	header_set_cookie,
 	header_cookie,
+	header_dnt,
 	header_host,
 	header_if_modified_since,
 	header_if_none_match,

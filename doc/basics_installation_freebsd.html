@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_basics_html_getting_started_a_8594_a_href_basics_installation_html_installation_a"><a href="index.html">Index</a> &#8594; <a href="basics.html">Getting started</a> &#8594; <a href="basics_installation.html">Installation</a></h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Installation on FreeBSD</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>If you have a prepackaged version of Cherokee available in FreeBSD,
+please use the provided installation mechanism of choice.
+This will provide you with automatic bootup scripts, consistency and
+dependency checks, and an easy upgrade path
+tailored to your system whenever a new package is available.
+
+If you do not find a prepackaged version that suits your needs, you
+can always download and compile your own.
+
+[[quickstart]]
+Quickstart
+~~~~~~~~~~
+
+. link:basics_download.html[Download] a fresh copy of Cherokee
+. Configure the package for your system:
++</tt></pre>
+</div></div>
+<div class="paragraph"><p>8.x,9.x
+As root:
+if using pkgng:
+pkg install cherokee
+if using ports:
+cd /usr/ports/www/cherokee &amp;&amp; make install clean
+Read the pkg-message after install.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>[[autostart]]
+Autostart
+~~~~~~~~~
+
+If you need the cherokee webserver to start at boot</tt></pre>
+</div></div>
+<div class="paragraph"><p>echo <em>cherokee_enable="YES"</em> &gt;&gt; /etc/rc.conf</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>That's it.</tt></pre>
+</div></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

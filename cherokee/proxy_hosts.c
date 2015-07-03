@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -34,13 +34,16 @@ static void
 poll_free (void *p)
 {
 	cherokee_handler_proxy_poll_t *poll = p;
-	poll = p;
+
+	cherokee_handler_proxy_poll_free (poll);
+
+	free (poll);
 }
 
 ret_t
 cherokee_handler_proxy_hosts_init (cherokee_handler_proxy_hosts_t *hosts)
 {
- 	CHEROKEE_MUTEX_INIT (&hosts->hosts_mutex, CHEROKEE_MUTEX_FAST);
+	CHEROKEE_MUTEX_INIT (&hosts->hosts_mutex, CHEROKEE_MUTEX_FAST);
 	cherokee_avl_init (&hosts->hosts);
 	cherokee_buffer_init (&hosts->tmp);
 
@@ -51,7 +54,7 @@ ret_t
 cherokee_handler_proxy_hosts_mrproper (cherokee_handler_proxy_hosts_t *hosts)
 {
 	CHEROKEE_MUTEX_DESTROY (&hosts->hosts_mutex);
-	cherokee_avl_mrproper (&hosts->hosts, poll_free);
+	cherokee_avl_mrproper (AVL_GENERIC(&hosts->hosts), poll_free);
 	cherokee_buffer_mrproper (&hosts->tmp);
 
 	return ret_ok;
@@ -59,9 +62,9 @@ cherokee_handler_proxy_hosts_mrproper (cherokee_handler_proxy_hosts_t *hosts)
 
 ret_t
 cherokee_handler_proxy_hosts_get (cherokee_handler_proxy_hosts_t  *hosts,
-				  cherokee_source_t               *src,
-				  cherokee_handler_proxy_poll_t  **poll,
-				  cuint_t                          reuse_max)
+                                  cherokee_source_t               *src,
+                                  cherokee_handler_proxy_poll_t  **poll,
+                                  cuint_t                          reuse_max)
 {
 	ret_t                          ret;
 	cherokee_handler_proxy_poll_t *n;
@@ -108,7 +111,7 @@ error:
 
 ret_t
 cherokee_handler_proxy_poll_new (cherokee_handler_proxy_poll_t **poll,
-				 cuint_t                         reuse_max)
+                                 cuint_t                         reuse_max)
 {
 	CHEROKEE_NEW_STRUCT (n, handler_proxy_poll);
 
@@ -151,8 +154,8 @@ cherokee_handler_proxy_poll_free (cherokee_handler_proxy_poll_t *poll)
 
 ret_t
 cherokee_handler_proxy_poll_get (cherokee_handler_proxy_poll_t  *poll,
-				 cherokee_handler_proxy_conn_t **pconn,
-				 cherokee_source_t              *src)
+                                 cherokee_handler_proxy_conn_t **pconn,
+                                 cherokee_source_t              *src)
 {
 	ret_t            ret;
 	cherokee_list_t *i;
@@ -202,7 +205,7 @@ error:
 
 static ret_t
 poll_release (cherokee_handler_proxy_poll_t *poll,
-	      cherokee_handler_proxy_conn_t *pconn)
+              cherokee_handler_proxy_conn_t *pconn)
 {
 	/* Not longer an active connection */
 	cherokee_list_del (&pconn->listed);
@@ -311,7 +314,7 @@ cherokee_handler_proxy_conn_release (cherokee_handler_proxy_conn_t *pconn)
 
 ret_t
 cherokee_handler_proxy_conn_send (cherokee_handler_proxy_conn_t *pconn,
-				  cherokee_buffer_t             *buf)
+                                  cherokee_buffer_t             *buf)
 {
 	ret_t  ret;
 	size_t sent = 0;
@@ -332,8 +335,8 @@ cherokee_handler_proxy_conn_send (cherokee_handler_proxy_conn_t *pconn,
 
 static ret_t
 find_header_end_flexible (cherokee_buffer_t  *buf,
-			  char              **end,
-			  cuint_t            *sep_len)
+                          char              **end,
+                          cuint_t            *sep_len)
 {
 	char *pos;
 
@@ -360,8 +363,8 @@ find_header_end_flexible (cherokee_buffer_t  *buf,
 
 ret_t
 cherokee_handler_proxy_conn_recv_headers (cherokee_handler_proxy_conn_t *pconn,
-					  cherokee_buffer_t             *body,
-					  cherokee_boolean_t             flexible)
+                                          cherokee_buffer_t             *body,
+                                          cherokee_boolean_t             flexible)
 {
 	ret_t    ret;
 	char    *end;
@@ -371,8 +374,8 @@ cherokee_handler_proxy_conn_recv_headers (cherokee_handler_proxy_conn_t *pconn,
 	/* Read
 	 */
 	ret = cherokee_socket_bufread (&pconn->socket,
-				       &pconn->header_in_raw,
-				       DEFAULT_RECV_SIZE, &size);
+	                               &pconn->header_in_raw,
+	                               DEFAULT_RECV_SIZE, &size);
 	switch (ret) {
 	case ret_ok:
 		break;
@@ -429,8 +432,8 @@ cherokee_handler_proxy_conn_recv_headers (cherokee_handler_proxy_conn_t *pconn,
 
 error:
 	LOG_ERROR (CHEROKEE_ERROR_PROXY_HEADER_PARSE,
-		   pconn->header_in_raw.len,
-		   pconn->header_in_raw.buf);
+	           pconn->header_in_raw.len,
+	           pconn->header_in_raw.buf);
 
 	return ret_error;
 }
@@ -442,7 +445,7 @@ error:
 
 ret_t
 cherokee_handler_proxy_conn_init_socket (cherokee_handler_proxy_conn_t *pconn,
-					 cherokee_source_t             *src)
+                                         cherokee_source_t             *src)
 {
 	ret_t              ret;
 	cherokee_socket_t *socket = &pconn->socket;
@@ -464,7 +467,7 @@ cherokee_handler_proxy_conn_init_socket (cherokee_handler_proxy_conn_t *pconn,
 		return ret_error;
 	}
 
-        SOCKET_SIN_PORT(socket) = htons (src->port);
+	SOCKET_SIN_PORT(socket) = htons (src->port);
 
 	/* Set a few properties */
 	cherokee_fd_set_closexec    (socket->socket);
@@ -474,9 +477,9 @@ cherokee_handler_proxy_conn_init_socket (cherokee_handler_proxy_conn_t *pconn,
 	/* Trace */
 #ifdef TRACE_ENABLED
 	if (cherokee_trace_is_tracing()) {
-		cuint_t          ip_num;
-		struct addrinfo *ai;
-		char             buf[50];
+		cuint_t                ip_num;
+		const struct addrinfo *ai;
+		char                   buf[50];
 
 		ai     = pconn->addr_info_ref;
 		ip_num = pconn->addr_current;
@@ -499,10 +502,10 @@ cherokee_handler_proxy_conn_init_socket (cherokee_handler_proxy_conn_t *pconn,
 
 ret_t
 cherokee_handler_proxy_conn_get_addrinfo (cherokee_handler_proxy_conn_t  *pconn,
-					  cherokee_source_t              *src)
+                                          cherokee_source_t              *src)
 {
 	ret_t                    ret;
-	struct addrinfo         *ai;
+	const struct addrinfo   *ai;
 	cherokee_resolv_cache_t *resolv;
 
 	/* Resolve the hostname of the target server

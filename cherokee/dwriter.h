@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -71,7 +71,8 @@ ret_t cherokee_dwriter_init       (cherokee_dwriter_t *writer, cherokee_buffer_t
 ret_t cherokee_dwriter_mrproper   (cherokee_dwriter_t *writer);
 ret_t cherokee_dwriter_set_buffer (cherokee_dwriter_t *writer, cherokee_buffer_t *output);
 
-ret_t cherokee_dwriter_integer    (cherokee_dwriter_t *w, unsigned long l);
+ret_t cherokee_dwriter_unsigned   (cherokee_dwriter_t *w, unsigned long int l);
+ret_t cherokee_dwriter_integer    (cherokee_dwriter_t *w, long int l);
 ret_t cherokee_dwriter_double     (cherokee_dwriter_t *w, double d);
 ret_t cherokee_dwriter_number     (cherokee_dwriter_t *w, const char *s, int len);
 ret_t cherokee_dwriter_string     (cherokee_dwriter_t *w, const char *s, int len);

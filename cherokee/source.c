@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -79,9 +79,15 @@ cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 	/* Short path: it's already connecting
 	 */
 	if (sock->socket >= 0) {
-		return cherokee_socket_connect (sock);
+		ret = cherokee_socket_connect (sock);
+		if (ret != ret_deny || src->addr_current->ai_next == NULL)
+			return ret;
+		/* Fall through and attempt to try another address... */
+		cherokee_socket_close(sock);
+		src->addr_current = src->addr_current->ai_next;
 	}
 
+long_path:
 	/* Create the new socket and set the target IP info
 	 */
 	if (! cherokee_buffer_is_empty (&src->unix_socket)) {
@@ -195,18 +201,28 @@ cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 	cherokee_fd_set_closexec  (sock->socket);
 	cherokee_fd_set_reuseaddr (sock->socket);
 
-	return cherokee_socket_connect (sock);
+	/* On the off-chance a connect completes early, handle a deny here
+	 * in addition to at the top of this routine.
+	 */
+	ret = cherokee_socket_connect (sock);
+	if (ret == ret_deny && src->addr_current && src->addr_current->ai_next != NULL) {
+		src->addr_current = src->addr_current->ai_next;
+		cherokee_socket_close(sock);
+		goto long_path;
+	}
+
+	return ret;
 }
 
 
 ret_t
 cherokee_source_connect_polling (cherokee_source_t     *src,
-				 cherokee_socket_t     *socket,
-				 cherokee_connection_t *conn)
+                                 cherokee_socket_t     *socket,
+                                 cherokee_connection_t *conn)
 {
 	ret_t ret;
 
- 	ret = cherokee_source_connect (src, socket);
+	ret = cherokee_source_connect (src, socket);
 	switch (ret) {
 	case ret_ok:
 		TRACE (ENTRIES, "Connected successfully fd=%d\n", socket->socket);
@@ -215,10 +231,10 @@ cherokee_source_connect_polling (cherokee_source_t     *src,
 		break;
 	case ret_eagain:
 		ret = cherokee_thread_deactive_to_polling (CONN_THREAD(conn),
-							   conn,
-							   SOCKET_FD(socket),
-							   FDPOLL_MODE_WRITE,
-							   false);
+		                                           conn,
+		                                           SOCKET_FD(socket),
+		                                           FDPOLL_MODE_WRITE,
+		                                           false);
 		if (ret != ret_ok) {
 			return ret_deny;
 		}
@@ -266,7 +282,7 @@ set_host (cherokee_source_t *src, cherokee_buffer_t *host)
 	/* Resolve and cache it
 	 */
 	ret = cherokee_resolv_cache_get_default (&resolv);
-        if (unlikely (ret!=ret_ok)) {
+	if (unlikely (ret != ret_ok)) {
 		return ret_error;
 	}
 
@@ -298,7 +314,7 @@ cherokee_source_configure (cherokee_source_t *src, cherokee_config_node_t *conf)
 
 ret_t
 cherokee_source_copy_name (cherokee_source_t *src,
-			   cherokee_buffer_t *buf)
+                           cherokee_buffer_t *buf)
 {
 	if (! cherokee_buffer_is_empty (&src->unix_socket)) {
 		cherokee_buffer_add_buffer (buf, &src->unix_socket);

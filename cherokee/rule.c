@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -68,7 +68,7 @@ cherokee_rule_free (cherokee_rule_t *rule)
 
 static ret_t
 configure_base (cherokee_rule_t           *rule,
-		cherokee_config_node_t    *conf)
+                cherokee_config_node_t    *conf)
 {
 	ret_t              ret;
 	cherokee_buffer_t *final = NULL;
@@ -119,7 +119,7 @@ cherokee_rule_match (cherokee_rule_t *rule, void *cnt, void *ret_conf)
 
 void
 cherokee_rule_get_config (cherokee_rule_t          *rule,
-			  cherokee_config_entry_t **config)
+                          cherokee_config_entry_t **config)
 {
 	cherokee_rule_t *r = rule;
 

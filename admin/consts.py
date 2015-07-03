@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2011 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -28,7 +28,7 @@ AVAILABLE_LANGUAGES = [
     ('de',           N_('German')),
     ('fr',           N_('French')),
     ('it',           N_('Italian')),
-    ('jp',           N_('Japanese')),
+    ('ja',           N_('Japanese')),
     ('nl',           N_('Dutch')),
     ('pl',           N_('Polish')),
     ('sv_SE',        N_('Swedish')),
@@ -137,8 +137,7 @@ POLL_METHODS = [
     ('kqueue', 'kqueue() - BSD, OS X'),
     ('ports',  'Solaris ports - >= 10'),
     ('poll',   'poll()'),
-    ('select', 'select()'),
-    ('win32',  'Win32')
+    ('select', 'select()')
 ]
 
 REDIR_SHOW = [
@@ -224,8 +223,9 @@ EVHOSTS = [
 
 CLIENT_CERTS = [
     ('',         N_('Skip')),
+    ('tolerate', N_('Tolerate')),
     ('accept',   N_('Accept')),
-    ('required', N_('Require'))
+    ('require',  N_('Require'))
 ]
 
 COLLECTORS = [

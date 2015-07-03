@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -80,6 +80,7 @@ cherokee_handler_file_configure (cherokee_config_node_t   *conf,
 						  MODULE_PROPS_FREE(cherokee_handler_file_props_free));
 
 		n->use_cache = true;
+		n->send_symlinks = true;
 		*_props = MODULE_PROPS(n);
 	}
 
@@ -90,6 +91,9 @@ cherokee_handler_file_configure (cherokee_config_node_t   *conf,
 
 		if (equal_buf_str (&subconf->key, "iocache")) {
 			ret = cherokee_atob (subconf->val.buf, &props->use_cache);
+			if (ret != ret_ok) return ret;
+		} else if (equal_buf_str (&subconf->key, "symlinks")) {
+			ret = cherokee_atob (subconf->val.buf, &props->send_symlinks);
 			if (ret != ret_ok) return ret;
 		}
 	}
@@ -453,6 +457,25 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl,
 		goto out;
 	}
 
+	/* Are we allowed to send symlinks?
+	 */
+	if (!HDL_FILE_PROP(fhdl)->send_symlinks) {
+		struct stat stat;
+		int re;
+
+		re = cherokee_lstat (local_file->buf, &stat);
+		if (re < 0) {
+			ret = ret_error;
+			goto out;
+		}
+
+		if (S_ISLNK(stat.st_mode)) {
+			conn->error_code = http_not_found;
+			ret = ret_error;
+			goto out;
+		}
+	}
+
 	/* Look for the mime type
 	 */
 	if (srv->mime != NULL) {
@@ -646,7 +669,7 @@ ret_t
 cherokee_handler_file_init (cherokee_handler_file_t *fhdl)
 {
 	ret_t                  ret;
- 	cherokee_connection_t *conn = HANDLER_CONN(fhdl);
+	cherokee_connection_t *conn = HANDLER_CONN(fhdl);
 
 	/* OPTIONS request
 	 */
@@ -672,7 +695,6 @@ cherokee_handler_file_add_headers (cherokee_handler_file_t *fhdl,
 {
 	ret_t                  ret;
 	char                   bufstr[DTM_SIZE_GMTTM_STR];
-	struct tm              modified_tm;
 	size_t                 szlen          = 0;
 	off_t                  content_length = 0;
 	cherokee_connection_t *conn           = HANDLER_CONN(fhdl);
@@ -687,7 +709,6 @@ cherokee_handler_file_add_headers (cherokee_handler_file_t *fhdl,
 
 	/* Regular request
 	 */
-	memset (&modified_tm, 0, sizeof(struct tm));
 
 	/* ETag: "<etag>"
 	 */
@@ -703,26 +724,32 @@ cherokee_handler_file_add_headers (cherokee_handler_file_t *fhdl,
 
 	/* Last-Modified:
 	 */
-	cherokee_gmtime (&fhdl->info->st_mtime, &modified_tm);
+	if (!(fhdl->not_modified)) {
+		struct tm modified_tm;
 
-	szlen = cherokee_dtm_gmttm2str(bufstr, DTM_SIZE_GMTTM_STR, &modified_tm);
+		memset (&modified_tm, 0, sizeof(struct tm));
+		cherokee_gmtime (&fhdl->info->st_mtime, &modified_tm);
 
-	cherokee_buffer_add_str(buffer, "Last-Modified: ");
-	cherokee_buffer_add    (buffer, bufstr, szlen);
-	cherokee_buffer_add_str(buffer, CRLF);
+		szlen = cherokee_dtm_gmttm2str(bufstr, DTM_SIZE_GMTTM_STR, &modified_tm);
+
+		cherokee_buffer_add_str(buffer, "Last-Modified: ");
+		cherokee_buffer_add    (buffer, bufstr, szlen);
+		cherokee_buffer_add_str(buffer, CRLF);
+	}
 
 	/* Add MIME related headers:
 	 * "Content-Type:" and "Cache-Control: max-age="
 	 */
 	if (fhdl->mime != NULL) {
 		cuint_t            maxage;
-		cherokee_buffer_t *mime   = NULL;
+		if (!(fhdl->not_modified)) {
+			cherokee_buffer_t *mime   = NULL;
 
-		cherokee_mime_entry_get_type (fhdl->mime, &mime);
-		cherokee_buffer_add_str    (buffer, "Content-Type: ");
-		cherokee_buffer_add_buffer (buffer, mime);
-		cherokee_buffer_add_str    (buffer, CRLF);
-
+			cherokee_mime_entry_get_type (fhdl->mime, &mime);
+			cherokee_buffer_add_str    (buffer, "Content-Type: ");
+			cherokee_buffer_add_buffer (buffer, mime);
+			cherokee_buffer_add_str    (buffer, CRLF);
+		}
 		ret = cherokee_mime_entry_get_maxage (fhdl->mime, &maxage);
 		if (ret == ret_ok) {
 			/* Set the expiration if there wasn't a

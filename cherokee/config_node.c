@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -280,6 +280,27 @@ cherokee_config_node_read_int (cherokee_config_node_t *conf, const char *key, in
 
 
 ret_t
+cherokee_config_node_read_uint (cherokee_config_node_t *conf, const char *key, cuint_t *num)
+{
+	ret_t                   ret;
+	cherokee_config_node_t *tmp;
+
+	ret = cherokee_config_node_get (conf, key, &tmp);
+	if (ret != ret_ok) return ret;
+
+	if (cherokee_buffer_is_empty (&tmp->val)) {
+		return ret_not_found;
+	}
+
+	ret = cherokee_atou (tmp->val.buf, num);
+	if (unlikely (ret != ret_ok))
+		return ret_error;
+
+	return ret_ok;
+}
+
+
+ret_t
 cherokee_config_node_read_long (cherokee_config_node_t *conf, const char *key, long *num)
 {
 	ret_t                   ret;
@@ -338,9 +359,9 @@ cherokee_config_node_read_path (cherokee_config_node_t *conf, const char *key, c
 
 ret_t
 cherokee_config_node_read_list (cherokee_config_node_t           *conf,
-				const char                       *key,
-				cherokee_config_node_list_func_t  func,
-				void                             *param)
+                                const char                       *key,
+                                cherokee_config_node_list_func_t  func,
+                                void                             *param)
 {
 	ret_t                   ret;
 	char                   *ptr;

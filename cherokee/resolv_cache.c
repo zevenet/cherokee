@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -23,14 +23,10 @@
  */
 
 #include "common-internal.h"
-
-#ifndef _WIN32
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <netdb.h>
-#endif
-
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 #include "resolv_cache.h"
 #include "socket_lowlevel.h"
 #include "util.h"
@@ -89,7 +85,7 @@ entry_free (void *entry)
 
 static ret_t
 entry_fill_up (cherokee_resolv_cache_entry_t *entry,
-	       cherokee_buffer_t             *domain)
+               cherokee_buffer_t             *domain)
 {
 	ret_t            ret;
 	char             tmp[46];       // Max IPv6 length is 45
@@ -106,7 +102,7 @@ entry_fill_up (cherokee_resolv_cache_entry_t *entry,
 				eagain_at = cherokee_bogonow_now;
 
 			} else if (cherokee_bogonow_now > eagain_at + 3) {
-			      	LOG_WARNING (CHEROKEE_ERROR_RESOLVE_TIMEOUT, domain->buf);
+				LOG_WARNING (CHEROKEE_ERROR_RESOLVE_TIMEOUT, domain->buf);
 				return ret_error;
 			}
 
@@ -135,9 +131,9 @@ entry_fill_up (cherokee_resolv_cache_entry_t *entry,
 	 */
 	cherokee_buffer_add_buffer (&entry->ip_str_all, &entry->ip_str);
 
-	addr = entry->addr;
+	addr = entry->addr->ai_next;
 	while (addr != NULL) {
-		ret = cherokee_ntop (entry->addr->ai_family, addr->ai_addr, tmp, sizeof(tmp));
+		ret = cherokee_ntop (addr->ai_family, addr->ai_addr, tmp, sizeof(tmp));
 		if (ret != ret_ok) {
 			return ret_error;
 		}
@@ -174,7 +170,7 @@ cherokee_resolv_cache_init (cherokee_resolv_cache_t *resolv)
 ret_t
 cherokee_resolv_cache_mrproper (cherokee_resolv_cache_t *resolv)
 {
-	cherokee_avl_mrproper (&resolv->table, entry_free);
+	cherokee_avl_mrproper (AVL_GENERIC(&resolv->table), entry_free);
 	CHEROKEE_RWLOCK_DESTROY (&resolv->lock);
 
 	return ret_ok;
@@ -204,7 +200,7 @@ ret_t
 cherokee_resolv_cache_clean (cherokee_resolv_cache_t *resolv)
 {
 	CHEROKEE_RWLOCK_WRITER (&resolv->lock);
-	cherokee_avl_mrproper (&resolv->table, entry_free);
+	cherokee_avl_mrproper (AVL_GENERIC(&resolv->table), entry_free);
 	CHEROKEE_RWLOCK_UNLOCK (&resolv->lock);
 
 	return ret_ok;
@@ -213,8 +209,8 @@ cherokee_resolv_cache_clean (cherokee_resolv_cache_t *resolv)
 
 static ret_t
 table_add_new_entry (cherokee_resolv_cache_t        *resolv,
-		     cherokee_buffer_t              *domain,
-		     cherokee_resolv_cache_entry_t **entry)
+                     cherokee_buffer_t              *domain,
+                     cherokee_resolv_cache_entry_t **entry)
 {
 	ret_t                          ret;
 	cherokee_resolv_cache_entry_t *n    = NULL;
@@ -247,8 +243,8 @@ table_add_new_entry (cherokee_resolv_cache_t        *resolv,
 
 ret_t
 cherokee_resolv_cache_get_ipstr (cherokee_resolv_cache_t  *resolv,
-				 cherokee_buffer_t        *domain,
-				 const char              **ip)
+                                 cherokee_buffer_t        *domain,
+                                 const char              **ip)
 {
 	ret_t                          ret;
 	cherokee_resolv_cache_entry_t *entry = NULL;
@@ -285,8 +281,8 @@ cherokee_resolv_cache_get_ipstr (cherokee_resolv_cache_t  *resolv,
 
 ret_t
 cherokee_resolv_cache_get_host (cherokee_resolv_cache_t *resolv,
-				cherokee_buffer_t       *domain,
-				void                    *sock_)
+                                cherokee_buffer_t       *domain,
+                                void                    *sock_)
 {
 	ret_t                  ret;
 	const struct addrinfo *addr = NULL;
@@ -312,8 +308,8 @@ cherokee_resolv_cache_get_host (cherokee_resolv_cache_t *resolv,
 
 ret_t
 cherokee_resolv_cache_get_addrinfo (cherokee_resolv_cache_t *resolv,
-				    cherokee_buffer_t       *domain,
-				    const struct addrinfo  **addr_info)
+                                    cherokee_buffer_t       *domain,
+                                    const struct addrinfo  **addr_info)
 {
 	ret_t                          ret;
 	cherokee_resolv_cache_entry_t *entry = NULL;

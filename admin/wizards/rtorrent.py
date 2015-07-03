@@ -3,10 +3,10 @@
 # rTorrent Wizard
 #
 # Authors:
-#      Taher Shihadeh <taher@octality.com>
+#      Taher Shihadeh <taher@unixwars.com>
 #      Antonio Perez  <aperez@skarcha.com>
 #
-# Copyright (C) 2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public

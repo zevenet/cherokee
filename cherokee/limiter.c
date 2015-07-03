@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -53,7 +53,7 @@ cherokee_limiter_mrproper (cherokee_limiter_t *limiter)
 
 ret_t
 cherokee_limiter_add_conn (cherokee_limiter_t *limiter,
-			   void               *conn)
+                           void               *conn)
 {
 	cherokee_list_t *i;
 	cherokee_list_t *prev;
@@ -77,7 +77,7 @@ cherokee_limiter_add_conn (cherokee_limiter_t *limiter,
 
 cherokee_msec_t
 cherokee_limiter_get_time_limit (cherokee_limiter_t *limiter,
-				 cherokee_msec_t     fdwatch_msecs)
+                                 cherokee_msec_t     fdwatch_msecs)
 {
 	long long              time_delta;
 	cherokee_connection_t *conn;
@@ -109,7 +109,7 @@ cherokee_limiter_get_time_limit (cherokee_limiter_t *limiter,
 
 ret_t
 cherokee_limiter_reactive (cherokee_limiter_t *limiter,
-			   void               *thread)
+                           void               *thread)
 {
 	cherokee_list_t *i, *tmp;
 

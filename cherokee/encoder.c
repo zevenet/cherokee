@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -32,7 +32,7 @@
  */
 ret_t
 cherokee_encoder_props_init_base (cherokee_encoder_props_t *props,
-				  module_func_props_free_t  free_func)
+                                  module_func_props_free_t  free_func)
 {
 	props->perms         = cherokee_encoder_unset;
 	props->instance_func = NULL;
@@ -48,8 +48,8 @@ cherokee_encoder_props_free_base (cherokee_encoder_props_t *props)
 
 ret_t
 cherokee_encoder_configure (cherokee_config_node_t   *config,
-			    cherokee_server_t        *srv,
-			    cherokee_module_props_t **_props)
+                            cherokee_server_t        *srv,
+                            cherokee_module_props_t **_props)
 {
 	cherokee_encoder_props_t *props = ENCODER_PROPS(*_props);
 
@@ -89,8 +89,8 @@ cherokee_encoder_configure (cherokee_config_node_t   *config,
  */
 ret_t
 cherokee_encoder_init_base (cherokee_encoder_t       *enc,
-			    cherokee_plugin_info_t   *info,
-			    cherokee_encoder_props_t *props)
+                            cherokee_plugin_info_t   *info,
+                            cherokee_encoder_props_t *props)
 {
 	cherokee_module_init_base (MODULE(enc), NULL, info);
 
@@ -147,8 +147,8 @@ cherokee_encoder_init (cherokee_encoder_t *enc, void *conn)
 
 ret_t
 cherokee_encoder_encode (cherokee_encoder_t *enc,
-			 cherokee_buffer_t  *in,
-			 cherokee_buffer_t  *out)
+                         cherokee_buffer_t  *in,
+                         cherokee_buffer_t  *out)
 {
 	if (unlikely (enc->encode == NULL))
 		return ret_error;
@@ -159,8 +159,8 @@ cherokee_encoder_encode (cherokee_encoder_t *enc,
 
 ret_t
 cherokee_encoder_flush (cherokee_encoder_t *enc,
-			cherokee_buffer_t  *in,
-			cherokee_buffer_t  *out)
+                        cherokee_buffer_t  *in,
+                        cherokee_buffer_t  *out)
 {
 	if (unlikely (enc->flush == NULL))
 		return ret_error;

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -39,7 +39,7 @@ typedef struct {
 
 static file_matching_t *
 matching_new (cherokee_buffer_t *file,
-	      cherokee_buffer_t *icon)
+              cherokee_buffer_t *icon)
 {
 	file_matching_t *n;
 
@@ -120,8 +120,8 @@ cherokee_icons_free (cherokee_icons_t *icons)
 		matching_free((file_matching_t *)i);
 	}
 
-	cherokee_avl_mrproper (&icons->files, free_entry);
-	cherokee_avl_mrproper (&icons->suffixes, free_entry);
+	cherokee_avl_mrproper (AVL_GENERIC(&icons->files), free_entry);
+	cherokee_avl_mrproper (AVL_GENERIC(&icons->suffixes), free_entry);
 
 	/* Free the special icons buffers
 	 */
@@ -218,8 +218,8 @@ cherokee_icons_set_default (cherokee_icons_t *icons, cherokee_buffer_t *icon)
 
 ret_t
 cherokee_icons_get_icon (cherokee_icons_t   *icons,
-			 cherokee_buffer_t  *file,
-			 cherokee_buffer_t **icon_ret)
+                         cherokee_buffer_t  *file,
+                         cherokee_buffer_t **icon_ret)
 {
 	ret_t            ret;
 	char            *suffix;

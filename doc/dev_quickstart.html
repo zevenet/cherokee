@@ -20,17 +20,18 @@
 <div class="paragraph"><p>So, you have found things in Cherokee worth improving and feel the
 urge to contribute to the project. But where to start?</p></div>
 <div class="paragraph"><p>The first thing, of course, is setting up a development/testing
-environming for Cherokee.</p></div>
+environment for Cherokee.</p></div>
 <div class="paragraph"><p>The relevant documents would be those about
 <a href="basics_requirements.html">software requirements</a>,
-<a href="basics_download.html">downloading the SVN repository</a>, and the
+<a href="basics_download.html">downloading the GIT repository</a>, and the
 <a href="basics_installation_unix.html">quickstart installation notes</a>.</p></div>
 <div class="paragraph"><p>In principle, provided you have the required tools in your system, it
 should be as easy as:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>    svn co svn://svn.cherokee-project.com/cherokee/trunk ~/cherokee_dev
+<pre><tt>    git clone --recursive git://github.com/cherokee/webserver.git ~/cherokee
     cd ~/cherokee_dev
+    git submodule update --init #not needed on Git &gt;= 1.6.5
     ./autogen.sh --enable-beta --enable-trace
     make</tt></pre>
 </div></div>
@@ -40,7 +41,7 @@ section of the documentation, and go through the
 make sure you are not wasting your effort working on something already
 solved.</p></div>
 <div class="paragraph"><p>Joining the
-<a href="http://lists.octality.com/listinfo/cherokee-dev">development list</a>
+<a href="https://groups.google.com/forum/#!forum/cherokee-http-dev">development list</a>
 and hanging out at the <a href="irc://irc.freenode.net/cherokee">#cherokee
 IRC channel</a> are also good ideas.</p></div>
 <h3 id="_quick_tips">Quick Tips</h3><div style="clear:left"></div>

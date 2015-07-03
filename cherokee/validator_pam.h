@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -30,8 +30,7 @@
 #include "plugin_loader.h"
 
 typedef struct {
-	   cherokee_validator_t validator;
-
+	cherokee_validator_t validator;
 } cherokee_validator_pam_t;
 
 #define PAM(x) ((cherokee_validator_pam_t *)(x))

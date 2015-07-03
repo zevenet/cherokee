@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -95,15 +95,14 @@ typedef struct {
 	ret_t cherokee_validator_ ## name ## _configure (           \
 		cherokee_config_node_t   *,                         \
 		cherokee_server_t        *,                         \
-	 	cherokee_module_props_t **)
+		cherokee_module_props_t **)
 
 #define PLUGIN_INFO_VALIDATOR_EASY_INIT(name,methods)               \
 	VALIDATOR_CONF_PROTOTYPE(name);                             \
-                                                                    \
+	                                                            \
 	PLUGIN_INFO_VALIDATOR_INIT(name, cherokee_validator,        \
 		(void *)cherokee_validator_ ## name ## _new,        \
-		(void *)cherokee_validator_ ## name ## _configure,  \
-                methods)
+		(void *)cherokee_validator_ ## name ## _configure, methods)
 
 #define PLUGIN_INFO_VALIDATOR_EASIEST_INIT(name,methods)            \
 	PLUGIN_EMPTY_INIT_FUNCTION(name)                            \

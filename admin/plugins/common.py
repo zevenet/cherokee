@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -47,7 +47,7 @@ class Plugin_common (Handler.PluginHandler):
 
         self += CTK.RawHTML ('<h2>%s</h2>' %(_('Parsing')))
         self += CTK.Indenter (submit)
-        self += instance_plugin('file',    key, show_document_root=False)
-        self += instance_plugin('dirlist', key, show_document_root=False)
+        self += instance_plugin('file',    key, show_document_root=False, symlinks=False)
+        self += instance_plugin('dirlist', key, show_document_root=False, symlinks=True)
 
 CTK.publish ('^%s'%(URL_APPLY), CTK.cfg_apply_post, method="POST")

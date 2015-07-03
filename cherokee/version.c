@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -112,5 +112,5 @@ cherokee_version_add_simple (cherokee_buffer_t *buf, cherokee_server_token_t lev
 		ret = ret_error;
 	}
 
-	return ret_ok;
+	return ret;
 }

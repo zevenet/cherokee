@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -100,9 +100,6 @@ cherokee_info_build_print (cherokee_server_t *srv)
 #endif
 #ifdef HAVE_PORT
 	printf ("ports ");
-#endif
-#ifdef HAVE_WIN32_SELECT
-	printf ("win32-select ");
 #endif
 #ifdef HAVE_SELECT
 	printf ("select ");

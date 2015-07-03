@@ -4,9 +4,9 @@
 #
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
-#      Taher Shihadeh <taher@octality.com>
+#      Taher Shihadeh <taher@unixwars.com>
 #
-# Copyright (C) 2001-2011 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -42,6 +42,7 @@ NOTE_NEW_MAXAGE     = N_('Maximum time that this sort of content can be cached (
 VALIDATIONS = [
     ('new_mime', validations.is_safe_mime_type),
     ('new_exts', validations.is_safe_mime_exts),
+    ('new_mage', validations.is_positive_int)
 ]
 
 def commit():
@@ -69,6 +70,15 @@ def commit():
                     updates[k] = val
             except ValueError, e:
                 return { "ret": "error", "errors": { k: str(e) }}
+        elif k.endswith('!max-age'):
+            new = CTK.post[k]
+            if new:
+                try:
+                    val = validations.is_positive_int (new)
+                    if val != new:
+                        updates[k] = val
+                except ValueError, e:
+                    return { "ret": "error", "errors": { k: str(e) }}
         CTK.cfg[k] = CTK.post[k]
 
     if updates:

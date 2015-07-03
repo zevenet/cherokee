@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -59,7 +59,7 @@ void  PLUGIN_INIT_NAME(deflate)            (cherokee_plugin_loader_t *loader);
 /* Methods
  */
 ret_t cherokee_encoder_deflate_new         (cherokee_encoder_deflate_t **encoder,
-					    cherokee_encoder_props_t    *props);
+                                            cherokee_encoder_props_t    *props);
 
 ret_t cherokee_encoder_deflate_free        (cherokee_encoder_deflate_t  *encoder);
 

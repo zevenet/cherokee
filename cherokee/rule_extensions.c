@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -58,8 +58,8 @@ parse_value (cherokee_buffer_t *value, cherokee_avl_t *extensions)
 
 static ret_t
 configure (cherokee_rule_extensions_t *rule,
-	   cherokee_config_node_t     *conf,
-	   cherokee_virtual_server_t  *vsrv)
+           cherokee_config_node_t     *conf,
+           cherokee_virtual_server_t  *vsrv)
 {
 	ret_t              ret;
 	cherokee_buffer_t *tmp = NULL;
@@ -69,7 +69,7 @@ configure (cherokee_rule_extensions_t *rule,
 	ret = cherokee_config_node_read (conf, "extensions", &tmp);
 	if (ret != ret_ok) {
 		LOG_CRITICAL (CHEROKEE_ERROR_RULE_NO_PROPERTY,
-			      RULE(rule)->priority, "extensions");
+		              RULE(rule)->priority, "extensions");
 		return ret_error;
 	}
 
@@ -84,14 +84,14 @@ _free (void *p)
 {
 	cherokee_rule_extensions_t *rule = RULE_EXTENSIONS(p);
 
-	cherokee_avl_mrproper (&rule->extensions, NULL);
+	cherokee_avl_mrproper (AVL_GENERIC(&rule->extensions), NULL);
 	return ret_ok;
 }
 
 static ret_t
 local_file_exists (cherokee_rule_extensions_t *rule,
-		   cherokee_connection_t      *conn,
-		   cherokee_config_entry_t    *ret_conf)
+                   cherokee_connection_t      *conn,
+                   cherokee_config_entry_t    *ret_conf)
 {
 	ret_t                     ret;
 	struct stat              *info;
@@ -114,12 +114,10 @@ local_file_exists (cherokee_rule_extensions_t *rule,
 		cherokee_buffer_add_buffer (tmp, &conn->local_directory);
 	}
 
-	cherokee_buffer_add_str (tmp, "/");
-
 	if (! cherokee_buffer_is_empty (&conn->web_directory)) {
 		cherokee_buffer_add (tmp,
-				     conn->request.buf + conn->web_directory.len,
-				     conn->request.len - conn->web_directory.len);
+		                     conn->request.buf + conn->web_directory.len,
+		                     conn->request.len - conn->web_directory.len);
 	} else {
 		cherokee_buffer_add_buffer (tmp, &conn->request);
 	}
@@ -127,7 +125,7 @@ local_file_exists (cherokee_rule_extensions_t *rule,
 	/* Check the local file
 	 */
 	ret = cherokee_io_stat (srv->iocache, tmp, rule->use_iocache,
-				&nocache_info, &io_entry, &info);
+	                        &nocache_info, &io_entry, &info);
 
 	if (ret == ret_ok) {
 		is_file = S_ISREG(info->st_mode);
@@ -217,7 +215,7 @@ match (cherokee_rule_extensions_t *rule,
 			}
 
 			TRACE(ENTRIES, "Match extension: '%s'\n", dot+1);
- 			if (slash != NULL) {
+			if (slash != NULL) {
 				*slash = '/';
 			}
 			return ret_ok;
@@ -267,5 +265,5 @@ cherokee_rule_extensions_new (cherokee_rule_extensions_t **rule)
 	cherokee_avl_init (&n->extensions);
 
 	*rule = n;
- 	return ret_ok;
+	return ret_ok;
 }

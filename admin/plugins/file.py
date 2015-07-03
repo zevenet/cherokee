@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -36,8 +36,12 @@ class Plugin_file (Handler.PluginHandler):
         Handler.PluginHandler.__init__ (self, key, **kwargs)
         Handler.PluginHandler.AddCommon (self)
 
+        symlinks = kwargs.pop('symlinks', True)
+
         table = CTK.PropsTable()
         table.Add (_("Use I/O cache"), CTK.CheckCfgText("%s!iocache"%(self.key), True, _('Enabled')), _(NOTE_IO_CACHE))
+        if symlinks:
+            table.Add (_('Allow symbolic links'), CTK.CheckCfgText("%s!symlinks"%(self.key), True,  _('Allow')), '')
 
         submit = CTK.Submitter (URL_APPLY)
         submit += table

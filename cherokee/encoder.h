@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -89,16 +89,16 @@ typedef struct {
  */
 #define ENCODER_CONF_PROTOTYPE(name)                                \
 	ret_t cherokee_encoder_ ## name ## _configure (             \
-		cherokee_config_node_t   *,                         \
-		cherokee_server_t        *,                         \
-	 	cherokee_module_props_t **)
+	        cherokee_config_node_t   *,                         \
+	        cherokee_server_t        *,                         \
+	        cherokee_module_props_t **)
 
 #define PLUGIN_INFO_ENCODER_EASY_INIT(name)                         \
 	ENCODER_CONF_PROTOTYPE(name);                               \
-                                                                    \
+	                                                            \
 	PLUGIN_INFO_INIT(name, cherokee_encoder,                    \
-		(void *)cherokee_encoder_ ## name ## _new,          \
-		(void *)cherokee_encoder_ ## name ## _configure)
+	        (void *)cherokee_encoder_ ## name ## _new,          \
+	        (void *)cherokee_encoder_ ## name ## _configure)
 
 #define PLUGIN_INFO_ENCODER_EASIEST_INIT(name)                      \
 	PLUGIN_EMPTY_INIT_FUNCTION(name)                            \
@@ -108,17 +108,17 @@ typedef struct {
 /* Methods
  */
 ret_t cherokee_encoder_init_base   (cherokee_encoder_t       *enc,
-				    cherokee_plugin_info_t   *info,
-				    cherokee_encoder_props_t *props);
+                                    cherokee_plugin_info_t   *info,
+                                    cherokee_encoder_props_t *props);
 
 /* Base class methods
  */
 ret_t cherokee_encoder_configure (cherokee_config_node_t   *config,
-				  cherokee_server_t        *srv,
-				  cherokee_module_props_t **_props);
+                                  cherokee_server_t        *srv,
+                                  cherokee_module_props_t **_props);
 
 ret_t cherokee_encoder_props_init_base (cherokee_encoder_props_t *props,
-					module_func_props_free_t  free_func);
+                                        module_func_props_free_t  free_func);
 
 ret_t cherokee_encoder_props_free_base (cherokee_encoder_props_t *encoder_props);
 

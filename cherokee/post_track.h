@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -62,13 +62,13 @@ void  PLUGIN_INIT_NAME(post_track) (cherokee_plugin_loader_t *loader);
 
 ret_t cherokee_generic_post_track_new       (cherokee_post_track_t **track);
 ret_t cherokee_generic_post_track_configure (cherokee_post_track_t  *track,
-					     cherokee_config_node_t *config);
+                                             cherokee_config_node_t *config);
 
 ret_t cherokee_generic_post_track_get       (cherokee_post_track_t  *track,
-					     cherokee_buffer_t      *progress_id,
-					     const char            **out_status,
-					     off_t                  *out_size,
-					     off_t                  *out_received);
+                                             cherokee_buffer_t      *progress_id,
+                                             const char            **out_status,
+                                             off_t                  *out_size,
+                                             off_t                  *out_received);
 
 CHEROKEE_END_DECLS
 

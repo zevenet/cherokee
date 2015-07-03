@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -199,9 +199,9 @@ cherokee_request_header_build_string (cherokee_request_header_t *request, cherok
 
 ret_t
 cherokee_request_header_set_auth (cherokee_request_header_t *request,
-				  cherokee_http_auth_t       auth,
-				  cherokee_buffer_t         *user,
-				  cherokee_buffer_t         *password)
+                                  cherokee_http_auth_t       auth,
+                                  cherokee_buffer_t         *user,
+                                  cherokee_buffer_t         *password)
 {
 	request->auth = auth;
 

@@ -3,7 +3,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2009 Alvaro Lopez Ortega
+# Copyright (C) 2009-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -24,6 +24,7 @@ from consts import *
 from Button import Button
 from RawHTML import RawHTML
 from Container import Container
+from TextArea import TextArea
 from TextField import TextField
 from PageCleaner import Uniq_Block
 from Server import get_server
@@ -70,6 +71,7 @@ class Submitter (Container):
         HiddenField
         iPhoneToggle, iPhoneCfg
         Radio, RadioText
+        TextArea, TextAreaCfg
         TextField, TextFieldPassword, TextCfg, TextCfgPassword, TextCfgAuto
         ToggleButton, ToggleButtonOnOff
 

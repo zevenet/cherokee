@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -32,6 +32,7 @@
 #include "server.h"
 #include "info.h"
 #include "server-protected.h"
+#include "services.h"
 #include "util.h"
 
 #ifdef HAVE_SYS_WAIT_H
@@ -51,7 +52,7 @@
 
 #define APP_COPY_NOTICE \
 	"Written by Alvaro Lopez Ortega <alvaro@alobbs.com>\n\n"                       \
-	"Copyright (C) 2001-2011 Alvaro Lopez Ortega.\n"                               \
+	"Copyright (C) 2001-2014 Alvaro Lopez Ortega.\n"                               \
 	"This is free software; see the source for copying conditions.  There is NO\n" \
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 
@@ -60,22 +61,22 @@
  */
 #define DEFAULT_CONFIG_FILE CHEROKEE_CONFDIR "/cherokee.conf"
 
-#define BASIC_CONFIG							\
-	"vserver!1!nick = default\n"					\
-	"vserver!1!error_writer!type = stderr\n"                        \
-	"vserver!1!rule!3!match = directory\n"				\
-	"vserver!1!rule!3!match!directory = /cherokee_themes\n"		\
-	"vserver!1!rule!3!handler = file\n"				\
-	"vserver!1!rule!3!document_root = " CHEROKEE_THEMEDIR "\n"	\
-	"vserver!1!rule!2!match = directory\n"				\
-	"vserver!1!rule!2!match!directory = /icons\n"			\
-	"vserver!1!rule!2!handler = file\n"				\
-	"vserver!1!rule!2!document_root = " CHEROKEE_ICONSDIR "\n"	\
-	"vserver!1!rule!1!match = default\n"				\
-	"vserver!1!rule!1!handler = common\n"				\
-	"vserver!1!rule!1!handler!iocache = 0\n"			\
-	"icons!default = page_white.png\n"				\
-	"icons!directory = folder.png\n"				\
+#define BASIC_CONFIG                                               \
+	"vserver!1!nick = default\n"                               \
+	"vserver!1!error_writer!type = stderr\n"                   \
+	"vserver!1!rule!3!match = directory\n"                     \
+	"vserver!1!rule!3!match!directory = /cherokee_themes\n"    \
+	"vserver!1!rule!3!handler = file\n"                        \
+	"vserver!1!rule!3!document_root = " CHEROKEE_THEMEDIR "\n" \
+	"vserver!1!rule!2!match = directory\n"                     \
+	"vserver!1!rule!2!match!directory = /cherokee_icons\n"     \
+	"vserver!1!rule!2!handler = file\n"                        \
+	"vserver!1!rule!2!document_root = " CHEROKEE_ICONSDIR "\n" \
+	"vserver!1!rule!1!match = default\n"                       \
+	"vserver!1!rule!1!handler = common\n"                      \
+	"vserver!1!rule!1!handler!iocache = 0\n"                   \
+	"icons!default = page_white.png\n"                         \
+	"icons!directory = folder.png\n"                           \
 	"icons!parent_directory = arrow_turn_left.png\n"
 
 #define ENTRIES "main"
@@ -88,6 +89,7 @@ static cherokee_boolean_t  just_test     = false;
 static cherokee_boolean_t  print_modules = false;
 static cherokee_boolean_t  port_set      = false;
 static cuint_t             port          = 80;
+static int                 services_fd   = -1;
 
 static ret_t common_server_initialization (cherokee_server_t *srv);
 
@@ -215,9 +217,9 @@ common_server_initialization (cherokee_server_t *srv)
 		cherokee_path_arg_eval (&droot);
 
 		cherokee_buffer_add_va (&tmp,
-					"server!bind!1!port = %d\n"
-					"vserver!1!document_root = %s\n"
-					BASIC_CONFIG, port, droot.buf);
+		                        "server!bind!1!port = %d\n"
+		                        "vserver!1!document_root = %s\n"
+		                        BASIC_CONFIG, port, droot.buf);
 
 		/* Apply it
 		 */
@@ -234,7 +236,7 @@ common_server_initialization (cherokee_server_t *srv)
 	} else {
 		/* Check parameter inconsistencies */
 		if (port_set) {
-			PRINT_MSG ("The -p parameter can only be used in conjunction with -r.");
+			PRINT_MSG ("The -p parameter can only be used in conjunction with -r.\n");
 			return ret_error;
 		}
 
@@ -261,16 +263,17 @@ static void
 print_help (void)
 {
 	printf (APP_NAME "\n"
-		"Usage: cherokee [options]\n\n"
-		"  -h,       --help                  Print this help\n"
-		"  -V,       --version               Print version and exit\n"
-		"  -t,       --test                  Just test configuration file\n"
-		"  -d,       --detach                Detach from the console\n"
-		"  -C<PATH>, --config=<PATH>         Configuration file\n"
-		"  -p<NUM>,  --port=<NUM>            TCP port number\n"
-		"  -r<PATH>, --documentroot=<PATH>   Server directory content\n"
-		"  -i,       --print-server-info     Print server technical information\n"
-		"  -v,       --valgrind              Execute the worker process under valgrind\n\n"
+	        "Usage: cherokee [options]\n\n"
+	        "  -h,       --help                  Print this help\n"
+	        "  -V,       --version               Print version and exit\n"
+	        "  -t,       --test                  Just test configuration file\n"
+	        "  -d,       --detach                Detach from the console\n"
+	        "  -C<PATH>, --config=<PATH>         Configuration file\n"
+	        "  -p<NUM>,  --port=<NUM>            TCP port number\n"
+	        "  -r<PATH>, --documentroot=<PATH>   Server directory content\n"
+	        "  -i,       --print-server-info     Print server technical information\n"
+	        "  -v,       --valgrind              Execute the worker process under valgrind\n"
+	        "  -s,       --services-fd           FD for host process services\n\n"
 		"Report bugs to " PACKAGE_BUGREPORT "\n");
 }
 
@@ -294,10 +297,11 @@ process_parameters (int argc, char **argv)
 		{"port",              required_argument, NULL, 'p'},
 		{"documentroot",      required_argument, NULL, 'r'},
 		{"config",            required_argument, NULL, 'C'},
+		{"services-fd",       required_argument, NULL, 's'},
 		{NULL, 0, NULL, 0}
 	};
 
-	while ((c = getopt_long(argc, argv, "hVdtiap:r:C:", long_options, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "hVdtiap:r:C:s:", long_options, NULL)) != -1) {
 		switch(c) {
 		case 'C':
 			free (config_file);
@@ -326,6 +330,9 @@ process_parameters (int argc, char **argv)
 		case 'V':
 			printf (APP_NAME " " PACKAGE_VERSION "\n" APP_COPY_NOTICE);
 			return ret_eof;
+		case 's':
+			services_fd = atoi(optarg);
+			break;
 		case 'h':
 		case '?':
 		default:
@@ -387,6 +394,14 @@ main (int argc, char **argv)
 	if (ret < ret_ok) {
 		exit (EXIT_ERROR_FATAL);
 	}
+
+	if (services_fd != -1) {
+		ret = cherokee_services_client_init(services_fd);
+		if (unlikely(ret < ret_ok)) {
+			exit (EXIT_ERROR_FATAL);
+		}
+	}
+
 
 	do {
 		ret = cherokee_server_step (srv);

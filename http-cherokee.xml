@@ -7,7 +7,7 @@
     Authors:
          Rodrigo Fernandez-Vizarra <rodrigo.fernandez-vizarra@sun.com>
 
-    Copyright (C) 2006-2010 Alvaro Lopez Ortega
+    Copyright (C) 2001-2014 Alvaro Lopez Ortega
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of version 2 of the GNU General Public
@@ -60,7 +60,7 @@
       -->
       <exec_method type='method'
 		   name='start'
-		   exec='/usr/local/sbin/cherokee -d'
+		   exec='/usr/local/zenloadbalancer/app/cherokee/sbin/cherokee -d'
 		   timeout_seconds='60'>
 	<method_context>
 	  <method_credential user='root' group='root' />
@@ -73,7 +73,7 @@
       -->
       <exec_method type='method'
 		   name='stop'
-		   exec='kill `cat /usr/local/var/run/cherokee.pid`'
+		   exec='kill `cat /usr/local/zenloadbalancer/app/cherokee/var/run/cherokee.pid`'
 		   timeout_seconds='60'>
 	<method_context>
 	  <method_credential user='root' group='root' />
@@ -86,7 +86,7 @@
       -->
       <exec_method type='method'
 		   name='refresh'
-		   exec='kill -HUP `cat /usr/local/var/run/cherokee.pid`'
+		   exec='kill -HUP `cat /usr/local/zenloadbalancer/app/cherokee/var/run/cherokee.pid`'
 		   timeout_seconds='60'>
 	<method_context>
 	  <method_credential user='root' group='root' />

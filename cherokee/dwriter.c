@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -28,79 +28,79 @@
 #define CS  (w->state[w->depth])
 #define OUT (w->buf)
 
-#define ADD_SEP                                                         \
-        do {							      	\
-	        if ((CS == dwriter_dict_key) ||				\
-		    (CS == dwriter_list_in))				\
-		{							\
-			cherokee_buffer_add_str (OUT, ",");		\
-			if (w->pretty)					\
-				cherokee_buffer_add_str(OUT, "\n");	\
-		} else if (CS == dwriter_dict_val) {			\
-			if ((w->lang == dwriter_php) ||			\
-			    (w->lang == dwriter_ruby))			\
-				cherokee_buffer_add_str (OUT, "=>");	\
-			else						\
-				cherokee_buffer_add_str (OUT, ":");	\
-			if (w->pretty)					\
-				cherokee_buffer_add_str (OUT, " ");	\
-		}							\
+#define ADD_SEP                                                              \
+	do {                                                                 \
+		if ((CS == dwriter_dict_key) ||                              \
+		    (CS == dwriter_list_in))                                 \
+		{                                                            \
+			cherokee_buffer_add_str (OUT, ",");                  \
+			if (w->pretty)                                       \
+				cherokee_buffer_add_str(OUT, "\n");          \
+		} else if (CS == dwriter_dict_val) {                         \
+			if ((w->lang == dwriter_php) ||                      \
+			    (w->lang == dwriter_ruby))                       \
+				cherokee_buffer_add_str (OUT, "=>");         \
+			else                                                 \
+				cherokee_buffer_add_str (OUT, ":");          \
+			if (w->pretty)                                       \
+				cherokee_buffer_add_str (OUT, " ");          \
+		}                                                            \
 	} while(0)
 
-#define ADD_WHITE							\
-	do {								\
-		unsigned int i;						\
-		if (w->pretty) {					\
-			if (CS != dwriter_dict_val) {			\
-				for (i=0; i<w->depth; i++)		\
+#define ADD_WHITE                                                            \
+	do {                                                                 \
+		unsigned int i;                                              \
+		if (w->pretty) {                                             \
+			if (CS != dwriter_dict_val) {                        \
+				for (i=0; i<w->depth; i++)                   \
 					cherokee_buffer_add_str (OUT, "  "); \
-			}						\
-		}							\
+			}                                                    \
+		}                                                            \
 	} while(0)
 
-#define ADD_END							\
-	do {							\
-		switch(CS) {					\
-		case dwriter_start:				\
-			CS = dwriter_complete;			\
-			break;					\
-		case dwriter_dict_start:			\
-		case dwriter_dict_key:				\
-			CS = dwriter_dict_val;			\
-			break;					\
-		case dwriter_list_start:			\
-			CS = dwriter_list_in;			\
-			break;					\
-		case dwriter_dict_val:				\
-			CS = dwriter_dict_key;			\
-			break;					\
-		default:					\
-			break;					\
-		}						\
+#define ADD_END                                                              \
+	do {                                                                 \
+		switch(CS) {                                                 \
+		case dwriter_start:                                          \
+			CS = dwriter_complete;                               \
+			break;                                               \
+		case dwriter_dict_start:                                     \
+		case dwriter_dict_key:                                       \
+			CS = dwriter_dict_val;                               \
+			break;                                               \
+		case dwriter_list_start:                                     \
+			CS = dwriter_list_in;                                \
+			break;                                               \
+		case dwriter_dict_val:                                       \
+			CS = dwriter_dict_key;                               \
+			break;                                               \
+		default:                                                     \
+			break;                                               \
+		}                                                            \
 	} while(0)
 
-#define ADD_NEW_LINE					\
-	if ((w->pretty) && (CS == dwriter_complete))	\
+#define ADD_NEW_LINE                                                         \
+	if ((w->pretty) && (CS == dwriter_complete))                         \
 		cherokee_buffer_add_str (OUT, "\n")
 
 
-#define ENSURE_NOT_KEY				\
-	if (CS == dwriter_dict_key)		\
+#define ENSURE_NOT_KEY                                                       \
+	if (CS == dwriter_dict_key)                                          \
 		return ret_error
 
-#define ENSURE_VALID_STATE					\
-	if ((CS == dwriter_error) || (CS == dwriter_error))	\
+#define ENSURE_VALID_STATE                                                   \
+	if ((CS == dwriter_error) || (CS == dwriter_error))                  \
 		return ret_error
 
-#define INCREMENT_DEPTH				\
-	w->depth += 1;				\
-	if (w->depth >= DWRITER_STACK_LEN)	\
+#define INCREMENT_DEPTH                                                      \
+	w->depth += 1;                                                       \
+	if (w->depth >= DWRITER_STACK_LEN)                                   \
 		return ret_error
 
 
 ret_t
 cherokee_dwriter_init (cherokee_dwriter_t *writer,
-		       cherokee_buffer_t  *tmp)
+                       cherokee_buffer_t  *tmp)
 {
 	writer->buf    = NULL;
 	writer->pretty = false;
@@ -121,16 +121,17 @@ cherokee_dwriter_mrproper (cherokee_dwriter_t *writer)
 
 ret_t
 cherokee_dwriter_set_buffer (cherokee_dwriter_t *writer,
-			     cherokee_buffer_t  *output)
+                             cherokee_buffer_t  *output)
 {
 	writer->buf = output;
 	return ret_ok;
 }
 
 static ret_t
-escape_string (cherokee_buffer_t *buffer,
-	       const char        *s,
-	       cuint_t            len)
+escape_string (cherokee_buffer_t      *buffer,
+               const char             *s,
+               cuint_t                 len,
+	       cherokee_dwriter_lang_t lang)
 {
 	char    c;
 	cuint_t i, j;
@@ -165,7 +166,9 @@ escape_string (cherokee_buffer_t *buffer,
 			buffer->buf[j++] = '\\';
 			break;
 		case '/':
-			buffer->buf[j++] = '\\';
+			if (lang == dwriter_json)
+				buffer->buf[j++] = '\\';
+
 			buffer->buf[j++] = '/';
 			break;
 		case '"':
@@ -183,7 +186,20 @@ escape_string (cherokee_buffer_t *buffer,
 }
 
 ret_t
-cherokee_dwriter_integer (cherokee_dwriter_t *w, unsigned long l)
+cherokee_dwriter_integer (cherokee_dwriter_t *w, long int l)
+{
+	ENSURE_VALID_STATE; ENSURE_NOT_KEY;
+	ADD_SEP; ADD_WHITE;
+
+	cherokee_buffer_add_va (OUT, "%ld", l);
+
+	ADD_END; ADD_NEW_LINE;
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_dwriter_unsigned (cherokee_dwriter_t *w, unsigned long int l)
 {
 	ENSURE_VALID_STATE; ENSURE_NOT_KEY;
 	ADD_SEP; ADD_WHITE;
@@ -193,7 +209,6 @@ cherokee_dwriter_integer (cherokee_dwriter_t *w, unsigned long l)
 	ADD_END; ADD_NEW_LINE;
 	return ret_ok;
 }
-
 
 ret_t
 cherokee_dwriter_double (cherokee_dwriter_t *w, double d)
@@ -272,7 +287,7 @@ cherokee_dwriter_string (cherokee_dwriter_t *w, const char *s, int len)
 
 	cherokee_buffer_add_str (OUT, "\"");
 
-	escape_string (w->tmp, s, len);
+	escape_string (w->tmp, s, len, w->lang);
 	cherokee_buffer_add (OUT, w->tmp->buf, w->tmp->len);
 
 	cherokee_buffer_add_str (OUT, "\"");
@@ -437,7 +452,7 @@ cherokee_dwriter_list_close (cherokee_dwriter_t *w)
 
 ret_t
 cherokee_dwriter_lang_to_type (cherokee_buffer_t       *buf,
-			       cherokee_dwriter_lang_t *lang)
+                               cherokee_dwriter_lang_t *lang)
 {
 	if (equal_buf_str (buf, "json")) {
 		*lang = dwriter_json;

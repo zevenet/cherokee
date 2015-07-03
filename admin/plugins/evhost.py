@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2009-2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -28,7 +28,7 @@ URL_APPLY = '/plugin/evhost/apply'
 
 NOTE_CHECK_DROOT = N_("Check the dynamically generated Document Root, and use the general Document Root if it doesn't exist.")
 NOTE_REHOST      = N_("The Document Root directory will be built dynamically. The following variables are accepted:<br/>") +\
-                   "${domain}, ${tld}, ${domain_no_tld}, ${root_domain}, ${subdomain1}, ${subdomain2}."
+                   "${domain}, ${domain_md5}, ${tld}, ${domain_no_tld}, ${root_domain}, ${subdomain1}, ${subdomain2}."
 
 HELPS = [('config_virtual_servers_evhost', _("Advanced Virtual Hosting"))]
 

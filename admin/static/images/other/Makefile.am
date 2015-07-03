@@ -5,11 +5,12 @@ other_DATA = \
 contact-bug.png \
 contact-list.png \
 facebook.png \
+googleplus.png \
+github.png \
 linkedin.png \
 irc.png \
 latest.png \
 left.png \
-octality-logo.png \
 proud.png \
 right.png \
 twitter.png \

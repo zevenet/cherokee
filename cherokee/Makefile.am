@@ -1,6 +1,8 @@
 ## Cherokee: cherokee/Makefile.am  -*- makefile -*-
 
-INCLUDES = \
+AUTOMAKE_OPTIONS = subdir-objects
+
+AM_CPPFLAGS = \
 -I${top_srcdir} \
 $(PTHREAD_CFLAGS)
 
@@ -71,10 +73,10 @@ errors.h \
 errors_defs.h
 
 errors.h: errors.py error_list.py
-	python errors.py --errors $@
+	$(PYTHON) errors.py --errors $@
 
 errors_defs.h: errors.py error_list.py
-	python errors.py --defines $@
+	$(PYTHON) errors.py --defines $@
 
 
 #
@@ -95,11 +97,6 @@ endif
 #
 library_soname = \
 -version-info $(CHEROKEE_CURRENT):$(CHEROKEE_REVISION):$(CHEROKEE_AGE)
-
-if PLATFORM_WIN32
-no_undefined = -no-undefined -Wl,--export-all-symbols
-module_ldflags_w32 = -lcherokee-base -lcherokee-config -lcherokee-server
-endif
 
 common_ldflags = \
 $(no_undefined) \
@@ -582,8 +579,7 @@ handler_render_rrd.h \
 logo.inc
 
 libplugin_render_rrd_la_LDFLAGS = $(module_ldflags)
-libplugin_render_rrd_la_SOURCES = $(handler_render_rrd)
-libplugin_render_rrd_la_LIBADD  = $(dynamic_handler_file_lib)
+libplugin_render_rrd_la_SOURCES = $(handler_render_rrd) $(handler_file)
 
 if STATIC_HANDLER_RENDER_RRD
 static_handler_render_rrd_src = $(handler_render_rrd)
@@ -605,8 +601,7 @@ handler_cgi.c \
 handler_cgi.h
 
 libplugin_cgi_la_LDFLAGS = $(module_ldflags)
-libplugin_cgi_la_SOURCES = $(handler_cgi)
-libplugin_cgi_la_LIBADD  = $(dynamic_handler_file_lib)
+libplugin_cgi_la_SOURCES = $(handler_cgi) $(handler_file)
 
 if STATIC_HANDLER_CGI
 static_handler_cgi_src = $(handler_cgi)
@@ -628,8 +623,7 @@ handler_scgi.h \
 handler_scgi.c
 
 libplugin_scgi_la_LDFLAGS = $(module_ldflags)
-libplugin_scgi_la_SOURCES = $(handler_scgi)
-libplugin_scgi_la_LIBADD  = $(dynamic_handler_file_lib)
+libplugin_scgi_la_SOURCES = $(handler_scgi) $(handler_file)
 
 if STATIC_HANDLER_SCGI
 static_handler_scgi_src = $(handler_scgi)
@@ -652,8 +646,7 @@ handler_fcgi.h \
 handler_fcgi.c
 
 libplugin_fcgi_la_LDFLAGS = $(module_ldflags)
-libplugin_fcgi_la_SOURCES = $(handler_fcgi)
-libplugin_fcgi_la_LIBADD  = $(dynamic_handler_file_lib)
+libplugin_fcgi_la_SOURCES = $(handler_fcgi) $(handler_file)
 
 if STATIC_HANDLER_FCGI
 static_handler_fcgi_src = $(handler_fcgi)
@@ -675,8 +668,7 @@ handler_uwsgi.h \
 handler_uwsgi.c
 
 libplugin_uwsgi_la_LDFLAGS = $(module_ldflags)
-libplugin_uwsgi_la_SOURCES = $(handler_uwsgi)
-libplugin_uwsgi_la_LIBADD  = $(dynamic_handler_file_lib)
+libplugin_uwsgi_la_SOURCES = $(handler_uwsgi) $(handler_file)
 
 if STATIC_HANDLER_UWSGI
 static_handler_uwsgi_src = $(handler_uwsgi)
@@ -709,11 +701,7 @@ handler_error_redir = \
 handler_error_redir.c \
 handler_error_redir.h
 
-if PLATFORM_WIN32
-error_redir_ldflags_win32 = -lplugin_redir
-endif
-
-libplugin_error_redir_la_LDFLAGS = $(module_ldflags) $(error_redir_ldflags_win32)
+libplugin_error_redir_la_LDFLAGS = $(module_ldflags)
 libplugin_error_redir_la_SOURCES = $(handler_error_redir)
 
 if STATIC_HANDLER_ERROR_REDIR
@@ -749,11 +737,7 @@ handler_common = \
 handler_common.c \
 handler_common.h
 
-if PLATFORM_WIN32
-common_ldflags_win32 = -lplugin_dirlist -lplugin_file
-endif
-
-libplugin_common_la_LDFLAGS = $(module_ldflags) $(common_ldflags_win32)
+libplugin_common_la_LDFLAGS = $(module_ldflags)
 libplugin_common_la_SOURCES = $(handler_common)
 
 if STATIC_HANDLER_COMMON
@@ -1011,11 +995,7 @@ logger_combined = \
 logger_combined.h \
 logger_combined.c
 
-if PLATFORM_WIN32
-combined_ldflags_win32 = -lplugin_ncsa
-endif
-
-libplugin_combined_la_LDFLAGS = $(module_ldflags) $(combined_ldflags_win32)
+libplugin_combined_la_LDFLAGS = $(module_ldflags)
 libplugin_combined_la_SOURCES = $(logger_combined)
 
 if STATIC_LOGGER_COMBINED
@@ -1321,20 +1301,6 @@ if COMPILE_SELECT
 poll_select_src = fdpoll-select.c
 endif
 
-if COMPILE_WIN32_SELECT
-poll_win32_src = fdpoll-win32.c
-endif
-
-if PLATFORM_WIN32
-win32_src = \
-unix4win32.h \
-unix4win32.c \
-win32_misc.h \
-win32_misc.c \
-win32_cservice.h \
-win32_cservice.c
-endif
-
 
 libcherokee_base_la_SOURCES = \
 $(zlib_src) \
@@ -1345,8 +1311,6 @@ $(poll_epoll_src) \
 $(poll_kqueue_src) \
 $(poll_port_src) \
 $(poll_select_src) \
-$(poll_win32_src) \
-$(win32_src) \
 cherokee.h \
 init.h \
 init.c \
@@ -1626,8 +1590,9 @@ dwriter.h \
 dwriter.c \
 limiter.h \
 limiter.c \
-spawner.h \
-spawner.c \
+services.h \
+services-common.c \
+services-client.c \
 collector.h \
 collector.c \
 header_op.h \
@@ -1759,11 +1724,7 @@ $(dynamic_balancer_failover_lib)
 #
 # Cherokee server worker
 #
-sbin_PROGRAMS = cherokee-worker cherokee-admin
-
-if !PLATFORM_WIN32
-sbin_PROGRAMS += cherokee
-endif
+sbin_PROGRAMS = cherokee-worker cherokee-admin cherokee
 
 cherokee_worker_SOURCES = main_worker.c
 cherokee_worker_LDFLAGS = -export-dynamic
@@ -1775,8 +1736,8 @@ libcherokee-server.la
 #
 # Cherokee
 #
-cherokee_SOURCES = main.c
-cherokee_LDADD   = $(PTHREAD_LIBS) $(RT_LIBS)
+cherokee_SOURCES = main.c services-common.c services-server.c
+cherokee_LDADD   = $(PTHREAD_LIBS) $(RT_LIBS) libcherokee-base.la
 
 #
 # Cherokee admin
@@ -1785,36 +1746,12 @@ cherokee_admin_SOURCES = main_admin.c
 cherokee_admin_LDADD   = $(cherokee_worker_LDADD)
 cherokee_admin_LDFLAGS = $(cherokee_worker_LDFLAGS)
 
-
-#
-# Win32 service
-#
-if PLATFORM_WIN32
-win32_cherokeeserv = win32_cherokeeserv
-else
-win32_cherokeeserv =
-endif
-
-win32_cherokeeserv_SOURCES = win32_cherokeeserv.c
-win32_cherokeeserv_LDADD = libcherokee-base.la libcherokee-client.la
-
-#
-# Test programs
-#
-noinst_PROGRAMS = $(win32_cherokeeserv)
-
 # test_SOURCES = test.c
 # test_LDADD = libcherokee-base.la libcherokee-client.la
 
 
 CLEANFILES = \
 config.h
-
-WINDOWS_PORT_FILES = \
-unix4win32.h \
-unix4win32.c \
-win32_misc.h \
-win32_misc.c
 
 EXTRA_DIST = \
 pcre/LICENCE \
@@ -1823,13 +1760,11 @@ error_list.py \
 errors.h \
 errors_defs.h \
 $(pcre_src) \
-$(win32_src) \
 $(getopt_src) \
 $(bin_SCRIPTS) \
 $(validator_mysql) \
 $(handler_dbslayer) \
 $(cherokeedeps_DATA) \
-$(WINDOWS_PORT_FILES) \
 $(cryptor_libssl_dist)
 
 distclean-local:

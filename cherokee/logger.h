@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -77,8 +77,8 @@ typedef struct {
 /* Logger methods
  */
 ret_t cherokee_logger_init_base       (cherokee_logger_t      *logger,
-				       cherokee_plugin_info_t *info,
-				       cherokee_config_node_t *config);
+                                       cherokee_plugin_info_t *info,
+                                       cherokee_config_node_t *config);
 
 /* Logger virtual methods
  */

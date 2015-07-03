@@ -6,7 +6,7 @@
     <key>Label</key><string>org.cherokee.webserver</string>
     <key>ProgramArguments</key>
     <array>
-      <string>/usr/local/sbin/cherokee</string>
+      <string>/usr/local/zenloadbalancer/app/cherokee/sbin/cherokee</string>
     </array>
     <key>Debug</key><false/>
     <key>Disabled</key><true/>

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -138,9 +138,6 @@ const char *month[13] = {
 char *
 cherokee_strerror_r (int err, char *buf, size_t bufsize)
 {
-#ifdef _WIN32
-	return win_strerror (err, buf, bufsize);
-#else
 	char *p;
 	if (buf == NULL)
 		return NULL;
@@ -157,7 +154,6 @@ cherokee_strerror_r (int err, char *buf, size_t bufsize)
 	}
 
 	return p;
-#endif
 }
 
 
@@ -197,29 +193,29 @@ ret_t
 cherokee_sys_fdlimit_get (cuint_t *limit)
 {
 #ifdef HAVE_GETRLIMIT
-        struct rlimit rlp;
+	struct rlimit rlp;
 
-        rlp.rlim_cur = rlp.rlim_max = RLIM_INFINITY;
-        if (getrlimit (RLIMIT_NOFILE, &rlp))
-            return ret_error;
+	rlp.rlim_cur = rlp.rlim_max = RLIM_INFINITY;
+	if (getrlimit (RLIMIT_NOFILE, &rlp))
+		return ret_error;
 
-        *limit = rlp.rlim_cur;
+	*limit = rlp.rlim_cur;
 	return ret_ok;
 #else
 #ifdef HAVE_GETDTABLESIZE
 	int nfiles;
 
 	nfiles = getdtablesize();
-        if (nfiles <= 0) return ret_error;
+	if (nfiles <= 0) return ret_error;
 
 	*limit = nfiles;
 	return ret_ok;
 #else
 #ifdef OPEN_MAX
-        *limit = OPEN_MAX;         /* need to include limits.h somehow */
+	*limit = OPEN_MAX;         /* need to include limits.h somehow */
 	return ret_ok;
 #else
-        *limit = FD_SETSIZE;
+	*limit = FD_SETSIZE;
 	return ret_ok;
 #endif
 #endif
@@ -230,7 +226,6 @@ cherokee_sys_fdlimit_get (cuint_t *limit)
 ret_t
 cherokee_sys_fdlimit_set (cuint_t limit)
 {
-#ifndef _WIN32
 	int           re;
 	struct rlimit rl;
 
@@ -241,7 +236,6 @@ cherokee_sys_fdlimit_set (cuint_t limit)
 	if (re != 0) {
 		return ret_error;
 	}
-#endif
 
 	return ret_ok;
 }
@@ -301,7 +295,7 @@ strcasestr (register char *s, register char *find)
 char *
 strncasestrn (const char *s, size_t slen, const char *find, size_t findlen)
 {
-        char c;
+	char c;
 	char sc;
 
 	if (unlikely (find == NULL) || (findlen == 0))
@@ -325,7 +319,7 @@ strncasestrn (const char *s, size_t slen, const char *find, size_t findlen)
 	} while (strncasecmp (s, find, findlen) != 0);
 
 	s--;
-        return (char *)s;
+	return (char *)s;
 }
 
 char *
@@ -365,28 +359,33 @@ size_t
 strlcat (char *dst, const char *src, size_t siz)
 {
 	register char *d = dst;
-        register const char *s = src;
-        register size_t n = siz;
-        size_t dlen;
+	register const char *s = src;
+	register size_t n = siz;
+	size_t dlen;
 
-        /* Find the end of dst and adjust bytes left but don't go past end */
-        while (n-- != 0 && *d != '\0')
-                d++;
-        dlen = d - dst;
-        n = siz - dlen;
+	/* Find the end of dst and adjust bytes left but don't go past end */
+	while (n-- != 0 && *d != '\0') {
+		d++;
+	}
 
-        if (n == 0)
-                return(dlen + strlen(s));
-        while (*s != '\0') {
-                if (n != 1) {
-                        *d++ = *s;
-                        n--;
-                }
-                s++;
-        }
-        *d = '\0';
+	dlen = d - dst;
+	n = siz - dlen;
 
-        return(dlen + (s - src));       /* count does not include NUL */
+	if (n == 0) {
+		return(dlen + strlen(s));
+	}
+
+	while (*s != '\0') {
+		if (n != 1) {
+			*d++ = *s;
+			n--;
+		}
+		s++;
+	}
+
+	*d = '\0';
+
+	return(dlen + (s - src));       /* count does not include NUL */
 }
 #endif
 
@@ -472,11 +471,11 @@ cherokee_readdir (DIR *dirstream, struct dirent *entry, struct dirent **result)
 	return ENOSYS;
 #else
 # ifdef HAVE_READDIR_R_2
-        /* We cannot rely on the return value of readdir_r as it
+	/* We cannot rely on the return value of readdir_r as it
 	 * differs between various platforms (HPUX returns 0 on
 	 * success whereas Solaris returns non-zero)
-         */
-        entry->d_name[0] = '\0';
+	 */
+	entry->d_name[0] = '\0';
 
 	do {
 		errno = 0;
@@ -484,7 +483,7 @@ cherokee_readdir (DIR *dirstream, struct dirent *entry, struct dirent **result)
 	} while (errno == EINTR);
 
 	if (entry->d_name[0] != '\0') {
-                *result = entry;
+		*result = entry;
 		return 0;
 	}
 
@@ -536,10 +535,10 @@ cherokee_closedir (DIR *dirstream)
 
 ret_t
 cherokee_split_pathinfo (cherokee_buffer_t  *path,
-			 cuint_t             init_pos,
-			 int                 allow_dirs,
-			 char              **pathinfo,
-			 int                *pathinfo_len)
+                         cuint_t             init_pos,
+                         int                 allow_dirs,
+                         char              **pathinfo,
+                         int                *pathinfo_len)
 {
 	char        *cur;
 	struct stat  st;
@@ -620,19 +619,17 @@ cherokee_estimate_va_length (const char *fmt, va_list ap)
 	cherokee_boolean_t  lflag;
 	cherokee_boolean_t  llflag;
 	cuint_t             width;
-	char                padc;
 	cuint_t             len = 0;
 
 #define LEN_NUM(var,base)    \
 	do {                 \
 		var /= base; \
 		len++;       \
-        } while (var > 0);   \
+	} while (var > 0);   \
 	len++
 
 	for (;;) {
 		width = 0;
-		padc  = ' ';
 
 		while ((ch = *fmt++) != '%') {
 			if (ch == '\0')
@@ -670,7 +667,7 @@ reswitch:
 			LEN_NUM(ul,10);
 			break;
 		case '0':
-			padc = '0';
+			len++;
 			goto reswitch;
 		case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9':
@@ -843,18 +840,14 @@ cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 	int flags = 0;
 
 	/* Disable the Nagle algorithm. This means that segments are
-         * always sent as soon as possible, even if there is only a
-         * small amount of data. When not set, data is buffered until
-         * there is a sufficient amount to send out, thereby avoiding
-         * the frequent sending of small packets, which results in
-         * poor utilization of the network.
+	 * always sent as soon as possible, even if there is only a
+	 * small amount of data. When not set, data is buffered until
+	 * there is a sufficient amount to send out, thereby avoiding
+	 * the frequent sending of small packets, which results in
+	 * poor utilization of the network.
 	 */
 
-#ifdef _WIN32
-	flags = enable;
-	re = ioctlsocket (fd, FIONBIO, (u_long) &flags);
-
-#elif defined(FIONBIO)
+#ifdef FIONBIO
 	/* Even though the right thing to do would be to use POSIX's
 	 * O_NONBLOCK, we are using FIONBIO here. It requires a single
 	 * syscall, while using O_NONBLOCK would require us to call
@@ -865,7 +858,7 @@ cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 #else
 	/* Use POSIX's O_NONBLOCK
 	 */
- 	flags = fcntl (fd, F_GETFL, 0);
+	flags = fcntl (fd, F_GETFL, 0);
 	if (unlikely (flags == -1)) {
 		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_GETFL, fd);
 		return ret_error;
@@ -893,9 +886,6 @@ cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable)
 	int re;
 	int flags = 0;
 
-#ifdef _WIN32
-	re = ioctlsocket (fd, FIONBIO, (u_long *) &enable);
-#else
 	flags = fcntl (fd, F_GETFL, 0);
 	if (flags < 0) {
 		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_GETFL, fd);
@@ -908,7 +898,7 @@ cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable)
 		BIT_UNSET (flags, O_NONBLOCK);
 
 	re = fcntl (fd, F_SETFL, flags);
-#endif
+
 	if (re < 0) {
 		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_SETFL, fd, flags, "O_NONBLOCK");
 		return ret_error;
@@ -924,7 +914,6 @@ cherokee_fd_set_closexec (int fd)
 	int re;
 	int flags = 0;
 
-#ifndef _WIN32
 	flags = fcntl (fd, F_GETFD, 0);
 	if (flags < 0) {
 		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_GETFD, fd);
@@ -938,7 +927,6 @@ cherokee_fd_set_closexec (int fd)
 		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_SETFD, fd, flags, "FD_CLOEXEC");
 		return ret_error;
 	}
-#endif
 
 	return ret_ok;
 }
@@ -1110,7 +1098,7 @@ ret_t
 cherokee_parse_query_string (cherokee_buffer_t *qstring, cherokee_avl_t *arguments)
 {
 	ret_t  ret;
- 	char  *string;
+	char  *string;
 	char  *token;
 
 	if (cherokee_buffer_is_empty (qstring)) {
@@ -1305,9 +1293,9 @@ cherokee_getpwnam (const char *name, struct passwd *pwbuf, char *buf, size_t buf
 	 *
 	 * Linux:
 	 * int getpwnam_r (const char     *name,
-	 * 	           struct passwd  *pwbuf,
+	 *                 struct passwd  *pwbuf,
 	 *                 char           *buf,
-         *                 size_t          buflen,
+	 *                 size_t          buflen,
 	 *                 struct passwd **pwbufp);
 	 */
 	do {
@@ -1654,13 +1642,7 @@ cherokee_fd_close (int fd)
 		return ret_error;
 	}
 
-	do {
-#ifdef _WIN32
-		re = closesocket (fd);
-#else
-		re = close (fd);
-#endif
-	} while ((re == -1) && (errno == EINTR));
+	re = close (fd);
 
 	TRACE (ENTRIES",close_fd", "fd=%d re=%d\n", fd, re);
 	return (re == 0) ? ret_ok : ret_error;
@@ -1674,11 +1656,7 @@ cherokee_get_shell (const char **shell, const char **binary)
 
 	/* Set the shell path
 	 */
-#ifdef _WIN32
-	*shell = getenv("ComSpec");
-#else
 	*shell = "/bin/sh";
-#endif
 
 	/* Find the binary
 	 */
@@ -1696,29 +1674,29 @@ cherokee_get_shell (const char **shell, const char **binary)
 
 ret_t
 cherokee_buf_add_bogonow (cherokee_buffer_t  *buf,
-			  cherokee_boolean_t  update)
+                          cherokee_boolean_t  update)
 {
 	if (update) {
 		cherokee_bogotime_try_update();
 	}
 
 	cherokee_buffer_add_va (buf, "%02d/%02d/%d %02d:%02d:%02d.%03d",
-				cherokee_bogonow_tmloc.tm_mday,
-				cherokee_bogonow_tmloc.tm_mon + 1,
-				cherokee_bogonow_tmloc.tm_year + 1900,
-				cherokee_bogonow_tmloc.tm_hour,
-				cherokee_bogonow_tmloc.tm_min,
-				cherokee_bogonow_tmloc.tm_sec,
-				cherokee_bogonow_tv.tv_usec / 1000);
+	                        cherokee_bogonow_tmloc.tm_mday,
+	                        cherokee_bogonow_tmloc.tm_mon + 1,
+	                        cherokee_bogonow_tmloc.tm_year + 1900,
+	                        cherokee_bogonow_tmloc.tm_hour,
+	                        cherokee_bogonow_tmloc.tm_min,
+	                        cherokee_bogonow_tmloc.tm_sec,
+	                        cherokee_bogonow_tv.tv_usec / 1000);
 	return ret_ok;
 }
 
 
 ret_t
 cherokee_buf_add_backtrace (cherokee_buffer_t *buf,
-			    int                n_skip,
-			    const char        *new_line,
-			    const char        *line_pre)
+                            int                n_skip,
+                            const char        *new_line,
+                            const char        *line_pre)
 {
 #if HAVE_BACKTRACE
 	void    *array[128];
@@ -1755,11 +1733,8 @@ cherokee_mkstemp (cherokee_buffer_t *buffer, int *fd)
 {
 	int re;
 
-#ifdef _WIN32
-	re = cherokee_win32_mkstemp (buffer);
-#else
 	re = mkstemp (buffer->buf);
-#endif
+    
 	if (re < 0) return ret_error;
 
 	*fd = re;
@@ -1798,7 +1773,7 @@ ret_t
 cherokee_mkdir_p (cherokee_buffer_t *path, int mode)
 {
 	int          re;
-        char        *p;
+	char        *p;
 	int          err;
 	struct stat  foo;
 
@@ -1858,8 +1833,8 @@ cherokee_mkdir_p (cherokee_buffer_t *path, int mode)
 
 ret_t
 cherokee_mkdir_p_perm (cherokee_buffer_t *dir_path,
-		       int                create_mode,
-		       int                ensure_perm)
+                       int                create_mode,
+                       int                ensure_perm)
 {
 	int         re;
 	ret_t       ret;
@@ -1890,7 +1865,7 @@ cherokee_mkdir_p_perm (cherokee_buffer_t *dir_path,
 
 ret_t
 cherokee_rm_rf (cherokee_buffer_t *path,
-		uid_t              only_uid)
+                uid_t              only_uid)
 {
 	int               re;
 	DIR              *d;
@@ -1911,8 +1886,8 @@ cherokee_rm_rf (cherokee_buffer_t *path,
 		if ((re != 0) || (entry == NULL))
 			break;
 
-                if (!strncmp (entry->d_name, ".",  1)) continue;
-                if (!strncmp (entry->d_name, "..", 2)) continue;
+		if (!strncmp (entry->d_name, ".",  1)) continue;
+		if (!strncmp (entry->d_name, "..", 2)) continue;
 
 		cherokee_buffer_clean      (&tmp);
 		cherokee_buffer_add_buffer (&tmp, path);
@@ -1952,11 +1927,11 @@ cherokee_rm_rf (cherokee_buffer_t *path,
 
 ret_t
 cherokee_iovec_skip_sent (struct iovec *orig, uint16_t  orig_len,
-			  struct iovec *dest, uint16_t *dest_len,
-			  size_t sent)
+                          struct iovec *dest, uint16_t *dest_len,
+                          size_t sent)
 {
 	int    i;
- 	int    j      = 0;
+	int    j      = 0;
 	size_t total  = 0;
 
 	for (i=0; i<orig_len; i++) {
@@ -2002,11 +1977,11 @@ cherokee_iovec_was_sent (struct iovec *orig, uint16_t orig_len, size_t sent)
 
 ret_t
 cherokee_io_stat (cherokee_iocache_t        *iocache,
-		  cherokee_buffer_t         *path,
-		  cherokee_boolean_t         useit,
-		  struct stat               *nocache_info,
-		  cherokee_iocache_entry_t **io_entry,
-		  struct stat              **info)
+                  cherokee_buffer_t         *path,
+                  cherokee_boolean_t         useit,
+                  struct stat               *nocache_info,
+                  cherokee_iocache_entry_t **io_entry,
+                  struct stat              **info)
 {
 	ret_t ret;
 	int   re  = -1;
@@ -2093,8 +2068,8 @@ cherokee_header_get_next_line (char *string)
 
 ret_t
 cherokee_header_del_entry (cherokee_buffer_t *header,
-			   const char        *header_name,
-			   int                header_name_len)
+                           const char        *header_name,
+                           int                header_name_len)
 {
 	char                        *end;
 	char                        *begin;
@@ -2154,9 +2129,9 @@ strnstr (const char *s, const char *find, size_t slen)
 
 ret_t
 cherokee_find_header_end_cstr (char      *c_str,
-			       cint_t     c_len,
-			       char     **end,
-			       cuint_t   *sep_len)
+                               cint_t     c_len,
+                               char     **end,
+                               cuint_t   *sep_len)
 {
 	char *p;
 	char *fin;
@@ -2170,7 +2145,7 @@ cherokee_find_header_end_cstr (char      *c_str,
 	fin = c_str + MIN(c_len, MAX_HEADER_LEN);
 
 	while (p < fin) {
- 		if ((*p == CHR_CR) || (*p == CHR_LF)) {
+		if ((*p == CHR_CR) || (*p == CHR_LF)) {
 			cr_n  = 0;
 			lf_n  = 0;
 			begin = p;
@@ -2218,8 +2193,8 @@ cherokee_find_header_end_cstr (char      *c_str,
 
 ret_t
 cherokee_find_header_end (cherokee_buffer_t  *buf,
-			  char              **end,
-			  cuint_t            *sep_len)
+                          char              **end,
+                          cuint_t            *sep_len)
 {
 	return cherokee_find_header_end_cstr (buf->buf, buf->len, end, sep_len);
 }
@@ -2295,11 +2270,8 @@ cherokee_tmp_dir_copy (cherokee_buffer_t *buffer)
 
 	/* Read the system variable
 	 */
-#ifdef _WIN32
-	p = getenv("TEMP");
-#else
 	p = getenv("TMPDIR");
-#endif
+
 	if (p != NULL) {
 		cherokee_buffer_add (buffer, p, strlen(p));
 		return ret_ok;
@@ -2315,8 +2287,8 @@ cherokee_tmp_dir_copy (cherokee_buffer_t *buffer)
 
 ret_t
 cherokee_parse_host (cherokee_buffer_t  *buf,
-		     cherokee_buffer_t  *host,
-		     cuint_t            *port)
+                     cherokee_buffer_t  *host,
+                     cuint_t            *port)
 {
 	char *p;
 	char *colon;
@@ -2384,7 +2356,7 @@ cherokee_string_is_ipv6 (cherokee_buffer_t *ip)
 
 ret_t
 cherokee_find_exec_in_path (const char        *bin_name,
-			    cherokee_buffer_t *fullpath)
+                            cherokee_buffer_t *fullpath)
 {
 	int   re;
 	char *p, *q;
@@ -2443,6 +2415,22 @@ cherokee_atoi (const char *str, int *ret_value)
 
 
 ret_t
+cherokee_atou (const char *str, cuint_t *ret_value)
+{
+	cuint_t tmp;
+
+	errno = 0;
+	tmp = strtoul (str, NULL, 10);
+	if (errno != 0) {
+		return ret_error;
+	}
+
+	*ret_value = tmp;
+	return ret_ok;
+}
+
+
+ret_t
 cherokee_atob (const char *str, cherokee_boolean_t *ret_value)
 {
 	ret_t ret;
@@ -2460,7 +2448,7 @@ cherokee_atob (const char *str, cherokee_boolean_t *ret_value)
 
 ret_t
 cherokee_copy_local_address (void              *sock,
-			     cherokee_buffer_t *buf)
+                             cherokee_buffer_t *buf)
 {
 	int                 re;
 	cherokee_sockaddr_t my_address;
@@ -2583,7 +2571,7 @@ cherokee_reset_signals (void)
 	sig_action.sa_flags   = 0;
 	sigemptyset (&sig_action.sa_mask);
 
-	for (i=0 ; i < NSIG ; i++) {
+	for (i = 1; i < NSIG; i++) {
 		sigaction (i, &sig_action, NULL);
 	}
 
@@ -2637,6 +2625,18 @@ cherokee_pipe (int fildes[2])
 
 	do {
 		re = pipe (fildes);
+	} while ((re < 0) && (errno == EINTR));
+
+	return re;
+}
+
+int cherokee_socketpair (int fildes[2], cherokee_boolean_t stream)
+{
+	int re;
+
+	do {
+		re = socketpair (AF_UNIX, stream ? SOCK_STREAM : SOCK_DGRAM,
+				 0, fildes);
 	} while ((re < 0) && (errno == EINTR));
 
 	return re;

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -31,7 +31,7 @@
 
 ret_t
 cherokee_cryptor_init_base (cherokee_cryptor_t      *cryp,
-			    cherokee_plugin_info_t  *info)
+                            cherokee_plugin_info_t  *info)
 {
 	ret_t ret;
 
@@ -49,6 +49,10 @@ cherokee_cryptor_init_base (cherokee_cryptor_t      *cryp,
 	 */
 	cryp->timeout_handshake = TIMEOUT_DEFAULT;
 	cryp->allow_SSLv2       = false;
+	cryp->allow_SSLv3       = false;
+	cryp->allow_TLSv1       = true;
+	cryp->allow_TLSv1_1     = true;
+	cryp->allow_TLSv1_2     = true;
 
 	return ret_ok;
 }
@@ -74,8 +78,8 @@ cherokee_cryptor_free (cherokee_cryptor_t *cryp)
 
 ret_t
 cherokee_cryptor_configure (cherokee_cryptor_t     *cryp,
-			    cherokee_config_node_t *conf,
-			    cherokee_server_t      *srv)
+                            cherokee_config_node_t *conf,
+                            cherokee_server_t      *srv)
 {
 	ret_t ret;
 
@@ -83,6 +87,10 @@ cherokee_cryptor_configure (cherokee_cryptor_t     *cryp,
 	 */
 	cherokee_config_node_read_int  (conf, "timeout_handshake", &cryp->timeout_handshake);
 	cherokee_config_node_read_bool (conf, "protocol!SSLv2",    &cryp->allow_SSLv2);
+	cherokee_config_node_read_bool (conf, "protocol!SSLv3",    &cryp->allow_SSLv3);
+	cherokee_config_node_read_bool (conf, "protocol!TLSv1",    &cryp->allow_TLSv1);
+	cherokee_config_node_read_bool (conf, "protocol!TLSv1_1",  &cryp->allow_TLSv1_1);
+	cherokee_config_node_read_bool (conf, "protocol!TLSv1_2",  &cryp->allow_TLSv1_2);
 
 	/* Call the its virtual method
 	 */
@@ -100,8 +108,8 @@ cherokee_cryptor_configure (cherokee_cryptor_t     *cryp,
 
 ret_t
 cherokee_cryptor_vserver_new (cherokee_cryptor_t          *cryp,
-			      void                        *vsrv,
-			      cherokee_cryptor_vserver_t **cryp_vsrv)
+                              void                        *vsrv,
+                              cherokee_cryptor_vserver_t **cryp_vsrv)
 {
 	if (unlikely (cryp->vserver_new == NULL))
 		return ret_error;
@@ -112,7 +120,7 @@ cherokee_cryptor_vserver_new (cherokee_cryptor_t          *cryp,
 
 ret_t
 cherokee_cryptor_socket_new (cherokee_cryptor_t         *cryp,
-			     cherokee_cryptor_socket_t **cryp_sock)
+                             cherokee_cryptor_socket_t **cryp_sock)
 {
 	if (unlikely (cryp->socket_new == NULL))
 		return ret_error;
@@ -123,7 +131,7 @@ cherokee_cryptor_socket_new (cherokee_cryptor_t         *cryp,
 
 ret_t
 cherokee_cryptor_client_new (cherokee_cryptor_t         *cryp,
-			     cherokee_cryptor_client_t **cryp_client)
+                             cherokee_cryptor_client_t **cryp_client)
 {
 	if (unlikely (cryp->socket_new == NULL))
 		return ret_error;
@@ -202,10 +210,10 @@ cherokee_cryptor_socket_clean (cherokee_cryptor_socket_t *cryp)
 
 ret_t
 cherokee_cryptor_socket_init_tls (cherokee_cryptor_socket_t *cryp,
-				  void                      *sock,
-				  void                      *vsrv,
-				  void                      *conn,
-				  void                      *blocking)
+                                  void                      *sock,
+                                  void                      *vsrv,
+                                  void                      *conn,
+                                  void                      *blocking)
 {
 	if (unlikely (cryp->init_tls == NULL))
 		return ret_error;
@@ -224,7 +232,7 @@ cherokee_cryptor_socket_shutdown (cherokee_cryptor_socket_t *cryp)
 
 ret_t
 cherokee_cryptor_socket_read (cherokee_cryptor_socket_t *cryp,
-			      char *buf, int len, size_t *re_len)
+                              char *buf, int len, size_t *re_len)
 {
 	if (unlikely (cryp->read == NULL))
 		return ret_error;
@@ -234,7 +242,7 @@ cherokee_cryptor_socket_read (cherokee_cryptor_socket_t *cryp,
 
 ret_t
 cherokee_cryptor_socket_write (cherokee_cryptor_socket_t *cryp,
-			       char *buf, int len, size_t *re_len)
+                               char *buf, int len, size_t *re_len)
 {
 	if (unlikely (cryp->write == NULL))
 		return ret_error;
@@ -259,8 +267,8 @@ cherokee_cryptor_socket_pending (cherokee_cryptor_socket_t *cryp)
 
 ret_t
 cherokee_cryptor_client_init (cherokee_cryptor_client_t *cryp,
-			      cherokee_buffer_t         *host,
-			      void                      *socket)
+                              cherokee_buffer_t         *host,
+                              void                      *socket)
 {
 	cherokee_socket_status_t foo = socket_closed;
 

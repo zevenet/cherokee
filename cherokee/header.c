@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -46,10 +46,11 @@
 #endif
 
 #ifdef HEADER_INTERNAL_DEBUG
-# define HEADER_INTERNAL_CHECK(h)       	                                                   \
-	do { if (cherokee_buffer_crc32 (h->input_buffer) != h->input_buffer_crc)                   \
-		fprintf (stderr, "Header sanity check failed: %s, line %d\n", __FILE__, __LINE__); \
-        } while(0)
+# define HEADER_INTERNAL_CHECK(h)                                                                          \
+	do {                                                                                               \
+		if (cherokee_buffer_crc32 (h->input_buffer) != h->input_buffer_crc)                        \
+			fprintf (stderr, "Header sanity check failed: %s, line %d\n", __FILE__, __LINE__); \
+	} while(0)
 #else
 # define HEADER_INTERNAL_CHECK(h)
 #endif
@@ -300,11 +301,11 @@ parse_method (cherokee_header_t *hdr, char *line, char *end, char **pointer)
 	char *p;
 	char  chr = *line;
 
-#define detect_method(l,str,mthd)		\
-	if (cmp_str (line, (str" "))) {		\
-		hdr->method = http_ ## mthd;    \
-		*pointer += sizeof(str);        \
-		return ret_ok;                  \
+#define detect_method(l,str,mthd)            \
+	if (cmp_str (line, (str" "))) {      \
+		hdr->method = http_ ## mthd; \
+		*pointer += sizeof(str);     \
+		return ret_ok;               \
 	}
 
 	/* Check the first letter of the method name, if it matches it
@@ -320,6 +321,8 @@ parse_method (cherokee_header_t *hdr, char *line, char *end, char **pointer)
 		detect_method (line, "PUT", put)
 		else
 		detect_method (line, "PURGE", purge)
+		else
+		detect_method (line, "PATCH", patch)
 		else
 		detect_method (line, "POLL", poll)
 		else
@@ -385,10 +388,10 @@ parse_method (cherokee_header_t *hdr, char *line, char *end, char **pointer)
 		detect_method (line, "REPORT", report)
 	        break;
 	case 'V':
-		detect_method (line, "VERSION_CONTROL", version_control)
+		detect_method (line, "VERSION-CONTROL", version_control)
 	        break;
 	case 'B':
-		detect_method (line, "BASELINE_CONTROL", baseline_control)
+		detect_method (line, "BASELINE-CONTROL", baseline_control)
 		break;
 	case 'I':
 		detect_method (line, "INVALID", invalid)
@@ -579,8 +582,8 @@ cherokee_header_get_length (cherokee_header_t *hdr, cuint_t *len)
 
 ret_t
 cherokee_header_get_unknown (cherokee_header_t *hdr,
-			     const char        *name,   cuint_t name_len,
-			     char             **header, cuint_t *header_len)
+                             const char        *name,   cuint_t name_len,
+                             char             **header, cuint_t *header_len)
 {
 	int i;
 
@@ -603,9 +606,9 @@ cherokee_header_get_unknown (cherokee_header_t *hdr,
 
 ret_t
 cherokee_header_copy_unknown (cherokee_header_t *hdr,
-			      const char        *name,
-			      cuint_t            name_len,
-			      cherokee_buffer_t *buf)
+                              const char        *name,
+                              cuint_t            name_len,
+                              cherokee_buffer_t *buf)
 {
 	ret_t    ret;
 	char    *info;
@@ -671,8 +674,8 @@ sanitize_buffer (cherokee_buffer_t *buf)
 	 */
 	for (i=0,j=0; j<buf->len;) {
 		if (unlikely ((j+1 < buf->len) &&
-			      (buf->buf[i] == 0x1B) &&
-			      (buf->buf[i+1] == '[' || buf->buf[i+1] == ']')))
+		              (buf->buf[i] == 0x1B) &&
+		              (buf->buf[i+1] == '[' || buf->buf[i+1] == ']')))
 		{
 			j       += 2;
 			removed += 2;
@@ -867,8 +870,8 @@ has_header_request (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cuint_t t
 	/* It could be a partial header, or maybe a POST request
 	 */
 	ret = cherokee_find_header_end_cstr (start,
-					     (buffer->buf + buffer->len) - start,
-					     &end, &crlf_len);
+	                                     (buffer->buf + buffer->len) - start,
+	                                     &end, &crlf_len);
 	if (ret != ret_ok) {
 		return ret_not_found;
 	}
@@ -938,7 +941,7 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 		if (ret != ret_ok) {
 			if (ret == ret_not_found) {
 				LOG_ERROR (CHEROKEE_ERROR_HEADER_NO_EOH,
-					   buffer->len, buffer->buf);
+				           buffer->len, buffer->buf);
 			} else {
 				LOG_ERROR_S (CHEROKEE_ERROR_HEADER_TOO_MANY_CRLF);
 			}
@@ -994,10 +997,10 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 	 */
 	while ((begin < header_end)) {
 		cuint_t header_len;
-		int	val_offs;
-		int	val_len;
-		char    first_char;
-		char    chr_end;
+		int  val_offs;
+		int  val_len;
+		char first_char;
+		char chr_end;
 
 		/* Check where the line ends
 		 */
@@ -1046,9 +1049,10 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 			first_char -=  'a' - 'A';
 
 
-#define header_equals(str,hdr_enum,begin,len) ((len == (sizeof(str)-1)) && \
-					       (hdr->header[hdr_enum].info_off == 0) && \
-					       (strncasecmp (begin, str, sizeof(str)-1) == 0))
+#define header_equals(str,hdr_enum,begin,len) \
+	((len == (sizeof(str)-1)) && \
+	 (hdr->header[hdr_enum].info_off == 0) && \
+	 (strncasecmp (begin, str, sizeof(str)-1) == 0))
 
 		switch (first_char) {
 		case 'A':
@@ -1066,14 +1070,24 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 				goto unknown;
 			break;
 		case 'C':
-			if (header_equals ("Connection", header_connection, begin, header_len)) {
+			if (header_equals ("Cache-Control", header_cache_control, begin, header_len)) {
+				ret = add_known_header (hdr, header_cache_control, val_offs, val_len);
+			} else if (header_equals ("Connection", header_connection, begin, header_len)) {
 				ret = add_known_header (hdr, header_connection, val_offs, val_len);
+			} else if (header_equals ("Content-Encoding", header_content_encoding, begin, header_len)) {
+				ret = add_known_header (hdr, header_content_encoding, val_offs, val_len);
 			} else if (header_equals ("Content-Length", header_content_length, begin, header_len)) {
 				ret = add_known_header (hdr, header_content_length, val_offs, val_len);
 			} else if (header_equals ("Content-Type", header_content_type, begin, header_len)) {
 				ret = add_known_header (hdr, header_content_type, val_offs, val_len);
 			} else if (header_equals ("Cookie", header_cookie, begin, header_len)) {
 				ret = add_known_header (hdr, header_cookie, val_offs, val_len);
+			} else
+				goto unknown;
+			break;
+		case 'D':
+			if (header_equals ("DNT", header_expect, begin, header_len)) {
+				ret = add_known_header (hdr, header_dnt, val_offs, val_len);
 			} else
 				goto unknown;
 			break;
@@ -1165,8 +1179,9 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 	next:
 		*end = chr_end;
 
-		while ((*end == CHR_CR) || (*end == CHR_LF))
+		while ((*end == CHR_CR) || (*end == CHR_LF)) {
 			end++;
+		}
 		begin = end;
 	}
 
@@ -1189,10 +1204,10 @@ cherokee_header_foreach_unknown (cherokee_header_t *hdr, cherokee_header_foreach
 		char *begin_info = hdr->unknowns[i].header_info_off + hdr->input_buffer->buf;
 
 		cherokee_buffer_add (&tmp_hdr, begin,
-				     (hdr->unknowns[i].header_info_off - 2) - hdr->unknowns[i].header_off);
+		                     (hdr->unknowns[i].header_info_off - 2) - hdr->unknowns[i].header_off);
 
 		cherokee_buffer_add (&tmp_val, begin_info,
-				     hdr->unknowns[i].header_info_len);
+		                     hdr->unknowns[i].header_info_len);
 
 		func (&tmp_hdr, &tmp_val, data);
 

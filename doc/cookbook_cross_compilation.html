@@ -44,10 +44,12 @@ LD=i586-mingw32msvc-ld
 AR=i586-mingw32msvc-ar
 RC=i586-mingw32msvc-windres</tt></pre>
 </div></div>
-<div class="paragraph"><p>Check out the last version of Cherokee trunk:</p></div>
+<div class="paragraph"><p>Check out the last development version of Cherokee:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ svn co svn://svn.cherokee-project.com/cherokee/trunk cherokee</tt></pre>
+<pre><tt>$ git clone --recursive git://github.com/cherokee/webserver.git cherokee
+$ cd cherokee
+$ git submodule update --init #Not needed on Git &gt;= 1.6.5</tt></pre>
 </div></div>
 <div class="paragraph"><p>and execute a quite long "configure" command:</p></div>
 <div class="listingblock">

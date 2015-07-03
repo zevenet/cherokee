@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -63,7 +63,7 @@ to64 (char *tmp, unsigned long v, int n)
 char *
 md5_crypt(const char *pw, const char *salt, const char *magic, char passwd[MD5CRYPT_PASSWD_LEN])
 {
-	char salt_copy[9], *p;
+	char salt_copy[9];
 	const char *sp, *ep;
 	unsigned char final[16];
 	int sl, pl, i, j;
@@ -164,8 +164,6 @@ md5_crypt(const char *pw, const char *salt, const char *magic, char passwd[MD5CR
 
 		MD5Final(final, &ctx1);
 	}
-
-	p = passwd + strlen(passwd);
 
 	l = (final[ 0]<<16) | (final[ 6]<<8) | final[12];
 	strlcat (passwd, to64(to64_buf, l, 4), MD5CRYPT_PASSWD_LEN);

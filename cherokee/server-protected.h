@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -186,9 +186,9 @@ struct cherokee_server {
 };
 
 
-ret_t cherokee_server_del_connection (cherokee_server_t *srv, char *begin);
-ret_t cherokee_server_get_vserver    (cherokee_server_t *srv, cherokee_buffer_t *name, cherokee_connection_t *conn, cherokee_virtual_server_t **vsrv);
-ret_t cherokee_server_get_next_bind  (cherokee_server_t *srv, cherokee_bind_t *bind, cherokee_bind_t **next);
-ret_t cherokee_server_get_log_writer (cherokee_server_t *srv, cherokee_config_node_t *config, cherokee_logger_writer_t **writer);
+ret_t cherokee_server_close_connection (cherokee_server_t *srv, cherokee_thread_t *mythread, char *id_str);
+ret_t cherokee_server_get_vserver      (cherokee_server_t *srv, cherokee_buffer_t *name, cherokee_connection_t *conn, cherokee_virtual_server_t **vsrv);
+ret_t cherokee_server_get_next_bind    (cherokee_server_t *srv, cherokee_bind_t *bind, cherokee_bind_t **next);
+ret_t cherokee_server_get_log_writer   (cherokee_server_t *srv, cherokee_config_node_t *config, cherokee_logger_writer_t **writer);
 
 #endif /* CHEROKEE_SERVER_PROTECTED_H */

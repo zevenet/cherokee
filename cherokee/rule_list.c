@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -62,7 +62,7 @@ cherokee_rule_list_mrproper (cherokee_rule_list_t *list)
 
 static void
 update_connection (cherokee_connection_t   *conn,
-		   cherokee_config_entry_t *ret_config)
+                   cherokee_config_entry_t *ret_config)
 {
 	if (! conn->auth_type)
 		conn->auth_type = ret_config->authentication;
@@ -84,8 +84,8 @@ update_connection (cherokee_connection_t   *conn,
 
 ret_t
 cherokee_rule_list_match (cherokee_rule_list_t    *list,
-			  cherokee_connection_t   *conn,
-			  cherokee_config_entry_t *ret_config)
+                          cherokee_connection_t   *conn,
+                          cherokee_config_entry_t *ret_config)
 {
 	ret_t            ret;
 	cherokee_list_t *i;

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -56,8 +56,8 @@ cherokee_handler_streaming_props_free (cherokee_handler_streaming_props_t *props
 
 ret_t
 cherokee_handler_streaming_configure (cherokee_config_node_t   *conf,
-				      cherokee_server_t        *srv,
-				      cherokee_module_props_t **_props)
+                                      cherokee_server_t        *srv,
+                                      cherokee_module_props_t **_props)
 {
 	ret_t                               ret;
 	cherokee_list_t                    *i;
@@ -67,7 +67,7 @@ cherokee_handler_streaming_configure (cherokee_config_node_t   *conf,
 		CHEROKEE_NEW_STRUCT (n, handler_streaming_props);
 
 		cherokee_handler_props_init_base (HANDLER_PROPS(n),
-			MODULE_PROPS_FREE(cherokee_handler_streaming_props_free));
+		     MODULE_PROPS_FREE(cherokee_handler_streaming_props_free));
 
 		n->props_file       = NULL;
 		n->auto_rate        = true;
@@ -92,7 +92,7 @@ cherokee_handler_streaming_configure (cherokee_config_node_t   *conf,
 			props->auto_rate_factor = strtof (subconf->val.buf, NULL);
 
 		} else if (equal_buf_str (&subconf->key, "rate_boost")) {
-			ret = cherokee_atoi (subconf->val.buf, &props->auto_rate_boost);
+			ret = cherokee_atou (subconf->val.buf, &props->auto_rate_boost);
 			if (ret != ret_ok) return ret_error;
 		}
 	}
@@ -107,11 +107,7 @@ ret_t
 cherokee_handler_streaming_free (cherokee_handler_streaming_t *hdl)
 {
 	if (hdl->handler_file != NULL) {
-		cherokee_handler_file_free (hdl->handler_file);
-	}
-
-	if (hdl->avformat != NULL) {
-		av_close_input_file (hdl->avformat);
+		cherokee_handler_free ((void *) hdl->handler_file);
 	}
 
 	cherokee_buffer_mrproper (&hdl->local_file);
@@ -121,8 +117,8 @@ cherokee_handler_streaming_free (cherokee_handler_streaming_t *hdl)
 
 ret_t
 cherokee_handler_streaming_new (cherokee_handler_t      **hdl,
-				void                     *cnt,
-				cherokee_module_props_t  *props)
+                                void                     *cnt,
+                                cherokee_module_props_t  *props)
 {
 	ret_t ret;
 	CHEROKEE_NEW_STRUCT (n, handler_streaming);
@@ -139,7 +135,7 @@ cherokee_handler_streaming_new (cherokee_handler_t      **hdl,
 	/* Instance the sub-handler
 	 */
 	ret = cherokee_handler_file_new ((cherokee_handler_t **)&n->handler_file, cnt,
-					 MODULE_PROPS(PROP_STREAMING(props)->props_file));
+	                                 MODULE_PROPS(PROP_STREAMING(props)->props_file));
 	if (ret != ret_ok) {
 		return ret_ok;
 	}
@@ -167,7 +163,7 @@ cherokee_handler_streaming_new (cherokee_handler_t      **hdl,
 
 static ret_t
 parse_time_start (cherokee_handler_streaming_t *hdl,
-		  cherokee_buffer_t            *value)
+                  cherokee_buffer_t            *value)
 {
 	float                  start;
 	char                  *end    = NULL;
@@ -194,7 +190,7 @@ error:
 
 static ret_t
 parse_offset_start (cherokee_handler_streaming_t *hdl,
-		    cherokee_buffer_t            *value)
+                    cherokee_buffer_t            *value)
 {
 	long                   start;
 	char                  *end    = NULL;
@@ -271,8 +267,8 @@ seek_mp3 (cherokee_handler_streaming_t *hdl)
 
 static ret_t
 set_rate (cherokee_handler_streaming_t *hdl,
-	  cherokee_connection_t        *conn,
-	  long                          rate)
+          cherokee_connection_t        *conn,
+          long                          rate)
 {
 	cherokee_handler_streaming_props_t *props = HDL_STREAMING_PROP(hdl);
 
@@ -312,14 +308,15 @@ open_media_file (cherokee_handler_streaming_t *hdl)
 
 	/* Open the media stream
 	 */
-	re = av_open_input_file (&hdl->avformat, hdl->local_file.buf, NULL, 0, NULL);
+	TRACE(ENTRIES, "open_media_file %s\n", hdl->local_file.buf);
+	re = avformat_open_input (&hdl->avformat, hdl->local_file.buf, NULL, NULL);
 	if (re != 0) {
 		goto error;
 	}
 
 	/* Read the info
 	 */
-	re = av_find_stream_info (hdl->avformat);
+	re = avformat_find_stream_info (hdl->avformat, NULL);
 	if (re < 0) {
 		goto error;
 	}
@@ -327,7 +324,8 @@ open_media_file (cherokee_handler_streaming_t *hdl)
 	return ret_ok;
 error:
 	if (hdl->avformat != NULL) {
-		av_close_input_file (hdl->avformat);
+		TRACE(ENTRIES, "close_file (error) %s\n", hdl->local_file.buf);
+		avformat_close_input (&hdl->avformat);
 		hdl->avformat = NULL;
 	}
 
@@ -380,7 +378,7 @@ set_auto_rate (cherokee_handler_streaming_t *hdl)
 	if (likely (secs > 0)) {
 		long tmp;
 
-		tmp = (hdl->avformat->file_size / secs);
+		tmp = (hdl->handler_file->info->st_size / secs);
 		if (tmp > rate) {
 			rate = tmp;
 			TRACE(ENTRIES, "New rate: %d bytes/s\n", rate);
@@ -390,8 +388,8 @@ set_auto_rate (cherokee_handler_streaming_t *hdl)
 	ret = set_rate (hdl, conn, rate);
 
 	cherokee_avl_add (&_streaming_cache,
-			  &hdl->local_file,
-			  INT_TO_POINTER(rate));
+	                  &hdl->local_file,
+	                  INT_TO_POINTER(rate));
 
 	return ret;
 }
@@ -471,7 +469,7 @@ cherokee_handler_streaming_init (cherokee_handler_streaming_t *hdl)
 
 		ret = seek_mp3 (hdl);
 		if (unlikely (ret != ret_ok)) {
-			return ret_error;
+			goto out;
 		}
 	}
 
@@ -481,13 +479,21 @@ cherokee_handler_streaming_init (cherokee_handler_streaming_t *hdl)
 		set_auto_rate (hdl);
 	}
 
+out:
+	/* Close our ffmpeg handle, all information has been gathered
+	 */
+	if (hdl->avformat != NULL) {
+		TRACE(ENTRIES, "close_file %s\n", hdl->local_file.buf);
+		avformat_close_input (&hdl->avformat);
+	}
+
 	return ret_ok;
 }
 
 
 ret_t
 cherokee_handler_streaming_add_headers (cherokee_handler_streaming_t *hdl,
-					cherokee_buffer_t            *buffer)
+                                        cherokee_buffer_t            *buffer)
 {
 	ret_t ret;
 
@@ -504,7 +510,7 @@ cherokee_handler_streaming_add_headers (cherokee_handler_streaming_t *hdl,
 
 ret_t
 cherokee_handler_streaming_step (cherokee_handler_streaming_t *hdl,
-				 cherokee_buffer_t            *buffer)
+                                 cherokee_buffer_t            *buffer)
 {
 	cherokee_connection_t *conn = HANDLER_CONN(hdl);
 
@@ -533,6 +539,36 @@ cherokee_handler_streaming_step (cherokee_handler_streaming_t *hdl,
 }
 
 
+/* Lock manager
+ */
+
+#ifdef HAVE_PTHREAD
+static int ff_lockmgr(void **mutex, enum AVLockOp op)
+{
+	CHEROKEE_MUTEX_T(**pmutex) = (void*)mutex;
+
+	switch (op) {
+	case AV_LOCK_CREATE:
+		*pmutex = malloc(sizeof(**pmutex));
+		CHEROKEE_MUTEX_INIT(*pmutex, NULL);
+		break;
+	case AV_LOCK_OBTAIN:
+		CHEROKEE_MUTEX_LOCK(*pmutex);
+		break;
+	case AV_LOCK_RELEASE:
+		CHEROKEE_MUTEX_UNLOCK(*pmutex);
+		break;
+	case AV_LOCK_DESTROY:
+		CHEROKEE_MUTEX_DESTROY(*pmutex);
+		free(*pmutex);
+		break;
+	}
+
+	return 0;
+}
+#endif
+
+
 /* Library init function
  */
 static cherokee_boolean_t _streaming_is_init = false;
@@ -554,4 +590,7 @@ PLUGIN_INIT_NAME(streaming) (cherokee_plugin_loader_t *loader)
 	/* Initialize FFMpeg
 	 */
 	av_register_all();
+#ifdef HAVE_PTHREAD
+	av_lockmgr_register(ff_lockmgr);
+#endif
 }

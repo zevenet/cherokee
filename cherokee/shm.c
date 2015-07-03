@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -94,7 +94,7 @@ cherokee_shm_create (cherokee_shm_t *shm, char *name, size_t len)
 
 ret_t
 cherokee_shm_map (cherokee_shm_t    *shm,
-		  cherokee_buffer_t *name)
+                  cherokee_buffer_t *name)
 {
 	int         re;
 	int         fd;

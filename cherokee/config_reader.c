@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -135,10 +135,10 @@ check_config_node_sanity (cherokee_config_node_t *conf)
 				continue;
 
 			re = cherokee_buffer_case_cmp_buf (&CONFIG_NODE(i)->key,
-							   &CONFIG_NODE(j)->key);
+			                                   &CONFIG_NODE(j)->key);
 			if (re == 0) {
 				LOG_ERROR (CHEROKEE_ERROR_CONF_READ_CHILDREN_SAME_NODE,
-					   CONFIG_NODE(i)->key.buf, CONFIG_NODE(j)->key.buf);
+				           CONFIG_NODE(i)->key.buf, CONFIG_NODE(j)->key.buf);
 				return ret_error;
 			}
 		}
@@ -219,7 +219,7 @@ cherokee_config_reader_parse_string (cherokee_config_node_t *conf, cherokee_buff
 		 */
 		while ((begin < eof) &&
 		       ((*begin == ' ') || (*begin == '\t') ||
-			(*begin == '\r') || (*begin == '\n')))
+		        (*begin == '\r') || (*begin == '\n')))
 		{
 			begin++;
 		}
@@ -227,7 +227,7 @@ cherokee_config_reader_parse_string (cherokee_config_node_t *conf, cherokee_buff
 		/* Look for the EOL
 		 */
 		eol = cherokee_min_str (strchr(begin, '\n'),
-					strchr(begin, '\r'));
+		                        strchr(begin, '\r'));
 
 		if (eol == NULL) {
 			eol = eof;

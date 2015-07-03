@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -49,10 +49,10 @@ match (cherokee_vrule_rehost_t *vrule,
 		pcre *regex = LIST_ITEM_INFO(i);
 
 		re = pcre_exec (regex, NULL,
-				host->buf,
-				host->len,
-				0, 0,
-				conn->regex_host_ovector, OVECTOR_LEN);
+		                host->buf,
+		                host->len,
+		                0, 0,
+		                conn->regex_host_ovector, OVECTOR_LEN);
 		if (re >= 0) {
 			conn->regex_host_ovecsize = re;
 			TRACE (ENTRIES, "Host \"%s\" matched: %d variables\n", host->buf, re);
@@ -66,8 +66,8 @@ match (cherokee_vrule_rehost_t *vrule,
 
 static ret_t
 configure (cherokee_vrule_rehost_t   *vrule,
-	   cherokee_config_node_t    *conf,
-	   cherokee_virtual_server_t *vsrv)
+           cherokee_config_node_t    *conf,
+           cherokee_virtual_server_t *vsrv)
 {
 	ret_t                   ret;
 	cherokee_list_t        *i;

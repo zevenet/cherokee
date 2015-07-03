@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -35,7 +35,7 @@
 
 /* Plug-in initialization
  */
-PLUGIN_INFO_HANDLER_EASIEST_INIT (admin, http_get | http_post | http_purge);
+PLUGIN_INFO_HANDLER_EASIEST_INIT (admin, http_post | http_purge);
 
 
 /* Methods implementation
@@ -124,6 +124,8 @@ process_request_line (cherokee_handler_admin_t *hdl, cherokee_buffer_t *line)
 	} else if (COMP (line->buf, "close server.connection")) {
 		return cherokee_admin_server_reply_close_conn (HANDLER(hdl), &hdl->dwriter, line);
 
+	} else if (COMP (line->buf, "restart")) {
+		return cherokee_admin_server_reply_restart (HANDLER(hdl), &hdl->dwriter);
 	}
 
 	SHOULDNT_HAPPEN;
@@ -174,8 +176,9 @@ cherokee_handler_admin_init (cherokee_handler_admin_t *hdl)
 {
 	cherokee_connection_t *conn = HANDLER_CONN(hdl);
 
-#define finishes_by(s) ((conn->request.len > sizeof(s)-1) && \
-			(!strncmp (conn->request.buf + conn->request.len - (sizeof(s)-1), s, sizeof(s)-1)))
+#define finishes_by(s) \
+	((conn->request.len > sizeof(s)-1) && \
+	 (!strncmp (conn->request.buf + conn->request.len - (sizeof(s)-1), s, sizeof(s)-1)))
 
 	if (finishes_by ("/py")) {
 		hdl->dwriter.lang = dwriter_python;

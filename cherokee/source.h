@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -64,11 +64,11 @@ ret_t cherokee_source_configure (cherokee_source_t *src, cherokee_config_node_t 
 ret_t cherokee_source_connect   (cherokee_source_t *src, cherokee_socket_t *socket);
 
 ret_t cherokee_source_connect_polling (cherokee_source_t     *src,
-				       cherokee_socket_t     *socket,
-				       cherokee_connection_t *conn);
+                                       cherokee_socket_t     *socket,
+                                       cherokee_connection_t *conn);
 
 ret_t cherokee_source_copy_name       (cherokee_source_t     *src,
-				       cherokee_buffer_t     *buf);
+                                       cherokee_buffer_t     *buf);
 
 CHEROKEE_END_DECLS
 

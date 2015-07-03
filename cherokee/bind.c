@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -35,8 +35,9 @@ cherokee_bind_new (cherokee_bind_t **listener)
 
 	cherokee_buffer_init (&n->ip);
 	cherokee_socket_init (&n->socket);
-	n->port = 0;
-	n->id   = 0;
+	n->port   = 0;
+	n->id     = 0;
+	n->family = 0;
 
 	cherokee_buffer_init (&n->server_string);
 	cherokee_buffer_init (&n->server_string_w_port);
@@ -81,7 +82,7 @@ build_strings (cherokee_bind_t         *listener,
 	 */
 	cherokee_buffer_clean (&listener->server_string_w_port);
 	ret = cherokee_version_add_w_port (&listener->server_string_w_port,
-					   token, listener->port);
+	                                   token, listener->port);
 	if (ret != ret_ok)
 		return ret;
 
@@ -104,7 +105,7 @@ build_strings (cherokee_bind_t         *listener,
 
 ret_t
 cherokee_bind_configure (cherokee_bind_t        *listener,
-			 cherokee_config_node_t *conf)
+                         cherokee_config_node_t *conf)
 {
 	ret_t              ret;
 	cherokee_boolean_t tls;
@@ -118,9 +119,14 @@ cherokee_bind_configure (cherokee_bind_t        *listener,
 	if (ret == ret_ok) {
 		cherokee_buffer_mrproper (&listener->ip);
 		cherokee_buffer_add_buffer (&listener->ip, buf);
+		if (cherokee_string_is_ipv6 (&listener->ip)) {
+			listener->family = AF_INET6;
+		} else {
+			listener->family = AF_INET;
+		}
 	}
 
-	ret = cherokee_config_node_read_int (conf, "port", &listener->port);
+	ret = cherokee_config_node_read_uint (conf, "port", &listener->port);
 	if (ret != ret_ok) {
 		LOG_CRITICAL_S (CHEROKEE_ERROR_BIND_PORT_NEEDED);
 		return ret_error;
@@ -148,7 +154,7 @@ set_socket_opts (int socket)
 {
 	ret_t                    ret;
 #ifdef SO_ACCEPTFILTER
-        struct accept_filter_arg afa;
+	struct accept_filter_arg afa;
 #endif
 
 	/* Set 'close-on-exec'
@@ -221,13 +227,13 @@ set_socket_opts (int socket)
 
 
 static ret_t
-init_socket (cherokee_bind_t *listener, int family)
+init_socket (cherokee_bind_t *listener)
 {
 	ret_t ret;
 
 	/* Create the socket, and set its properties
 	 */
-	ret = cherokee_socket_create_fd (&listener->socket, family);
+	ret = cherokee_socket_create_fd (&listener->socket, listener->family);
 	if ((ret != ret_ok) || (SOCKET_FD(&listener->socket) < 0)) {
 		return ret_error;
 	}
@@ -258,31 +264,34 @@ error:
 
 ret_t
 cherokee_bind_init_port (cherokee_bind_t         *listener,
-			 cuint_t                  listen_queue,
-			 cherokee_boolean_t       ipv6,
-			 cherokee_server_token_t  token)
+                         cuint_t                  listen_queue,
+                         cherokee_boolean_t       ipv6,
+                         cherokee_server_token_t  token)
 {
 	ret_t ret;
+	int family = listener->family;
 
 	/* Init the port
 	 */
 #ifdef HAVE_IPV6
-	if (ipv6) {
-		ret = init_socket (listener, AF_INET6);
+	if (ipv6 && (family == 0 || family == AF_INET6)) {
+		listener->family = AF_INET6;
+		ret = init_socket (listener);
 	} else
 #endif
 	{
 		ret = ret_not_found;
 	}
 
-	if (ret != ret_ok) {
-		ret = init_socket (listener, AF_INET);
+	if (ret != ret_ok && (family == 0 || family == AF_INET)) {
+		listener->family = AF_INET;
+		ret = init_socket (listener);
+	}
 
-		if (ret != ret_ok) {
-			LOG_CRITICAL (CHEROKEE_ERROR_BIND_COULDNT_BIND_PORT,
-				      listener->port, getuid(), getgid());
-			goto error;
-		}
+	if (ret != ret_ok) {
+		LOG_CRITICAL (CHEROKEE_ERROR_BIND_COULDNT_BIND_PORT,
+		              listener->port, getuid(), getgid());
+		goto error;
 	}
 
 	/* Listen
@@ -309,7 +318,7 @@ error:
 
 ret_t
 cherokee_bind_accept_more (cherokee_bind_t *listener,
-			   ret_t            prev_ret)
+                           ret_t            prev_ret)
 {
 	/* Failed to accept
 	 */

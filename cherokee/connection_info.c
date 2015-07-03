@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -80,7 +80,7 @@ info_fill_up (cherokee_connection_info_t *info,
 	ret_t             ret;
 	const char       *phase        = NULL;
 	const char       *handler_name = NULL;
- 	cherokee_icons_t *icons        = CONN_SRV(conn)->icons;
+	cherokee_icons_t *icons        = CONN_SRV(conn)->icons;
 
 	/* ID
 	 */
@@ -176,8 +176,8 @@ info_fill_up (cherokee_connection_info_t *info,
 
 ret_t
 cherokee_connection_info_list_thread (cherokee_list_t    *list,
-				      void               *_thread,
-				      cherokee_handler_t *self_handler)
+                                      void               *_thread,
+                                      cherokee_handler_t *self_handler)
 {
 	ret_t               ret;
 	cherokee_list_t    *i;
@@ -223,6 +223,16 @@ cherokee_connection_info_list_thread (cherokee_list_t    *list,
 		cherokee_list_add (LIST(n), list);
 	}
 
+	list_for_each (i, &thread->limiter.conns) {
+		cherokee_connection_info_t *n;
+
+		ret = cherokee_connection_info_new (&n);
+		if (unlikely (ret != ret_ok)) goto out;
+
+		info_fill_up (n, CONN(i));
+		cherokee_list_add (LIST(n), list);
+	}
+
 	ret = ret_ok;
 	if (cherokee_list_empty (list))
 		ret = ret_not_found;
@@ -239,8 +249,8 @@ out:
 
 ret_t
 cherokee_connection_info_list_server (cherokee_list_t    *list,
-				      cherokee_server_t  *server,
-				      cherokee_handler_t *self)
+                                      cherokee_server_t  *server,
+                                      cherokee_handler_t *self)
 {
 	cherokee_list_t *i;
 

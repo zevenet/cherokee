@@ -1,4 +1,4 @@
-/* config.h.in.  Generated from configure.in by autoheader.  */
+/* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
@@ -367,9 +367,6 @@
 /* HAVE_SOCKADDR_IN6 */
 #undef HAVE_SOCKADDR_IN6
 
-/* HAVE_SOCKADDR_STORAGE */
-#undef HAVE_SOCKADDR_STORAGE
-
 /* HAVE_SOCKADDR_UN */
 #undef HAVE_SOCKADDR_UN
 
@@ -534,15 +531,6 @@
 /* Define to 1 if you have the `vsyslog' function. */
 #undef HAVE_VSYSLOG
 
-/* Have Win32 select */
-#undef HAVE_WIN32_SELECT
-
-/* Define to 1 if you have the <winsock2.h> header file. */
-#undef HAVE_WINSOCK2_H
-
-/* Define to 1 if you have the <winsock.h> header file. */
-#undef HAVE_WINSOCK_H
-
 /* Define to 1 if `fork' works. */
 #undef HAVE_WORKING_FORK
 
@@ -616,9 +604,6 @@
 /* The size of `off_t', as computed by sizeof. */
 #undef SIZEOF_OFF_T
 
-/* The size of `sig_atomic_t', as computed by sizeof. */
-#undef SIZEOF_SIG_ATOMIC_T
-
 /* The size of `size_t', as computed by sizeof. */
 #undef SIZEOF_SIZE_T
 
@@ -677,6 +662,11 @@
 # ifndef WORDS_BIGENDIAN
 #  undef WORDS_BIGENDIAN
 # endif
+#endif
+
+/* Enable large inode numbers on Mac OS X 10.5.  */
+#ifndef _DARWIN_USE_64_BIT_INODE
+# define _DARWIN_USE_64_BIT_INODE 1
 #endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -113,7 +113,7 @@ _add_change(cherokee_fdpoll_kqueue_t *fdp, int fd, int rw, int change )
 		break;
 	default:
 		SHOULDNT_HAPPEN;
-        }
+	}
 
 	event->flags  = change;
 	event->fflags = 0;
@@ -168,11 +168,11 @@ _watch (cherokee_fdpoll_kqueue_t *fdp, int timeout_msecs)
 	 */
 again:
 	n_events = kevent (fdp->kqueue,
-			   fdp->changelist,
-			   fdp->nchanges,
-			   fdp->changelist,
-			   FDPOLL(fdp)->nfiles,
-			   &timeout);
+	                   fdp->changelist,
+	                   fdp->nchanges,
+	                   fdp->changelist,
+	                   FDPOLL(fdp)->nfiles,
+	                   &timeout);
 
 	fdp->nchanges = 0;
 

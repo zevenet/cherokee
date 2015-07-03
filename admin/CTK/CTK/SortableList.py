@@ -3,7 +3,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2009 Alvaro Lopez Ortega
+# Copyright (C) 2009-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -35,12 +35,12 @@ $("#%(id)s").tableDnD({
        $.ajax ({url:      "%(url)s",
                 async:    true,
                 type:     "POST",
-		dataType: "text",
+                dataType: "text",
                 data:     $.tableDnD.serialize_plain(),
-	        success:   function (data_raw) {
+                success:   function (data_raw) {
                   var data = eval('(' + data_raw + ')');
 
-		  if (data['ret'] == 'ok') {
+                  if (data['ret'] == 'ok') {
                     /* Modified: Save button */
                     var modified     = data['modified'];
                     var not_modified = data['not-modified'];

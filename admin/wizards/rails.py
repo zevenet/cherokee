@@ -3,9 +3,9 @@
 # Cherokee-admin's Ruby on Rails Wizard
 #
 # Authors:
-#      Taher Shihadeh <taher@octality.com>
+#      Taher Shihadeh <taher@unixwars.com>
 #
-# Copyright (C) 2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -35,7 +35,6 @@ import Wizard
 import validations
 
 from util import *
-from consts import *
 
 NOTE_WELCOME_H1 = N_("Welcome to the Ruby on Rails wizard")
 NOTE_WELCOME_P1 = N_('<a target="_blank" href="http://rubyonrails.org/">Ruby on Rails</a> is an open-source web framework optimized for programmer happines and sustainable productivity.')
@@ -91,7 +90,11 @@ source!%(src_num)d!interpreter = %(ror_dir)s/script/server -p %(src_port)d
 """
 
 SOURCE_PROXY3 = """
-source!%(src_num)d!interpreter = %(ror_dir)s/script/rails s -p %(src_port)d
+source!%(src_num)d!interpreter = %(ror_dir)s/script/rails s -p %(src_port)d -P tmp/pids/cherokee_$(src_port)d.pid
+"""
+
+SOURCE_PROXY4 = """
+source!%(src_num)d!interpreter = %(ror_dir)s/bin/rails s -p %(src_port)d
 """
 
 SOURCE_ENV = """
@@ -367,7 +370,7 @@ class Dispatcher (CTK.Container):
 class LocalSource:
     def __call__ (self):
         # Trim deployment options if needed
-        if not path_find_binary (DEFAULT_BINS):
+        if not path_find_binary (DEFAULT_BINS) and len(RAILS_METHOD) == 2:
             RAILS_METHOD.remove(('fcgi', 'FastCGI'))
 
         submit  = CTK.Submitter (URL_APPLY)
@@ -376,11 +379,7 @@ class LocalSource:
 
         table.Add (_('Project Directory'), CTK.TextCfg ('%s!ror_dir'%(PREFIX), False), _(NOTE_ROR_DIR))
         table.Add (_('RAILS_ENV environment'), CTK.ComboCfg ('%s!ror_env'%(PREFIX), trans_options(RAILS_ENV), {'class': 'noauto'}), _(NOTE_ENV))
-
-        if len(RAILS_METHOD) > 1:
-            table.Add (_('Deployment method'), CTK.ComboCfg ('%s!ror_method'%(PREFIX), trans_options(RAILS_METHOD), {'class': 'noauto'}), _(NOTE_METHOD))
-        else:
-            submit += CTK.Hidden('%s!ror_method'%(PREFIX), RAILS_METHOD[0][0])
+        table.Add (_('Deployment method'), CTK.ComboCfg ('%s!ror_method'%(PREFIX), trans_options(RAILS_METHOD), {'class': 'noauto'}), _(NOTE_METHOD))
 
         cont = CTK.Container()
         cont += CTK.RawHTML ('<h2>%s</h2>' %(_(NOTE_LOCAL_H1)))
@@ -411,48 +410,44 @@ class Welcome:
         return cont.Render().toStr()
 
 
-def is_ror_dir (path):
+def is_ror_dir(path):
     path = validations.is_local_dir_exists (path)
 
-    try:
-        manage = os.path.join (path, "script/server")
-        validations.is_local_file_exists (manage)
-    except:
-        try:
-            manage = os.path.join (path, "script/rails")
-            validations.is_local_file_exists (manage)
-        except:
-            raise ValueError, _(ERROR_NO_ROR)
+    ror2_bin = os.path.join(path, "script/server")
+    ror3_bin = os.path.join(path, "script/rails")
+    ror4_bin = os.path.join(path, "bin/rails")
 
-    return path
+    if os.path.exists(ror2_bin):
+        return path
+    elif os.path.exists(ror3_bin):
+        return path
+    elif os.path.exists(ror4_bin):
+        return path
+    else:
+        raise ValueError, _(ERROR_NO_ROR)
+
+def get_ror_version(path):
+    path = validations.is_local_dir_exists (path)
+
+    ror2_bin = os.path.join(path, "script/server")
+    ror3_bin = os.path.join(path, "script/rails")
+    ror4_bin = os.path.join(path, "bin/rails")
+
+    if os.path.exists(ror2_bin):
+        return 2
+    elif os.path.exists(ror3_bin):
+        return 3
+    elif os.path.exists(ror4_bin):
+        return 4
 
 
-def is_ror3_dir (path):
-    try:
-        path    = validations.is_local_dir_exists (path)
-        gemfile = validations.is_local_file_exists (os.path.join (path, 'Gemfile'))
-
-        data    = open(gemfile, 'r').read()
-        tmp     = re.findall("^gem\s+'rails',\s+'3[.0-9]*'", data, re.MULTILINE)
-        if tmp:
-            return True
-    except:
-        pass
-
-    return False
-
-
-def get_proxy_source (ror_dir):
-    if is_ror3_dir (ror_dir):
-        return SOURCE_PROXY3
-
-    try:
-        validations.is_local_file_exists (os.path.join (path, "script/server"))
+def get_proxy_source(ror_dir):
+    if get_ror_version(ror_dir) == 2:
         return SOURCE_PROXY
-    except:
-        pass
-
-    return SOURCE_PROXY.replace('/script/server', '/script/rails')
+    elif get_ror_version(ror_dir) == 3:
+        return SOURCE_PROXY3
+    elif get_ror_version(ror_dir) == 4:
+        return SOURCE_PROXY4
 
 
 VALS = [

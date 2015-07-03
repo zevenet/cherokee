@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -68,13 +68,12 @@ add_access (char *address, void *data)
 	}
 
 	return ret_ok;
-
 }
 
 
 ret_t
 cherokee_x_real_ip_configure (cherokee_x_real_ip_t   *real_ip,
-			      cherokee_config_node_t *config)
+                              cherokee_config_node_t *config)
 {
 	ret_t                   ret;
 	cherokee_config_node_t *subconf;
@@ -97,7 +96,7 @@ cherokee_x_real_ip_configure (cherokee_x_real_ip_t   *real_ip,
 
 ret_t
 cherokee_x_real_ip_is_allowed (cherokee_x_real_ip_t  *real_ip,
-			       cherokee_socket_t     *sock)
+                               cherokee_socket_t     *sock)
 {
 	ret_t ret;
 

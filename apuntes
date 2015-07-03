@@ -1,1 +1,7 @@
+#create the configure
+./autogen.sh --localstatedir=/var --prefix=/usr --sysconfdir=/etc --with-wwwroot=/var/www --enable-trace --enable-backtraces
+#not needed
+#make CFLAGS="-O0 -g3"
+#not needed
+#checkinstall
 ./configure --prefix=/usr/local/zenloadbalancer/app/cherokee/ --disable-ipv6 --with-wwwroot=/usr/local/zenloadbalancer/www --with-cgiroot=/usr/local/zenloadbalancer/www --with-wwwuser=root

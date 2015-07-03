@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -50,8 +50,8 @@ PLUGIN_INFO_HANDLER_EASIEST_INIT (error_nn, http_all_methods);
  */
 ret_t
 cherokee_handler_error_nn_configure (cherokee_config_node_t   *conf,
-				     cherokee_server_t        *srv,
-				     cherokee_module_props_t **_props)
+                                     cherokee_server_t        *srv,
+                                     cherokee_module_props_t **_props)
 {
 	UNUSED(conf);
 	UNUSED(srv);
@@ -104,9 +104,9 @@ go_out:
 
 static ret_t
 get_nearest_name (cherokee_connection_t *conn,
-		  cherokee_buffer_t     *local_dir,
-		  cherokee_buffer_t     *request,
-		  cherokee_buffer_t     *output)
+                  cherokee_buffer_t     *local_dir,
+                  cherokee_buffer_t     *request,
+                  cherokee_buffer_t     *output)
 {
 	ret_t              ret;
 	char              *rest;
@@ -186,8 +186,8 @@ error_nn_free (cherokee_handler_error_t *hdl)
 
 ret_t
 cherokee_handler_error_nn_new (cherokee_handler_t      **hdl,
-			       cherokee_connection_t    *conn,
-			       cherokee_module_props_t  *props)
+                               cherokee_connection_t    *conn,
+                               cherokee_module_props_t  *props)
 {
 	CHEROKEE_NEW_STRUCT (n, handler_error_nn);
 

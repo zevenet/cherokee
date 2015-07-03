@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2011 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -27,7 +27,7 @@ from configured import *
 
 URL_ABOUT_CONTENT = "/about-cherokee"
 
-COPYRIGHT_NOTICE = """Copyright ©2001-2011 Alvaro Lopez Ortega. All Rights Reserved."""
+COPYRIGHT_NOTICE = """Copyright © 2001-2014 Alvaro Lopez Ortega. All Rights Reserved."""
 BROUGHT_TO_YOU   = """
 <p>The Cherokee Web Server is proudly brought to you by Alvaro Lopez Ortega
 (contact info: <a href="mail:alvaro@alobbs.com">E-Mail</a>,
@@ -40,7 +40,7 @@ with the invaluable help of the Cherokee community.</p>
 """
 
 CONTRIBUTORS = """
-<p>Many people have contributed with the <a href="http://www.cherokee-project.com/" target="_blank">Cherokee Project</a> during the last years. Please, refer to the <a href="http://lists.cherokee-project.com/pipermail/cherokee-announce/">Announcement</a> Mailing List archive for the acknowledges.</p>
+<p>Many people have contributed with the <a href="http://www.cherokee-project.com/" target="_blank">Cherokee Project</a> during the last years. Please, refer to the <a href="https://groups.google.com/forum/#!forum/cherokee-http">Mailing List archive</a> for the acknowledges.</p>
 <p>Special recognition to the following people for their significant, long-term contributions:</p>
 <ul>
   <li>Antonio Pérez</li>

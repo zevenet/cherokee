@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -28,29 +28,22 @@
 #include <config.h>
 #include <constants.h>
 
-#ifdef _WIN32
-# include "unix4win32.h"
-# include "win32_misc.h"
-#endif
-
 #include "common.h"
 #include "threading.h"
 #include "error_log.h"
 
-#ifndef _WIN32
-# if defined HAVE_ENDIAN_H
-#  include <endian.h>
-# elif defined HAVE_MACHINE_ENDIAN_H
-#  include <machine/endian.h>
-# elif defined HAVE_SYS_ENDIAN_H
-#  include <sys/endian.h>
-# elif defined HAVE_SYS_MACHINE_H
-#  include <sys/machine.h>
-# elif defined HAVE_SYS_ISA_DEFS_H
-#  include <sys/isa_defs.h>
-# else
-#  error "Can not include endian.h"
-# endif
+#if defined HAVE_ENDIAN_H
+# include <endian.h>
+#elif defined HAVE_MACHINE_ENDIAN_H
+# include <machine/endian.h>
+#elif defined HAVE_SYS_ENDIAN_H
+# include <sys/endian.h>
+#elif defined HAVE_SYS_MACHINE_H
+# include <sys/machine.h>
+#elif defined HAVE_SYS_ISA_DEFS_H
+# include <sys/isa_defs.h>
+#else
+# error "Can not include endian.h"
 #endif
 
 #include <stdio.h>
@@ -118,10 +111,11 @@
 # define CHEROKEE_MUTEX_DESTROY(m)     pthread_mutex_destroy(m)
 # define CHEROKEE_MUTEX_TRY_LOCK(m)    pthread_mutex_trylock(m)
 
-# define CHEROKEE_RWLOCK_INIT(m,n)     do {                                       \
-		                         memset (m, 0, sizeof(pthread_rwlock_t)); \
-					 pthread_rwlock_init(m,n);                \
-                                       } while(0)
+# define CHEROKEE_RWLOCK_INIT(m,n)                       \
+	do {                                             \
+		memset (m, 0, sizeof(pthread_rwlock_t)); \
+		pthread_rwlock_init(m,n);                \
+	} while(0)
 # define CHEROKEE_RWLOCK_READER(m)     pthread_rwlock_rdlock(m)
 # define CHEROKEE_RWLOCK_WRITER(m)     pthread_rwlock_wrlock(m)
 # define CHEROKEE_RWLOCK_TRYREADER(m)  pthread_rwlock_tryrdlock(m)
@@ -161,11 +155,7 @@
 #endif
 
 
-#ifdef _WIN32
-# define SOCK_ERRNO()      WSAGetLastError()
-#else
 # define SOCK_ERRNO()      errno
-#endif
 
 
 /* IMPORTANT:

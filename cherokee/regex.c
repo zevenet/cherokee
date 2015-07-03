@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -57,7 +57,7 @@ cherokee_regex_table_free (cherokee_regex_table_t *table)
 {
 	CHEROKEE_RWLOCK_DESTROY (&table->rwlock);
 
-	cherokee_avl_mrproper (&table->cache, free);
+	cherokee_avl_mrproper (AVL_GENERIC(&table->cache), free);
 
 	free(table);
 	return ret_ok;
@@ -141,7 +141,7 @@ configure_rewrite_entry (cherokee_list_t        *list,
 	ret_t                   ret;
 	cherokee_regex_entry_t *n;
 	cherokee_buffer_t      *substring;
-	cint_t                  hidden     = 1;
+	cherokee_boolean_t      hidden     = true;
 	pcre                   *re         = NULL;
 	cherokee_buffer_t      *regex      = NULL;
 
@@ -149,7 +149,7 @@ configure_rewrite_entry (cherokee_list_t        *list,
 
 	/* Query conf
 	 */
-	cherokee_config_node_read_int (conf, "show", &hidden);
+	cherokee_config_node_read_bool (conf, "show", &hidden);
 	hidden = !hidden;
 
 	ret = cherokee_config_node_read (conf, "regex", &regex);
@@ -185,8 +185,8 @@ configure_rewrite_entry (cherokee_list_t        *list,
 
 ret_t
 cherokee_regex_list_configure (cherokee_list_t        *list,
-			       cherokee_config_node_t *conf,
-			       cherokee_regex_table_t *regexs)
+                               cherokee_config_node_t *conf,
+                               cherokee_regex_table_t *regexs)
 {
 	ret_t            ret;
 	cherokee_list_t *i;
@@ -219,11 +219,11 @@ cherokee_regex_list_mrproper (cherokee_list_t *list)
 
 ret_t
 cherokee_regex_substitute (cherokee_buffer_t *regex_str,
-			   cherokee_buffer_t *source,
-			   cherokee_buffer_t *target,
-			   cint_t             ovector[],
-			   cint_t             stringcount,
-			   char               dollar_char)
+                           cherokee_buffer_t *source,
+                           cherokee_buffer_t *target,
+                           cint_t             ovector[],
+                           cint_t             stringcount,
+                           char               dollar_char)
 {
 	cint_t              re;
 	char               *s;

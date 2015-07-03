@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -63,9 +63,6 @@ typedef union {
 #ifdef HAVE_SOCKADDR_IN6
 	struct sockaddr_in6     sa_in6;
 #endif
-#ifdef HAVE_SOCKADDR_STORAGE
-	struct sockaddr_storage sa_stor;
-#endif
 } cherokee_sockaddr_t;
 
 
@@ -106,7 +103,7 @@ typedef struct {
 
 #define cherokee_socket_configured(c)    (SOCKET_FD(c) >= 0)
 #define cherokee_socket_is_connected(c)  (cherokee_socket_configured(c) && \
-					  (SOCKET_STATUS(c) != socket_closed))
+                                          (SOCKET_STATUS(c) != socket_closed))
 
 
 ret_t cherokee_socket_init              (cherokee_socket_t *socket);
@@ -126,7 +123,7 @@ ret_t cherokee_socket_flush             (cherokee_socket_t *socket);
 ret_t cherokee_socket_test_read         (cherokee_socket_t *socket);
 
 ret_t cherokee_socket_create_fd         (cherokee_socket_t *socket, unsigned short int family);
-ret_t cherokee_socket_bind              (cherokee_socket_t *socket, int port, cherokee_buffer_t *listen_to);
+ret_t cherokee_socket_bind              (cherokee_socket_t *socket, cuint_t port, cherokee_buffer_t *listen_to);
 ret_t cherokee_socket_listen            (cherokee_socket_t *socket, int backlog);
 
 ret_t cherokee_socket_bufwrite          (cherokee_socket_t *socket, cherokee_buffer_t *buf, size_t *written);

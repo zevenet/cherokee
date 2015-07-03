@@ -3,7 +3,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2010-2011 Alvaro Lopez Ortega
+# Copyright (C) 2010-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -42,11 +42,11 @@ $('#%(id)s').bind ('change', this, function() {
     info = {'%(key)s': $('#%(id)s')[0].value };
     $.ajax ({url:      '%(url)s',
              type:     'POST',
-	     async:     true,
-	     data:      info,
+             async:     true,
+             data:      info,
              success:  function(data) {
                  $('#%(plugin_id)s').html(data);
-		 $('#%(id)s').trigger('changed');
+                 $('#%(id)s').trigger('changed');
 
                  /* Activate the Save button */
                  var save_button = $('#save-button');
@@ -54,7 +54,7 @@ $('#%(id)s').bind ('change', this, function() {
                  save_button.removeClass('saved');
              },
              error: function (xhr, ajaxOptions, thrownError) {
-		 alert ("Error: " + xhr.status +"\\n"+ xhr.statusText);
+                 alert ("Error: " + xhr.status +"\\n"+ xhr.statusText);
              }
     });
 

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -40,8 +40,8 @@ PLUGIN_INFO_BALANCER_EASIEST_INIT (ip_hash);
 
 ret_t
 cherokee_balancer_ip_hash_configure (cherokee_balancer_t    *balancer,
-				     cherokee_server_t      *srv,
-				     cherokee_config_node_t *conf)
+                                     cherokee_server_t      *srv,
+                                     cherokee_config_node_t *conf)
 {
 	ret_t                        ret;
 	cherokee_list_t             *i;
@@ -78,7 +78,7 @@ cherokee_balancer_ip_hash_configure (cherokee_balancer_t    *balancer,
 
 static ret_t
 reactivate_entry (cherokee_balancer_ip_hash_t *balancer,
-		  cherokee_balancer_entry_t   *entry)
+                  cherokee_balancer_entry_t   *entry)
 {
 	/* balancer->mutex is LOCKED
 	 */
@@ -104,8 +104,8 @@ reactivate_entry (cherokee_balancer_ip_hash_t *balancer,
 
 static ret_t
 report_fail (cherokee_balancer_ip_hash_t *balancer,
-	     cherokee_connection_t       *conn,
-	     cherokee_source_t           *src)
+             cherokee_connection_t       *conn,
+             cherokee_source_t           *src)
 {
 	ret_t                      ret;
 	cherokee_list_t           *i;
@@ -157,8 +157,8 @@ out:
 
 static ret_t
 dispatch (cherokee_balancer_ip_hash_t  *balancer,
-	  cherokee_connection_t        *conn,
-	  cherokee_source_t           **src)
+          cherokee_connection_t        *conn,
+          cherokee_source_t           **src)
 {
 	cint_t                     n;
 	cint_t                     ip_len;
@@ -197,7 +197,7 @@ dispatch (cherokee_balancer_ip_hash_t  *balancer,
 		reactivate_entry (balancer, BAL_ENTRY(balancer->last_one));
 
 		balancer->last_one = list_next_circular (&BAL(balancer)->entries,
-							 balancer->last_one);
+		                                         balancer->last_one);
 	}
 
 	n = (hash % balancer->n_active);

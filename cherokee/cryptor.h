@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -35,7 +35,7 @@
 
 CHEROKEE_BEGIN_DECLS
 
-#define CHEROKEE_CIPHERS_DEFAULT "HIGH:!aNULL:!MD5"
+#define CHEROKEE_CIPHERS_DEFAULT "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA"
 
 /* Callback function prototipes
  */
@@ -67,6 +67,10 @@ typedef struct {
 	cherokee_module_t          module;
 	cint_t                     timeout_handshake;
 	cherokee_boolean_t         allow_SSLv2;
+	cherokee_boolean_t         allow_SSLv3;
+	cherokee_boolean_t         allow_TLSv1;
+	cherokee_boolean_t         allow_TLSv1_1;
+	cherokee_boolean_t         allow_TLSv1_2;
 
 	/* Methods */
 	cryptor_func_configure_t   configure;
@@ -108,16 +112,16 @@ typedef struct {
  */
 #define CRYPTOR_CONF_PROTOTYPE(name)                                \
 	ret_t cherokee_cryptor_ ## name ## _configure (             \
-		cherokee_config_node_t   *,                         \
-		cherokee_server_t        *,                         \
-	 	cherokee_module_props_t **)
+	        cherokee_config_node_t   *,                         \
+	        cherokee_server_t        *,                         \
+	        cherokee_module_props_t **)
 
 #define PLUGIN_INFO_CRYPTOR_EASY_INIT(name)                         \
 	CRYPTOR_CONF_PROTOTYPE(name);                               \
-                                                                    \
+	                                                            \
 	PLUGIN_INFO_INIT(name, cherokee_cryptor,                    \
-		(void *)cherokee_cryptor_ ## name ## _new,          \
-		(void *)NULL)
+	        (void *)cherokee_cryptor_ ## name ## _new,          \
+	        (void *)NULL)
 
 #define PLUGIN_INFO_CRYPTOR_EASIEST_INIT(name)                      \
 	PLUGIN_EMPTY_INIT_FUNCTION(name)                            \
@@ -127,23 +131,23 @@ typedef struct {
 /* Cryptor: Server
  */
 ret_t cherokee_cryptor_init_base   (cherokee_cryptor_t          *cryp,
-				    cherokee_plugin_info_t      *info);
+                                    cherokee_plugin_info_t      *info);
 ret_t cherokee_cryptor_free_base   (cherokee_cryptor_t          *cryp);
 ret_t cherokee_cryptor_free        (cherokee_cryptor_t          *cryp);
 
 ret_t cherokee_cryptor_configure   (cherokee_cryptor_t          *cryp,
-				    cherokee_config_node_t      *conf,
-				    cherokee_server_t           *srv);
+                                    cherokee_config_node_t      *conf,
+                                    cherokee_server_t           *srv);
 
 ret_t cherokee_cryptor_vserver_new (cherokee_cryptor_t          *cryp,
-				    void                        *vsrv,
-				    cherokee_cryptor_vserver_t **cryp_vsrv);
+                                    void                        *vsrv,
+                                    cherokee_cryptor_vserver_t **cryp_vsrv);
 
 ret_t cherokee_cryptor_socket_new  (cherokee_cryptor_t          *cryp,
-				    cherokee_cryptor_socket_t  **cryp_sock);
+                                    cherokee_cryptor_socket_t  **cryp_sock);
 
 ret_t cherokee_cryptor_client_new  (cherokee_cryptor_t         *cryp,
-				    cherokee_cryptor_client_t **cryp_client);
+                                    cherokee_cryptor_client_t **cryp_client);
 
 /* Cryptor: Virtual Server
  */
@@ -159,25 +163,25 @@ ret_t cherokee_cryptor_socket_free        (cherokee_cryptor_socket_t *cryp);
 ret_t cherokee_cryptor_socket_clean       (cherokee_cryptor_socket_t *cryp);
 ret_t cherokee_cryptor_socket_shutdown    (cherokee_cryptor_socket_t *cryp);
 ret_t cherokee_cryptor_socket_init_tls    (cherokee_cryptor_socket_t *cryp,
-					   void                      *sock,
-					   void                      *vsrv,
-					   void                      *conn,
-					   void                      *blocking);
+                                           void                      *sock,
+                                           void                      *vsrv,
+                                           void                      *conn,
+                                           void                      *blocking);
 ret_t cherokee_cryptor_socket_read        (cherokee_cryptor_socket_t *cryp,
-					   char                      *buf,
-					   int                        buf_size,
-					   size_t                    *pcnt_read);
+                                           char                      *buf,
+                                           int                        buf_size,
+                                           size_t                    *pcnt_read);
 ret_t cherokee_cryptor_socket_write       (cherokee_cryptor_socket_t *cryp,
-					   char                      *buf,
-					   int                        buf_len,
-					   size_t                    *written);
+                                           char                      *buf,
+                                           int                        buf_len,
+                                           size_t                    *written);
 int   cherokee_cryptor_socket_pending     (cherokee_cryptor_socket_t *cryp);
 
 /* Cryptor: Client Socket
  */
 ret_t cherokee_cryptor_client_init        (cherokee_cryptor_client_t *cryp,
-					   cherokee_buffer_t         *host,
-					   void                      *socket);
+                                           cherokee_buffer_t         *host,
+                                           void                      *socket);
 
 CHEROKEE_END_DECLS
 

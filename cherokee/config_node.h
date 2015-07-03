@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -36,11 +36,11 @@
 CHEROKEE_BEGIN_DECLS
 
 typedef struct {
-	   cherokee_list_t    entry;
-	   cherokee_list_t    child;
+	cherokee_list_t    entry;
+	cherokee_list_t    child;
 
-	   cherokee_buffer_t  key;
-	   cherokee_buffer_t  val;
+	cherokee_buffer_t  key;
+	cherokee_buffer_t  val;
 } cherokee_config_node_t;
 
 #define CONFIG_NODE(c) ((cherokee_config_node_t *)(c))
@@ -71,10 +71,11 @@ ret_t cherokee_config_node_copy       (cherokee_config_node_t *conf, const char 
 
 ret_t cherokee_config_node_read_path  (cherokee_config_node_t *conf, const char *key, cherokee_buffer_t **buf);
 ret_t cherokee_config_node_read_int   (cherokee_config_node_t *conf, const char *key, int *num);
+ret_t cherokee_config_node_read_uint  (cherokee_config_node_t *conf, const char *key, cuint_t *num);
 ret_t cherokee_config_node_read_long  (cherokee_config_node_t *conf, const char *key, long *num);
 ret_t cherokee_config_node_read_bool  (cherokee_config_node_t *conf, const char *key, cherokee_boolean_t *val);
 ret_t cherokee_config_node_read_list  (cherokee_config_node_t *conf, const char *key,
-				       cherokee_config_node_list_func_t func, void *param);
+                                       cherokee_config_node_list_func_t func, void *param);
 
 ret_t cherokee_config_node_convert_list (cherokee_config_node_t *conf, const char *key, cherokee_list_t *list);
 

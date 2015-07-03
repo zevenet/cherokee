@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -30,8 +30,8 @@
 
 
 typedef enum {
-        post_enc_regular,
-        post_enc_chunked
+	post_enc_regular,
+	post_enc_chunked
 } cherokee_post_encoding_t;
 
 typedef enum {
@@ -85,24 +85,24 @@ int   cherokee_post_has_buffered_info (cherokee_post_t *post);
 /* Read
  */
 ret_t cherokee_post_read              (cherokee_post_t          *post,
-				       cherokee_socket_t        *sock_in,
-				       cherokee_buffer_t        *buffer);
+                                       cherokee_socket_t        *sock_in,
+                                       cherokee_buffer_t        *buffer);
 
 /* Read + Send
  */
 ret_t cherokee_post_send_to_socket    (cherokee_post_t          *post,
-				       cherokee_socket_t        *sock_in,
-				       cherokee_socket_t        *sock_out,
-				       cherokee_buffer_t        *buffer,
-				       cherokee_socket_status_t *blocking,
-				       cherokee_boolean_t       *did_IO);
+                                       cherokee_socket_t        *sock_in,
+                                       cherokee_socket_t        *sock_out,
+                                       cherokee_buffer_t        *buffer,
+                                       cherokee_socket_status_t *blocking,
+                                       cherokee_boolean_t       *did_IO);
 
 ret_t cherokee_post_send_to_fd        (cherokee_post_t          *post,
-				       cherokee_socket_t        *sock_in,
-				       int                       fd_out,
-				       cherokee_buffer_t        *tmp,
-				       cherokee_socket_status_t *blocking,
-				       cherokee_boolean_t       *did_IO);
+                                       cherokee_socket_t        *sock_in,
+                                       int                       fd_out,
+                                       cherokee_buffer_t        *tmp,
+                                       cherokee_socket_status_t *blocking,
+                                       cherokee_boolean_t       *did_IO);
 
 CHEROKEE_END_DECLS
 

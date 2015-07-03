@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -92,7 +92,7 @@ cherokee_nonce_table_free (cherokee_nonce_table_t *nonces)
 		entry_free (nonces, (entry_t *)i);
 	}
 
-	cherokee_avl_mrproper (&nonces->table, NULL);
+	cherokee_avl_mrproper (AVL_GENERIC(&nonces->table), NULL);
 	CHEROKEE_MUTEX_DESTROY (&nonces->access);
 
 	free (nonces);
@@ -102,7 +102,7 @@ cherokee_nonce_table_free (cherokee_nonce_table_t *nonces)
 
 ret_t
 cherokee_nonce_table_remove (cherokee_nonce_table_t *nonces,
-			     cherokee_buffer_t      *nonce)
+                             cherokee_buffer_t      *nonce)
 {
 	ret_t    ret;
 	entry_t *entry = NULL;
@@ -121,7 +121,7 @@ cherokee_nonce_table_remove (cherokee_nonce_table_t *nonces,
 
 ret_t
 cherokee_nonce_table_check (cherokee_nonce_table_t *nonces,
-			    cherokee_buffer_t      *nonce)
+                            cherokee_buffer_t      *nonce)
 {
 	ret_t    ret;
 	entry_t *entry = NULL;
@@ -143,8 +143,8 @@ cherokee_nonce_table_check (cherokee_nonce_table_t *nonces,
 
 ret_t
 cherokee_nonce_table_generate (cherokee_nonce_table_t *nonces,
-			       cherokee_connection_t  *conn,
-			       cherokee_buffer_t      *nonce)
+                               cherokee_connection_t  *conn,
+                               cherokee_buffer_t      *nonce)
 {
 	entry_t *entry;
 

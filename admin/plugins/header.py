@@ -3,7 +3,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2009-2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -33,13 +33,34 @@ NOTE_TYPES    = N_("It defines how this match has to be evaluated.")
 NOTE_COMPLETE = N_("Match against the complete header block, rather than against a concrete header entry.")
 
 HEADERS = [
-    ('Accept-Encoding', 'Accept-Encoding'),
-    ('Accept-Charset',  'Accept-Charset'),
-    ('Accept-Language', 'Accept-Language'),
-    ('Referer',         'Referer'),
-    ('User-Agent',      'User-Agent'),
-    ('Cookie',          'Cookie'),
-    ('Host',            'Host')
+    ('Accept-Encoding',   'Accept-Encoding'),
+    ('Accept-Charset',    'Accept-Charset'),
+    ('Accept-Language',   'Accept-Language'),
+    ('Accept',            'Accept'),
+    ('Authorization',     'Authorization'),
+    ('Cache-Control',     'Cache-Control'),
+    ('Connection',        'Connection'),
+    ('Content-Encoding',  'Content-Encoding'),
+    ('Content-Length',    'Content-Length'),
+    ('Content-Type',      'Content-Type'),
+    ('Cookie',            'Cookie'),
+    ('DNT',               'DNT'),
+    ('Expect',            'Expect'),
+    ('Host',              'Host'),
+    ('If-Modified-Since', 'If-Modified-Since'),
+    ('If-None-Match',     'If-None-Match'),
+    ('If-Range',          'If-Range'),
+    ('Keep-Alive',        'Keep-Alive'),
+    ('Location',          'Location'),
+    ('Range',             'Range'),
+    ('Referer',           'Referer'),
+    ('Set-Cookie',        'Set-Cookie'),
+    ('Transfer-Encoding', 'Transfer-Encoding'),
+    ('Upgrade',           'Upgrade'),
+    ('User-Agent',        'User-Agent'),
+    ('X-Forwarded-For',   'X-Forwarded-For'),
+    ('X-Forwarded-Host',  'X-Forwarded-Host'),
+    ('X-Real-IP',         'X-Real-IP')
 ]
 
 TYPES = [

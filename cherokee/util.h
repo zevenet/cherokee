@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -70,16 +70,9 @@ CHEROKEE_BEGIN_DECLS
 
 /* Error buffer size for cherokee_strerror_r().
  */
-#define ERROR_MIN_BUFSIZE	64	/* min. buffer size */
-#define ERROR_MAX_BUFSIZE	512	/* max. buffer size */
-
-#ifdef _WIN32
-# define cherokee_stat(path,buf)   cherokee_win32_stat(path,buf)
-# define cherokee_lstat(path,buf)  cherokee_win32_stat(path,buf)
-# define cherokee_error            GetLastError()
-#else
-# define cherokee_error            errno
-#endif
+#define ERROR_MIN_BUFSIZE  64 /* min. buffer size */
+#define ERROR_MAX_BUFSIZE 512 /* max. buffer size */
+#define cherokee_error errno
 
 /* Missing functions
  */
@@ -117,30 +110,31 @@ long    cherokee_eval_formated_time (cherokee_buffer_t *buf);
 ret_t   cherokee_fix_dirpath        (cherokee_buffer_t *buf);
 
 ret_t   cherokee_find_header_end    (cherokee_buffer_t  *buf,
-				     char              **end,
-				     cuint_t            *sep_len);
+                                     char              **end,
+                                     cuint_t            *sep_len);
 
 ret_t   cherokee_find_header_end_cstr (char      *c_str,
-				       cint_t     c_len,
-				       char     **end,
-				       cuint_t   *sep_len);
+                                       cint_t     c_len,
+                                       char     **end,
+                                       cuint_t   *sep_len);
 
 ret_t   cherokee_parse_host         (cherokee_buffer_t *buf,
-				     cherokee_buffer_t *host,
-				     cuint_t           *port);
+                                     cherokee_buffer_t *host,
+                                     cuint_t           *port);
 
 int     cherokee_string_is_ipv6     (cherokee_buffer_t *ip);
 ret_t   cherokee_copy_local_address (void              *socket, cherokee_buffer_t *buf);
 
 ret_t   cherokee_buf_add_bogonow    (cherokee_buffer_t *buf,
-				     cherokee_boolean_t update);
+                                     cherokee_boolean_t update);
 
 ret_t   cherokee_buf_add_backtrace  (cherokee_buffer_t *buf, int n_skip, const char *new_line, const char *line_pre);
 
 ret_t   cherokee_find_exec_in_path  (const char        *bin_name,
-				     cherokee_buffer_t *fullpath);
+                                     cherokee_buffer_t *fullpath);
 
 ret_t   cherokee_atoi               (const char *str, int *ret_value);
+ret_t   cherokee_atou               (const char *str, cuint_t *ret_value);
 ret_t   cherokee_atob               (const char *str, cherokee_boolean_t *ret_value);
 
 /* Time management functions
@@ -162,6 +156,7 @@ int   cherokee_access        (const char *pathname, int mode);
 int   cherokee_open          (const char *path, int oflag, int mode);
 int   cherokee_unlink        (const char *path);
 int   cherokee_pipe          (int fildes[2]);
+int   cherokee_socketpair    (int fildes[2], cherokee_boolean_t stream);
 
 ret_t cherokee_gethostbyname (cherokee_buffer_t *hostname, struct addrinfo **addr);
 
@@ -191,11 +186,11 @@ ret_t cherokee_wait_pid      (int pid, int *retcode);
 ret_t cherokee_reset_signals (void);
 
 ret_t cherokee_io_stat       (cherokee_iocache_t        *iocache,
-			      cherokee_buffer_t         *path,
-			      cherokee_boolean_t         useit,
-			      struct stat               *info_space,
-			      cherokee_iocache_entry_t **io_entry,
-			      struct stat              **info);
+                              cherokee_buffer_t         *path,
+                              cherokee_boolean_t         useit,
+                              struct stat               *info_space,
+                              cherokee_iocache_entry_t **io_entry,
+                              struct stat              **info);
 
 /* File descriptors
  */
@@ -215,8 +210,8 @@ ret_t cherokee_tmp_dir_copy    (cherokee_buffer_t *buffer);
 /* IO vectors
  */
 ret_t cherokee_iovec_skip_sent (struct iovec orig[], uint16_t  orig_len,
-				struct iovec dest[], uint16_t *dest_len,
-				size_t sent);
+                                struct iovec dest[], uint16_t *dest_len,
+                                size_t sent);
 ret_t cherokee_iovec_was_sent  (struct iovec orig[], uint16_t orig_len, size_t sent);
 
 /* Debug
@@ -231,23 +226,23 @@ ret_t cherokee_path_arg_eval      (cherokee_buffer_t *path);
 /* Path walking
  */
 ret_t cherokee_split_pathinfo     (cherokee_buffer_t  *path,
-				   cuint_t             init_pos,
-				   int                 allow_dirs,
-				   char              **pathinfo,
-				   int                *pathinfo_len);
+                                   cuint_t             init_pos,
+                                   int                 allow_dirs,
+                                   char              **pathinfo,
+                                   int                *pathinfo_len);
 
 ret_t cherokee_split_arguments    (cherokee_buffer_t *request,
-				   int                init_pos,
-				   char             **arguments,
-				   int               *arguments_len);
+                                   int                init_pos,
+                                   char             **arguments,
+                                   int               *arguments_len);
 
 ret_t cherokee_parse_query_string (cherokee_buffer_t *qstring,
-				   cherokee_avl_t  *arguments);
+                                   cherokee_avl_t  *arguments);
 
 char  *cherokee_header_get_next_line (char *line);
 ret_t  cherokee_header_del_entry     (cherokee_buffer_t *header,
-				      const char        *header_name,
-				      int                header_name_len);
+                                      const char        *header_name,
+                                      int                header_name_len);
 
 
 CHEROKEE_END_DECLS

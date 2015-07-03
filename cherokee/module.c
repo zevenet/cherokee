@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -27,8 +27,8 @@
 
 ret_t
 cherokee_module_init_base (cherokee_module_t       *module,
-			   cherokee_module_props_t *props,
-			   cherokee_plugin_info_t  *info)
+                           cherokee_module_props_t *props,
+                           cherokee_plugin_info_t  *info)
 {
 	/* Properties
 	 */

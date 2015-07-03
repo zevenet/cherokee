@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -138,7 +138,7 @@ cherokee_downloader_async_step (cherokee_downloader_async_t *adownloader)
 		PRINT_ERROR("Error polling fd=%d rw=%d\n", fd, rw);
 		return ret_error;
 	case 0:
- 		TRACE(ENTRIES, "fd=%d rw=%d, not ready\n", fd, rw);
+		TRACE(ENTRIES, "fd=%d rw=%d, not ready\n", fd, rw);
 /*		return ret_eagain; */
 	}
 

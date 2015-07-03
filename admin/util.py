@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2011 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -341,7 +341,7 @@ def path_eval_exist (path_list):
 def os_get_document_root():
     if sys.platform == 'darwin':
         return "/Library/WebServer/Documents"
-    elif sys.platform == 'linux2':
+    elif sys.platform.startswith('linux'):
         if os.path.exists ("/etc/redhat-release"):
             return '/var/www'
         elif os.path.exists ("/etc/fedora-release"):

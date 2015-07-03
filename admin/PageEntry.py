@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2011 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -107,6 +107,12 @@ def Clone():
     next = CTK.cfg.get_next_entry_prefix ('vserver!%s!rule'%(vsrv))
 
     CTK.cfg.clone ('vserver!%s!rule!%s'%(vsrv,rule), next)
+    
+    if CTK.cfg.get_val ("%s!match"%(next)) == "default":
+        # TODO: ideally create an any match, opposed to regular expression
+        CTK.cfg["%s!match"%(next)] = 'request'
+        CTK.cfg["%s!match!request"%(next)] = '/.*'
+
     return CTK.cfg_reply_ajax_ok()
 
 
@@ -234,7 +240,10 @@ class HeaderOps (CTK.Container):
                     table[-1].props['id']       = n
                     table[-1][1].props['class'] = 'dragHandle'
 
-                self += table
+                submit = CTK.Submitter (apply_url)
+                submit += table
+
+                self += submit
 
     def __init__ (self, vsrv, rule, apply_orig):
         CTK.Container.__init__ (self)
@@ -511,10 +520,7 @@ class HandlerWidget (CTK.Container):
             key = 'vserver!%s!rule!%s!document_root'%(vsrv, rule)
 
             table2 = CTK.PropsTable()
-            if not CTK.cfg.get_val (key, '').startswith(CHEROKEE_OWS_ROOT):
-                table2.Add (_('Document Root'), CTK.TextCfg(key, True), _(Handler.NOTE_DOCUMENT_ROOT))
-            else:
-                table2.Add (_('Document Root'), CTK.TextCfg(key, True, {'disabled':True}), _(Handler.NOTE_DOCUMENT_ROOT))
+            table2.Add (_('Document Root'), CTK.TextCfg(key, True), _(Handler.NOTE_DOCUMENT_ROOT))
 
             submit = CTK.Submitter (apply)
             submit += table2

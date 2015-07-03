@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -43,7 +43,7 @@ cherokee_url_init (cherokee_url_t *url)
 	if (unlikely(ret < ret_ok)) return ret;
 
 	ret = cherokee_buffer_init (&url->request);
- 	if (unlikely(ret < ret_ok)) return ret;
+	if (unlikely(ret < ret_ok)) return ret;
 
 	/* Set default values
 	 */
@@ -102,9 +102,9 @@ parse_protocol (cherokee_url_t *url, char *string, cuint_t *len)
 
 static ret_t
 cherokee_url_parse_guts (cherokee_url_t    *url,
-			 cherokee_buffer_t *url_buf,
-			 cherokee_buffer_t *user_ret,
-			 cherokee_buffer_t *password_ret)
+                         cherokee_buffer_t *url_buf,
+                         cherokee_buffer_t *user_ret,
+                         cherokee_buffer_t *password_ret)
 {
 	ret_t    ret;
 	cuint_t  len = 0 ;
@@ -183,9 +183,9 @@ cherokee_url_parse_guts (cherokee_url_t    *url,
 
 ret_t
 cherokee_url_parse (cherokee_url_t    *url,
-		    cherokee_buffer_t *string,
-		    cherokee_buffer_t *user_ret,
-		    cherokee_buffer_t *password_ret)
+                    cherokee_buffer_t *string,
+                    cherokee_buffer_t *user_ret,
+                    cherokee_buffer_t *password_ret)
 {
 	if (cherokee_buffer_is_empty (string)) {
 		return ret_error;

@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2009-2011 Alvaro Lopez Ortega
+# Copyright (C) 2009-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -211,7 +211,6 @@ class MailHTML:
 if __name__ == "__main__":
     # Mail Headers
     mail = MailHTML ("Alvaro Lopez Ortega <alvaro@alobbs.com>",
-                     "Alvaro Lopez Ortega <alvaro@octality.com>",
                      "Good looking HTML mail")
 
     # Template

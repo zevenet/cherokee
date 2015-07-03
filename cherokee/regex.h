@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -64,19 +64,19 @@ typedef struct {
 #define REGEX_ENTRY(r) ((cherokee_regex_entry_t *)(r))
 
 ret_t cherokee_regex_list_configure (cherokee_list_t        *list,
-				     cherokee_config_node_t *conf,
-				     cherokee_regex_table_t *regexs);
+                                     cherokee_config_node_t *conf,
+                                     cherokee_regex_table_t *regexs);
 
 ret_t cherokee_regex_list_mrproper  (cherokee_list_t        *list);
 
 /* Utilities
  */
 ret_t cherokee_regex_substitute (cherokee_buffer_t *regex_str,
-				 cherokee_buffer_t *source,
-				 cherokee_buffer_t *target,
-				 cint_t             ovector[],
-				 cint_t             stringcount,
-				 char               dollar_char);
+                                 cherokee_buffer_t *source,
+                                 cherokee_buffer_t *target,
+                                 cint_t             ovector[],
+                                 cint_t             stringcount,
+                                 char               dollar_char);
 
 CHEROKEE_END_DECLS
 

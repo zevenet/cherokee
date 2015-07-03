@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -111,15 +111,15 @@ cherokee_validator_ldap_configure (cherokee_config_node_t *conf, cherokee_server
 			cherokee_buffer_add_buffer (&props->filter, &subconf->val);
 
 		} else if (equal_buf_str (&subconf->key, "tls")) {
-			ret = cherokee_atoi (subconf->val.buf, &props->tls);
+			ret = cherokee_atob (subconf->val.buf, &props->tls);
 			if (ret != ret_ok) return ret_error;
 
 		} else if (equal_buf_str (&subconf->key, "ca_file")) {
 			cherokee_buffer_add_buffer (&props->ca_file, &subconf->val);
 
 		} else if (equal_buf_str (&subconf->key, "methods") ||
-			   equal_buf_str (&subconf->key, "realm")   ||
-			   equal_buf_str (&subconf->key, "users")) {
+		           equal_buf_str (&subconf->key, "realm")   ||
+		           equal_buf_str (&subconf->key, "users")) {
 			/* Handled in validator.c
 			 */
 		} else {
@@ -161,8 +161,8 @@ init_ldap_connection (cherokee_validator_ldap_t *ldap, cherokee_validator_ldap_p
 	ldap->conn = ldap_init (props->server.buf, props->port);
 	if (ldap->conn == NULL) {
 		LOG_ERRNO (errno, cherokee_err_critical,
-			   CHEROKEE_ERROR_VALIDATOR_LDAP_CONNECT,
-			   props->server.buf, props->port);
+		           CHEROKEE_ERROR_VALIDATOR_LDAP_CONNECT,
+		           props->server.buf, props->port);
 		return ret_error;
 	}
 
@@ -187,7 +187,7 @@ init_ldap_connection (cherokee_validator_ldap_t *ldap, cherokee_validator_ldap_p
 			re = ldap_set_option (NULL, LDAP_OPT_X_TLS_CACERTFILE, props->ca_file.buf);
 			if (re != LDAP_OPT_SUCCESS) {
 				LOG_CRITICAL (CHEROKEE_ERROR_VALIDATOR_LDAP_CA,
-					      props->ca_file.buf, ldap_err2string (re));
+				              props->ca_file.buf, ldap_err2string (re));
 				return ret_error;
 			}
 		}
@@ -209,8 +209,8 @@ init_ldap_connection (cherokee_validator_ldap_t *ldap, cherokee_validator_ldap_p
 
 	if (re != LDAP_SUCCESS) {
 		LOG_CRITICAL (CHEROKEE_ERROR_VALIDATOR_LDAP_BIND,
-			      props->server.buf, props->port, props->binddn.buf,
-			      props->bindpw.buf, ldap_err2string(re));
+		              props->server.buf, props->port, props->binddn.buf,
+		              props->bindpw.buf, ldap_err2string(re));
 		return ret_error;
 	}
 
@@ -241,7 +241,7 @@ cherokee_validator_ldap_new (cherokee_validator_ldap_t **ldap, cherokee_module_p
 	 */
 	ret = init_ldap_connection (n, PROP_LDAP(props));
 	if (ret != ret_ok) {
-		cherokee_validator_free (n);
+		cherokee_validator_free (VALIDATOR(n));
 		return ret;
 	}
 
@@ -253,6 +253,10 @@ ret_t
 cherokee_validator_ldap_free (cherokee_validator_ldap_t *ldap)
 {
 	cherokee_buffer_mrproper (&ldap->filter);
+
+	if (ldap->conn)
+		ldap_unbind (ldap->conn);
+
 	return ret_ok;
 }
 
@@ -317,7 +321,7 @@ init_filter (cherokee_validator_ldap_t       *ldap,
 
 ret_t
 cherokee_validator_ldap_check (cherokee_validator_ldap_t *ldap,
-			       cherokee_connection_t     *conn)
+                               cherokee_connection_t     *conn)
 {
 	int                              re;
 	ret_t                            ret;
@@ -331,7 +335,8 @@ cherokee_validator_ldap_check (cherokee_validator_ldap_t *ldap,
 	/* Sanity checks
 	 */
 	if ((conn->validator == NULL) ||
-	    cherokee_buffer_is_empty (&conn->validator->user))
+	    cherokee_buffer_is_empty (&conn->validator->user) ||
+	    cherokee_buffer_is_empty (&conn->validator->passwd))
 		return ret_error;
 
 	size = cherokee_buffer_cnt_cspn (&conn->validator->user, 0, "*()");
@@ -349,7 +354,7 @@ cherokee_validator_ldap_check (cherokee_validator_ldap_t *ldap,
 	re = ldap_search_s (ldap->conn, props->basedn.buf, LDAP_SCOPE_SUBTREE, ldap->filter.buf, attrs, 0, &message);
 	if (re != LDAP_SUCCESS) {
 		LOG_ERROR (CHEROKEE_ERROR_VALIDATOR_LDAP_SEARCH,
-			   props->filter.buf ? props->filter.buf : "");
+		           props->filter.buf ? props->filter.buf : "");
 		return ret_error;
 	}
 

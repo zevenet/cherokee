@@ -4,9 +4,9 @@
 #
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
-#      Taher Shihadeh <taher@octality.com>
+#      Taher Shihadeh <taher@unixwars.com>
 #
-# Copyright (C) 2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -26,9 +26,7 @@
 import re
 import CTK
 import Page
-import Cherokee
 import SelectionPanel
-import validations
 import Rule
 
 from util import *
@@ -54,6 +52,7 @@ NOTE_TIMEOUT       = N_('How long should the server wait when spawning an interp
 NOTE_USAGE         = N_('Sources currently in use. Note that the last source of any rule cannot be deleted until the rule has been manually edited.')
 NOTE_USER          = N_('Execute the interpreter under a different user. Default: Same UID as the server.')
 NOTE_GROUP         = N_('Execute the interpreter under a different group. Default: Default GID of the new process UID.')
+NOTE_CHROOT        = N_('Execute the interpreter under a different root. Default: no.')
 NOTE_ENV_INHERIT   = N_('Whether the new child process should inherit the environment variables from the server process. Default: yes.')
 NOTE_DELETE_DIALOG = N_('You are about to delete an Information Source. Are you sure you want to proceed?')
 NOTE_NO_ENTRIES    = N_('The Information Source list is currently empty.')
@@ -62,14 +61,6 @@ NOTE_FORBID_2      = N_('First edit the offending rule(s)')
 NOTE_ADD_VARIABLE  = N_('Name of the environment variable')
 NOTE_ADD_VALUE     = N_('Value of the environment variable')
 NOTE_CLONE_DIALOG  = N_('The selected Information Source is about to be cloned.')
-
-VALIDATIONS = [
-    ('source!.+?!timeout',     validations.is_positive_int),
-    ('tmp!new_host',           validations.is_safe_information_source_host),
-    ('tmp!new_nick',           validations.is_safe_information_source_nick),
-    ("source_clone_trg",       validations.is_safe_id),
-    ("source!.+?!interpreter", validations.is_not_empty),
-]
 
 HELPS = [('config_info_sources', N_("Information Sources"))]
 
@@ -125,21 +116,6 @@ def commit():
     if new_variable and new_value:
         CTK.cfg['%s!%s'%(source_pre,new_variable)] = new_value
         return CTK.cfg_reply_ajax_ok()
-
-    # Modification
-    errors = {}
-    for key in CTK.post.keys():
-        try:
-            value = CTK.post.get_val (key)
-            if key.endswith('!nick'):
-                validations.is_safe_information_source_nick (value, key)
-            elif key.endswith('!host'):
-                validations.is_safe_information_source_host (value, key)
-        except ValueError, e:
-            errors[key] = str(e)
-
-    if errors:
-        return { "ret": "error", "errors": errors }
 
     return CTK.cfg_apply_post()
 
@@ -312,10 +288,11 @@ class Render_Source:
         if tipe == 'interpreter':
             NOTE_INTERPRETER = _(NOTE_INTERPRETER1) + '<br/>' + '<b>%s</b>'%(_(NOTE_INTERPRETER2))
 
-            table.Add (_('Interpreter'),         CTK.TextCfg ('source!%s!interpreter'%(num),   False), NOTE_INTERPRETER)
+            table.Add (_('Interpreter'),         CTK.TextAreaCfg ('source!%s!interpreter'%(num), False), NOTE_INTERPRETER)
             table.Add (_('Spawning timeout'),    CTK.TextCfg ('source!%s!timeout'%(num),       True),  _(NOTE_TIMEOUT))
             table.Add (_('Execute as User'),     CTK.TextCfg ('source!%s!user'%(num),          True),  _(NOTE_USER))
             table.Add (_('Execute as Group'),    CTK.TextCfg ('source!%s!group'%(num),         True),  _(NOTE_GROUP))
+            table.Add (_('Chroot Directory'),    CTK.TextCfg ('source!%s!chroot'%(num),        True),  _(NOTE_CHROOT))
             table.Add (_('Inherit Environment'), CTK.CheckCfgText ('source!%s!env_inherited'%(num), True, _('Enabled')), _(NOTE_ENV_INHERIT))
 
         submit = CTK.Submitter (URL_APPLY)
@@ -506,4 +483,4 @@ CTK.publish ('^%s/\d+$'          %(URL_BASE), Render_Particular)
 CTK.publish ('^%s/content/[\d]+$'%(URL_BASE), Render_Source)
 CTK.publish ('^%s/content/empty$'%(URL_BASE), Render_Source)
 CTK.publish ('^%s/content/[\d]+/clone$'%(URL_BASE), commit_clone)
-CTK.publish ('^%s'               %(URL_APPLY), commit, validation=VALIDATIONS, method="POST")
+CTK.publish ('^%s'               %(URL_APPLY), commit, method="POST")

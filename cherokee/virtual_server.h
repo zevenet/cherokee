@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -41,6 +41,13 @@
 #include "collector.h"
 #include "flcache.h"
 
+typedef enum {
+	req_client_cert_skip = 0,
+	req_client_cert_tolerate,
+	req_client_cert_accept,
+	req_client_cert_require
+} cherokee_req_client_cert_t;
+
 typedef struct {
 	cherokee_list_t              list_node;
 	void                        *server_ref;      /* Ref to server */
@@ -73,8 +80,11 @@ typedef struct {
 	cherokee_buffer_t            server_cert;
 	cherokee_buffer_t            server_key;
 	cherokee_buffer_t            certs_ca;
-	cherokee_buffer_t            req_client_certs;
+	cherokee_req_client_cert_t   req_client_certs;
 	cherokee_buffer_t            ciphers;
+	cherokee_boolean_t           cipher_server_preference;
+	cherokee_boolean_t           ssl_compression;
+	cuint_t                      ssl_dh_length;
 	cherokee_cryptor_vserver_t  *cryptor;
 
 	struct {
@@ -94,17 +104,17 @@ ret_t cherokee_virtual_server_free      (cherokee_virtual_server_t  *vserver);
 ret_t cherokee_virtual_server_clean     (cherokee_virtual_server_t  *vserver);
 
 ret_t cherokee_virtual_server_configure (cherokee_virtual_server_t  *vserver,
-					 cuint_t                     prio,
-					 cherokee_config_node_t     *config);
+                                         cuint_t                     prio,
+                                         cherokee_config_node_t     *config);
 
 ret_t cherokee_virtual_server_new_rule  (cherokee_virtual_server_t  *vserver,
-					 cherokee_config_node_t     *config,
-					 cuint_t                     priority,
-					 cherokee_rule_t           **rule);
+                                         cherokee_config_node_t     *config,
+                                         cuint_t                     priority,
+                                         cherokee_rule_t           **rule);
 
 ret_t cherokee_virtual_server_new_vrule (cherokee_virtual_server_t  *vserver,
-					 cherokee_config_node_t     *config,
-					 cherokee_vrule_t          **vrule);
+                                         cherokee_config_node_t     *config,
+                                         cherokee_vrule_t          **vrule);
 
 ret_t cherokee_virtual_server_init_tls  (cherokee_virtual_server_t *vserver);
 ret_t cherokee_virtual_server_has_tls   (cherokee_virtual_server_t *vserver);
@@ -113,6 +123,6 @@ void  cherokee_virtual_server_add_rx    (cherokee_virtual_server_t *vserver, siz
 void  cherokee_virtual_server_add_tx    (cherokee_virtual_server_t *vserver, size_t tx);
 
 ret_t cherokee_virtual_server_get_error_log (cherokee_virtual_server_t  *vserver,
-					     cherokee_logger_writer_t  **writer);
+                                             cherokee_logger_writer_t  **writer);
 
 #endif /* CHEROKEE_VIRTUAL_SERVER_H */

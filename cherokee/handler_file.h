@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -43,6 +43,7 @@
 typedef struct {
 	cherokee_handler_props_t base;
 	cherokee_boolean_t       use_cache;
+	cherokee_boolean_t       send_symlinks;
 } cherokee_handler_file_props_t;
 
 

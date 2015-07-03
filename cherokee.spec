@@ -1,8 +1,8 @@
 # Cherokee
-# Copyright (C) 2001-2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 
 Name:           cherokee
-Version:        1.2.101
+Version:        1.2.104
 Release:        1
 License:        GPL
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -132,7 +132,7 @@ cherokee_logger_writer_free (cherokee_logger_writer_t *writer)
 
 static ret_t
 config_read_type (cherokee_config_node_t         *config,
-		  cherokee_logger_writer_types_t *type)
+                  cherokee_logger_writer_types_t *type)
 {
 	ret_t              ret;
 	cherokee_buffer_t *tmp = NULL;
@@ -380,7 +380,7 @@ cherokee_logger_writer_release_buf (cherokee_logger_writer_t *writer)
 
 ret_t
 cherokee_logger_writer_flush (cherokee_logger_writer_t *writer,
-			      cherokee_boolean_t        locked)
+                              cherokee_boolean_t        locked)
 {
 	int   re;
 	ret_t ret = ret_ok;
@@ -470,7 +470,7 @@ out:
 
 ret_t
 cherokee_logger_writer_get_id (cherokee_config_node_t   *config,
-			       cherokee_buffer_t        *id)
+                               cherokee_buffer_t        *id)
 {
 	ret_t                           ret;
 	cherokee_buffer_t              *tmp;

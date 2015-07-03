@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -616,10 +616,10 @@ cherokee_avl_check (cherokee_avl_generic_t *avl)
 
 ret_t
 cherokee_avl_generic_while (cherokee_avl_generic_t             *avl,
-			    cherokee_avl_generic_while_func_t   func,
-			    void                               *param,
-			    cherokee_avl_generic_node_t       **key,
-			    void                              **value)
+                            cherokee_avl_generic_while_func_t   func,
+                            void                               *param,
+                            cherokee_avl_generic_node_t       **key,
+                            void                              **value)
 {
 	ret_t                        ret;
 	cherokee_avl_generic_node_t *node = avl->root;
@@ -666,7 +666,7 @@ cherokee_avl_len (cherokee_avl_generic_t *avl, size_t *len)
 
 ret_t
 cherokee_avl_mrproper (cherokee_avl_generic_t *avl,
-		       cherokee_func_free_t    free_func)
+                       cherokee_func_free_t    free_func)
 {
 	cherokee_avl_generic_node_t *node;
 	cherokee_avl_generic_node_t *next;
@@ -695,7 +695,7 @@ cherokee_avl_mrproper (cherokee_avl_generic_t *avl,
 
 ret_t
 cherokee_avl_free (cherokee_avl_generic_t *avl,
-		   cherokee_func_free_t    free_func)
+                   cherokee_func_free_t    free_func)
 {
 	ret_t ret;
 	ret = cherokee_avl_mrproper (avl, free_func);

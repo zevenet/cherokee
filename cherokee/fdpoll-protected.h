@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -42,14 +42,12 @@ ret_t fdpoll_kqueue_get_fdlimits (cuint_t *sys_fd_limit, cuint_t *fd_limit);
 ret_t fdpoll_port_get_fdlimits   (cuint_t *sys_fd_limit, cuint_t *fd_limit);
 ret_t fdpoll_poll_get_fdlimits   (cuint_t *sys_fd_limit, cuint_t *fd_limit);
 ret_t fdpoll_select_get_fdlimits (cuint_t *sys_fd_limit, cuint_t *fd_limit);
-ret_t fdpoll_win32_get_fdlimits  (cuint_t *sys_fd_limit, cuint_t *fd_limit);
 
 ret_t fdpoll_epoll_new  (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
 ret_t fdpoll_kqueue_new (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
 ret_t fdpoll_port_new   (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
 ret_t fdpoll_poll_new   (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
 ret_t fdpoll_select_new (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
-ret_t fdpoll_win32_new  (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
 
 
 struct cherokee_fdpoll {
@@ -57,9 +55,9 @@ struct cherokee_fdpoll {
 
 	/* Properties
 	 */
-        int nfiles;            /* Max. fds in this FD poll */
-        int system_nfiles;     /* Max. fds in the system   */
-        int npollfds;          /* Currently, how many FDs  */
+	int nfiles;            /* Max. fds in this FD poll */
+	int system_nfiles;     /* Max. fds in the system   */
+	int npollfds;          /* Currently, how many FDs  */
 
 	/* Virtual methods
 	 */

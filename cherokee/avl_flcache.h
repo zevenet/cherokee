@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2010 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -82,18 +82,18 @@ ret_t cherokee_avl_flcache_mrproper (cherokee_avl_flcache_t *avl, cherokee_func_
 ret_t cherokee_avl_flcache_cleanup  (cherokee_avl_flcache_t *avl);
 
 ret_t cherokee_avl_flcache_add        (cherokee_avl_flcache_t       *avl,
-				       cherokee_connection_t        *conn,
-				       cherokee_avl_flcache_node_t **node);
+                                       cherokee_connection_t        *conn,
+                                       cherokee_avl_flcache_node_t **node);
 
 ret_t cherokee_avl_flcache_get        (cherokee_avl_flcache_t       *avl,
-				       cherokee_connection_t        *conn,
-				       cherokee_avl_flcache_node_t **node);
+                                       cherokee_connection_t        *conn,
+                                       cherokee_avl_flcache_node_t **node);
 
 ret_t cherokee_avl_flcache_del        (cherokee_avl_flcache_t       *avl,
-				       cherokee_avl_flcache_node_t  *node);
+                                       cherokee_avl_flcache_node_t  *node);
 
 ret_t cherokee_avl_flcache_purge_path (cherokee_avl_flcache_t       *avl,
-				       cherokee_buffer_t            *path);
+                                       cherokee_buffer_t            *path);
 
 CHEROKEE_END_DECLS
 

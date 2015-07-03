@@ -3,7 +3,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2009 Alvaro Lopez Ortega
+# Copyright (C) 2009-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -107,6 +107,9 @@ class Refreshable (Widget):
         of the refreshable element."""
         if not selector:
             selector = "$('#%s')" %(self.id)
+
+        if len(on_success) > 0:
+             on_success = "$(document).ready(function(){ %s });" % on_success
 
         props = {'selector':   selector,
                  'url':        url or self.url,

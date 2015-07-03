@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -50,16 +50,9 @@ typedef struct {
 	int               post_data_sent;    /* amount POSTed to the CGI */
 	int               pipeInput;         /* read from the CGI */
 	int               pipeOutput;        /* write to the CGI */
-
-#ifdef _WIN32
-	cherokee_buffer_t envp;
-	HANDLE            process;
-	HANDLE            thread;
-#else
 	char             *envp[ENV_VAR_NUM]; /* Environ variables for execve() */
 	int               envp_last;
 	pid_t             pid;               /* CGI pid */
-#endif
 } cherokee_handler_cgi_t;
 
 #define HDL_CGI(x)           ((cherokee_handler_cgi_t *)(x))
@@ -86,8 +79,8 @@ ret_t cherokee_handler_cgi_step        (cherokee_handler_cgi_t *hdl, cherokee_bu
  * set enviroment variables, work with pathinfo, etc..
  */
 void  cherokee_handler_cgi_add_env_pair   (cherokee_handler_cgi_base_t *cgi,
-					   const char *name,    int name_len,
-					   const char *content, int content_len);
+                                           const char *name,    int name_len,
+                                           const char *content, int content_len);
 
 ret_t cherokee_handler_cgi_props_free     (cherokee_handler_cgi_props_t *props);
 

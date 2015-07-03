@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2011 Alvaro Lopez Ortega
+# Copyright (C) 2001-2014 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -39,7 +39,7 @@ def get_system_stats():
     global _stats
 
     if not _stats:
-        if sys.platform == 'linux2':
+        if sys.platform.startswith('linux'):
             _stats = System_stats__Linux()
         elif sys.platform == 'darwin':
             _stats = System_stats__Darwin()
@@ -97,7 +97,11 @@ class System_stats__Darwin (Thread, System_stats):
         self._page_size = int (re.findall("page size of (\d+) bytes", line)[0])
 
         first_line = self.vm_stat_fd.stdout.readline()
-        if 'spec' in first_line:
+        if 'comprs' in first_line:
+            # OSX 10.9, https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/vm_stat.1.html
+            # free active specul inactive throttle wired prgable faults copy 0fill reactive purged file-backed anonymous cmprssed cmprssor dcomprs comprs pageins pageout swapins swapouts
+            self.vm_stat_type = 22
+        elif 'spec' in first_line:
             # free active spec inactive wire faults copy 0fill reactive pageins pageout
             self.vm_stat_type = 11
         else:
@@ -173,7 +177,11 @@ class System_stats__Darwin (Thread, System_stats):
         tmp = filter (lambda x: x, line.split(' '))
         values = [(to_int(x) * self._page_size) / 1024 for x in tmp]
 
-        if self.vm_stat_type == 11:
+        if self.vm_stat_type == 22:
+            # free active specul inactive throttle wired prgable faults copy 0fill reactive purged file-backed anonymous cmprssed cmprssor dcomprs comprs pageins pageout swapins swapouts
+            free, active, spec, inactive, throttle, wired, prgable, faults, copy, fill, reactive, purged, filebacked, anonymous, cmprssed, cmprssor, dcomprs, comprs, pageins, pageout, swapins, swapouts = values
+            self.mem.total = free + active + spec + inactive + wired
+        elif self.vm_stat_type == 11:
             # free active spec inactive wire faults copy 0fill reactive pageins pageout
             free, active, spec, inactive, wired, faults, copy, fill, reactive, pageins, pageout = values
             self.mem.total = free + active + spec + inactive + wired
